@@ -3,3 +3,4 @@ conf2
 conf-conflict
 conf3
 conf4
+conf5
