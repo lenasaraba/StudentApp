@@ -1,34 +1,120 @@
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import { useState } from "react";
+import { extendTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import Header from "./Header";
+import { AppProvider } from "@toolpad/core/react-router-dom";
+import LaunchIcon from "@mui/icons-material/Launch";
+import InfoIcon from "@mui/icons-material/Info";
+import HomeIcon from "@mui/icons-material/Home";
+import SchoolIcon from "@mui/icons-material/School";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import ForumIcon from "@mui/icons-material/Forum";
+import type { Navigation } from "@toolpad/core";
+
+const NAVIGATION: Navigation = [
+  {
+    kind: "header",
+    title: "Meni",
+  },
+  {
+    segment: "",
+    title: "Početna",
+    icon: <HomeIcon />,
+  },
+  {
+    //provjeriti segment
+    segment: "onlineStudy",
+    title: "Online učenje",
+    icon: <AutoStoriesIcon />,
+  },
+  {
+    //provjera
+    segment: "profile",
+    title: "Profil",
+    icon: <PersonOutlineIcon />,
+  },
+  {
+    segment: "forum",
+    title: "Forum",
+    icon: <ForumIcon />,
+  },
+  {
+    segment: "etfis",
+    title: "ETFIS",
+    icon: <LaunchIcon />,
+  },
+  {
+    segment: "about",
+    title: "O nama",
+    icon: <InfoIcon />,
+  },
+];
+
+const BRANDING = {
+  title: "StudentApp",
+  logo: <SchoolIcon sx={{ fontSize: "2rem" }} />,
+};
+
+const demoTheme = extendTheme({
+  colorSchemes: {
+    light: {
+      palette: {
+        text: {
+          primary: "#3a98b9",
+          secondary: "#89a8b2",
+          disabled: "#000000",
+        },
+        action: {
+          active: "#89a8b2",
+          hover: "#f3e6d8",
+          //hoverselected: "rgba(255, 0, 0, 0.16)",
+          disabled: "rgba(255, 0, 0, 0.3)",
+          disabledBackground: "rgba(255, 0, 0, 0.12)",
+        },
+        background: {
+          default: "#f3e6d8",
+          paper: "#eedbc9",
+        },
+        divider: "#eedbc9",
+        primary: { main: "#3a98b9" },
+      },
+    },
+    dark: {
+      palette: {
+        text: {
+          primary: "#c4e1f6",
+          secondary: "#89a8b2",
+          disabled: "#000000",
+        },
+        action: {
+          active: "#89a8b2",
+          hover: "#0c1017",
+          //hoverselected: "rgba(255, 0, 0, 0.16)",
+          disabled: "rgba(255, 0, 0, 0.3)",
+          disabledBackground: "rgba(255, 0, 0, 0.12)",
+        },
+        background: {
+          default: "#0c1017",
+          paper: "#212a3e",
+        },
+        divider: "#212a3e",
+        primary: { main: "#37b7c3" },
+      },
+    },
+  },
+  colorSchemeSelector: "class",
+  defaultColorScheme: "dark",
+});
 
 export default function App() {
-  
-  const [darkMode, setDarkMode]=useState(false);
-  const paletteType=darkMode ? 'dark':'light';
-
-
-  const theme = createTheme({
-    palette: {
-      mode: paletteType,
-      background: {
-        default: paletteType==='light'? '#F3F3E0' :'#1E3E62'
-      },
-    }
-  });
-
-  function handleThemeChange() {
-    setDarkMode(!darkMode);
-  }
   return (
     <>
-      <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Header theme={theme} handleThemeChange={handleThemeChange} />
+      <AppProvider
+        theme={demoTheme}
+        navigation={NAVIGATION}
+        branding={BRANDING}
+      >
         <Outlet />
-      </ThemeProvider>
+      </AppProvider>
     </>
   );
 }
-
