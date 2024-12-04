@@ -6,22 +6,14 @@ import Layout from "../layout/Layout";
 import { useEffect } from "react";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
-  //   useEffect(() => {
-  //     // Proverava da li je kartica već otvorena
-  //     const existingWindow = window.open("", "_blank");
-
-  //     if (existingWindow) {
-  //       existingWindow.location.href = url;
-  //     }
-  //   }, [url]); // Poziva se samo kada se URL promeni
   useEffect(() => {
     window.location.replace(url);
   }, []);
-  return null; // Komponenta ne renderuje ništa
+  return null;
 };
 export const router = createBrowserRouter([
   {
-    element: <App />, // root layout route
+    element: <App />,
     children: [
       {
         path: "/",

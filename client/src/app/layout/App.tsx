@@ -102,10 +102,34 @@ const demoTheme = extendTheme({
     },
   },
   colorSchemeSelector: "class",
-  defaultColorScheme: "dark",
+  defaultColorScheme: localStorage.getItem("toolpad-mode")
+    ? localStorage.getItem("toolpad-mode")?.toString() == "light"
+      ? "light"
+      : "dark"
+    : "dark",
 });
 
 export default function App() {
+  // const dispatch = useAppDispatch();
+  // const [loading, setLoading] = useState(true);
+
+  // const initApp = useCallback(async () => {
+  //   try {
+  //     await dispatch(fetchCurrentUser());
+  //     await dispatch(fetchBasketAsync());
+  //   } catch (error: any) {
+  //     console.log(error);
+  //   }
+  // }, [dispatch]);
+
+  // useEffect(() => {
+  //   initApp().then(() => setLoading(false));
+  // }, [initApp]);
+  // if (loading)
+  //   return (
+  //     <LoadingComponent message="Initializing app..."></LoadingComponent>
+  //   );
+
   return (
     <>
       <AppProvider
