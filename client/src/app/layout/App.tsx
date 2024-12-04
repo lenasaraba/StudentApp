@@ -59,23 +59,23 @@ const demoTheme = extendTheme({
     light: {
       palette: {
         text: {
-          primary: "#3a98b9",
+          primary: "#4D869C",
           secondary: "#89a8b2",
           disabled: "#000000",
         },
         action: {
           active: "#89a8b2",
-          hover: "#f3e6d8",
-          //hoverselected: "rgba(255, 0, 0, 0.16)",
+          hover: "#7AB2B2",
           disabled: "rgba(255, 0, 0, 0.3)",
           disabledBackground: "rgba(255, 0, 0, 0.12)",
         },
         background: {
-          default: "#f3e6d8",
-          paper: "#eedbc9",
+          default: "#EEF7FF",
+          paper: "#CDE8E5",
         },
-        divider: "#eedbc9",
+        divider: "#CDE8E5",
         primary: { main: "#3a98b9" },
+        secondary:{main:"#eef7ff80"},
       },
     },
     dark: {
@@ -88,7 +88,6 @@ const demoTheme = extendTheme({
         action: {
           active: "#89a8b2",
           hover: "#0c1017",
-          //hoverselected: "rgba(255, 0, 0, 0.16)",
           disabled: "rgba(255, 0, 0, 0.3)",
           disabledBackground: "rgba(255, 0, 0, 0.12)",
         },
@@ -98,6 +97,7 @@ const demoTheme = extendTheme({
         },
         divider: "#212a3e",
         primary: { main: "#37b7c3" },
+        secondary:{main:"#0c101780"},
       },
     },
   },
