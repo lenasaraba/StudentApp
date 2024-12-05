@@ -4,6 +4,7 @@ import App from "../layout/App";
 import AboutPage from "../../features/about/AboutPage";
 import Layout from "../layout/Layout";
 import { useEffect } from "react";
+import Login from "../../features/account/Login";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -15,6 +16,10 @@ export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
+      {
+        path: "login",
+        element: <Login />,
+      },
       {
         path: "/",
         element: <Layout />,

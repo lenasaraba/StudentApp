@@ -61,13 +61,13 @@ const demoTheme = extendTheme({
         text: {
           primary: "#4D869C",
           secondary: "#89a8b2",
-          disabled: "#000000",
+          disabled: "#19334d",
         },
         action: {
           active: "#89a8b2",
           hover: "#7AB2B2",
-          disabled: "rgba(255, 0, 0, 0.3)",
-          disabledBackground: "rgba(255, 0, 0, 0.12)",
+          disabled: "#19334d",
+          disabledBackground: "#b3b3b3",
         },
         background: {
           default: "#EEF7FF",
@@ -75,7 +75,7 @@ const demoTheme = extendTheme({
         },
         divider: "#CDE8E5",
         primary: { main: "#3a98b9" },
-        secondary:{main:"#eef7ff80"},
+        secondary: { main: "#eef7ff80" },
       },
     },
     dark: {
@@ -83,21 +83,21 @@ const demoTheme = extendTheme({
         text: {
           primary: "#c4e1f6",
           secondary: "#89a8b2",
-          disabled: "#000000",
+          disabled: "#19334d",
         },
         action: {
           active: "#89a8b2",
           hover: "#0c1017",
-          disabled: "rgba(255, 0, 0, 0.3)",
-          disabledBackground: "rgba(255, 0, 0, 0.12)",
+          disabled: "#19334d",
+          disabledBackground: "#b3b3b3",
         },
         background: {
           default: "#0c1017",
           paper: "#212a3e",
         },
         divider: "#212a3e",
-        primary: { main: "#37b7c3" },
-        secondary:{main:"#0c101780"},
+        primary: { main: "#608bc1" },
+        secondary: { main: "#0c101780" },
       },
     },
   },
@@ -132,6 +132,7 @@ export default function App() {
 
   return (
     <>
+      {/* <ThemeProvider theme={demoTheme}> */}
       <AppProvider
         theme={demoTheme}
         navigation={NAVIGATION}
@@ -139,6 +140,7 @@ export default function App() {
       >
         <Outlet />
       </AppProvider>
+      {/* </ThemeProvider> */}
     </>
   );
 }

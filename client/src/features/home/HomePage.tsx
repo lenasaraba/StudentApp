@@ -4,6 +4,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import ForumTwoToneIcon from "@mui/icons-material/ForumTwoTone";
 import LoginIcon from "@mui/icons-material/Login";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
   return (
@@ -102,7 +103,6 @@ export default function HomePage() {
               <br />
               <Box sx={{ width: "100%", maxWidth: 700 }}>
                 <Typography
-                  variant="body2"
                   gutterBottom
                   sx={{ fontFamily: "Raleway, sans-serif" }}
                 >
@@ -149,9 +149,22 @@ export default function HomePage() {
                 </Typography>
               </Box>
               <Box>
-                <Button sx={{backgroundColor:'action.hover', padding:1.5, paddingLeft:3, paddingRight:3, borderRadius:4, color:'#EEF7FF'}}>
-                  Prijavi se
-                  &nbsp;
+                <Button
+                  component={Link}
+                  to="/login"
+                  sx={{
+                    padding: 1.5,
+                    paddingLeft: 3,
+                    paddingRight: 3,
+                    borderRadius: 4,
+                    color: "#EEF7FF",
+                    bgcolor: "action.hover",
+                    "&:hover": {
+                      bgcolor: "primary.main",
+                    },
+                  }}
+                >
+                  Prijavi se &nbsp;
                   <LoginIcon
                     sx={{
                       verticalAlign: "middle",
