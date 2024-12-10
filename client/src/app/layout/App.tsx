@@ -9,6 +9,13 @@ import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ForumIcon from "@mui/icons-material/Forum";
 import type { Navigation } from "@toolpad/core";
+import { useAppDispatch } from "../store/configureStore";
+import { useCallback, useEffect, useState } from "react";
+import {
+  fetchCoursesAsync,
+  setCourses,
+} from "../../features/onlineStudy/courseSlice";
+import LoadingComponent from "./LoadingComponent";
 
 const NAVIGATION: Navigation = [
   {
@@ -110,6 +117,25 @@ const demoTheme = extendTheme({
 });
 
 export default function App() {
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(true);
+
+  const initApp = useCallback(async () => {
+    try {
+      await dispatch(fetchCoursesAsync());
+      // setCourses(dispatch(fetchCoursesAsync()));
+    } catch (error: any) {
+      console.log(error);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    initApp().then(() => setLoading(false));
+  }, [initApp]);
+
+  if (loading)
+    return <LoadingComponent message="Učitavanje..."></LoadingComponent>;
+
   // const dispatch = useAppDispatch();
   // const [loading, setLoading] = useState(true);
 

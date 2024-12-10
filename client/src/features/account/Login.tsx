@@ -1,13 +1,9 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import CssBaseline from "@mui/material/CssBaseline";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Divider from "@mui/material/Divider";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
-import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -15,11 +11,11 @@ import MuiCard from "@mui/material/Card";
 import { styled, useTheme } from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import logo from "../../assets/etf.png";
-
-// import ForgotPassword from "./ForgotPassword";
-// import { GoogleIcon, FacebookIcon, SitemarkIcon } from "./CustomIcons";
-// import AppTheme from "../shared-theme/AppTheme";
-// import ColorModeSelect from "../shared-theme/ColorModeSelect";
+import { useAppDispatch } from "../../app/store/configureStore";
+import { FieldValues, useForm } from "react-hook-form";
+import { useLocation, useNavigate } from "react-router-dom";
+import { signInUser } from "./accountSlice";
+import { LoadingButton } from "@mui/lab";
 
 const Card = styled(MuiCard)(() => ({
   display: "flex",
@@ -50,61 +46,29 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useAppDispatch();
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors, isValid },
+  } = useForm({
+    mode: "onChange",
+  });
+
+  async function submitForm(data: FieldValues) {
+    try {
+      await dispatch(signInUser(data));
+
+      navigate(location.state?.from || "/");
+    } catch (error: any) {
+      console.log(error.data);
+    }
+  }
+
   const theme = useTheme();
-  console.log("theme " + theme.palette.action.active);
   //props: { disableCustomTheme?: boolean }
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
-
-  const validateInputs = () => {
-    const email = document.getElementById("email") as HTMLInputElement;
-    const password = document.getElementById("password") as HTMLInputElement;
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage("Please enter a valid email address.");
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage("");
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
-    }
-
-    return isValid;
-  };
 
   return (
     // <AppTheme {...props}>
@@ -148,7 +112,7 @@ export default function Login() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(submitForm)}
             noValidate
             sx={{
               display: "flex",
@@ -160,45 +124,40 @@ export default function Login() {
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
                 id="email"
                 type="email"
-                name="email"
                 placeholder="your@email.com"
-                autoComplete="email"
                 autoFocus
-                required
                 fullWidth
                 variant="outlined"
-                color={emailError ? "error" : "primary"}
+                {...register("email", { required: "Email je obavezan." })}
+                error={!!errors.email}
+                helperText={errors?.email?.message as string}
               />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="password">Lozinka</FormLabel>
               <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
                 placeholder="••••••"
                 type="password"
                 id="password"
-                autoComplete="current-password"
-                required
-                fullWidth
                 variant="outlined"
-                color={passwordError ? "error" : "primary"}
+                {...register("password", { required: "Lozinka je obavezna." })}
+                fullWidth
+                error={!!errors.password}
+                helperText={errors?.password?.message as string}
               />
             </FormControl>
             <br />
-            <Button
+            <LoadingButton
+              loading={isSubmitting}
+              disabled={!isValid}
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
             >
               Prijavi se
-            </Button>
+            </LoadingButton>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {/* <Button

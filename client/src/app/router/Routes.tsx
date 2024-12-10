@@ -5,6 +5,7 @@ import AboutPage from "../../features/about/AboutPage";
 import Layout from "../layout/Layout";
 import { useEffect } from "react";
 import Login from "../../features/account/Login";
+import OnlineStudy from "../../features/onlineStudy/OnlineStudy";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -12,6 +13,7 @@ const ExternalRedirect = ({ url }: { url: string }) => {
   }, []);
   return null;
 };
+
 export const router = createBrowserRouter([
   {
     element: <App />,
@@ -35,6 +37,10 @@ export const router = createBrowserRouter([
           {
             path: "etfis",
             element: <ExternalRedirect url="https://www.etf.ues.rs.ba/" />,
+          },
+          {
+            path: "onlineStudy",
+            element: <OnlineStudy />,
           },
         ],
       },

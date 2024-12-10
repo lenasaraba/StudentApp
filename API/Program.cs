@@ -1,3 +1,5 @@
+
+global using AutoMapper;
 using System.Text;
 using API.Data;
 using API.Entities;
@@ -42,10 +44,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddCors();
 builder.Services.AddIdentityCore<User>(opt =>
 {

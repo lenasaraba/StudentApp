@@ -5,8 +5,10 @@ import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import ForumTwoToneIcon from "@mui/icons-material/ForumTwoTone";
 import LoginIcon from "@mui/icons-material/Login";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../app/store/configureStore";
 
 export default function HomePage() {
+  const { user } = useAppSelector((state) => state.account);
   return (
     <>
       <Grid
@@ -149,30 +151,32 @@ export default function HomePage() {
                 </Typography>
               </Box>
               <Box>
-                <Button
-                  component={Link}
-                  to="/login"
-                  sx={{
-                    padding: 1.5,
-                    paddingLeft: 3,
-                    paddingRight: 3,
-                    borderRadius: 4,
-                    color: "#EEF7FF",
-                    bgcolor: "action.hover",
-                    "&:hover": {
-                      bgcolor: "primary.main",
-                    },
-                  }}
-                >
-                  Prijavi se &nbsp;
-                  <LoginIcon
+                {!user && (
+                  <Button
+                    component={Link}
+                    to="/login"
                     sx={{
-                      verticalAlign: "middle",
-                      marginRight: 1,
-                      marginBottom: 0.5,
+                      padding: 1.5,
+                      paddingLeft: 3,
+                      paddingRight: 3,
+                      borderRadius: 4,
+                      color: "#EEF7FF",
+                      bgcolor: "action.hover",
+                      "&:hover": {
+                        bgcolor: "primary.main",
+                      },
                     }}
-                  />
-                </Button>
+                  >
+                    Prijavi se &nbsp;
+                    <LoginIcon
+                      sx={{
+                        verticalAlign: "middle",
+                        marginRight: 1,
+                        marginBottom: 0.5,
+                      }}
+                    />
+                  </Button>
+                )}
               </Box>
             </Grid>
           </Paper>

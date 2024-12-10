@@ -59,5 +59,6 @@ namespace API.Controllers
             return StatusCode(201); 
         }
 
+        //currentUser dodati
     }
 }
