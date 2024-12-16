@@ -13,9 +13,11 @@ import { useAppDispatch } from "../store/configureStore";
 import { useCallback, useEffect, useState } from "react";
 import {
   fetchCoursesAsync,
+  fetchUserCoursesAsync,
   setCourses,
 } from "../../features/onlineStudy/courseSlice";
 import LoadingComponent from "./LoadingComponent";
+import { fetchCurrentUser } from "../../features/account/accountSlice";
 
 const NAVIGATION: Navigation = [
   {
@@ -122,8 +124,9 @@ export default function App() {
 
   const initApp = useCallback(async () => {
     try {
+      await dispatch(fetchCurrentUser());
       await dispatch(fetchCoursesAsync());
-      // setCourses(dispatch(fetchCoursesAsync()));
+      await dispatch(fetchUserCoursesAsync());
     } catch (error: any) {
       console.log(error);
     }

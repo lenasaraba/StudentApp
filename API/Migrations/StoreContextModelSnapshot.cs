@@ -30,9 +30,8 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("CourseCreationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -42,7 +41,17 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("StudyProgramId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("YearId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("StudyProgramId");
+
+                    b.HasIndex("YearId");
 
                     b.ToTable("Courses");
                 });
@@ -58,6 +67,9 @@ namespace API.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -66,7 +78,7 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MaterialType")
+                    b.Property<int>("MaterialTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -81,7 +93,62 @@ namespace API.Migrations
 
                     b.HasIndex("CourseId");
 
+                    b.HasIndex("MaterialTypeId");
+
                     b.ToTable("CourseMaterial");
+                });
+
+            modelBuilder.Entity("API.Entities.MaterialType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MaterialTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Video",
+                            Name = "Video"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "PDF",
+                            Name = "PDF"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Link",
+                            Name = "Link"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Dokument",
+                            Name = "Dokument"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Slika",
+                            Name = "Slika"
+                        });
                 });
 
             modelBuilder.Entity("API.Entities.Message", b =>
@@ -112,6 +179,35 @@ namespace API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("API.Entities.ProfessorCourse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EnrollDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("WithdrawDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProfessorCourse");
                 });
 
             modelBuilder.Entity("API.Entities.Role", b =>
@@ -155,6 +251,53 @@ namespace API.Migrations
                             Id = 2,
                             Name = "Student",
                             NormalizedName = "STUDENT"
+                        });
+                });
+
+            modelBuilder.Entity("API.Entities.StudyProgram", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StudyPrograms");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "RiI",
+                            Name = "Računarstvo i informatika"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "AiE",
+                            Name = "Automatika i elektronika"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "EE",
+                            Name = "Elektroenergetika"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "ZO",
+                            Name = "Zajedničke osnove"
                         });
                 });
 
@@ -267,6 +410,82 @@ namespace API.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("API.Entities.UserCourse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EnrollDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("WithdrawDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserCourse");
+                });
+
+            modelBuilder.Entity("API.Entities.Year", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Years");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Prva godina",
+                            Name = "Prva godina"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Druga godina",
+                            Name = "Druga godina"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Treća godina",
+                            Name = "Treća godina"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Četvrta godina",
+                            Name = "Četvrta godina"
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -370,6 +589,25 @@ namespace API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("API.Entities.Course", b =>
+                {
+                    b.HasOne("API.Entities.StudyProgram", "StudyProgram")
+                        .WithMany()
+                        .HasForeignKey("StudyProgramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.Year", "Year")
+                        .WithMany()
+                        .HasForeignKey("YearId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StudyProgram");
+
+                    b.Navigation("Year");
+                });
+
             modelBuilder.Entity("API.Entities.CourseMaterial", b =>
                 {
                     b.HasOne("API.Entities.Course", "Course")
@@ -378,7 +616,15 @@ namespace API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("API.Entities.MaterialType", "MaterialType")
+                        .WithMany()
+                        .HasForeignKey("MaterialTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Course");
+
+                    b.Navigation("MaterialType");
                 });
 
             modelBuilder.Entity("API.Entities.Message", b =>
@@ -399,6 +645,25 @@ namespace API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("API.Entities.ProfessorCourse", b =>
+                {
+                    b.HasOne("API.Entities.Course", "Course")
+                        .WithMany("ProfessorsCourse")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.User", "User")
+                        .WithMany("ProfessorCourses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("API.Entities.Theme", b =>
                 {
                     b.HasOne("API.Entities.Course", "Course")
@@ -409,6 +674,25 @@ namespace API.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("API.Entities.UserCourse", b =>
+                {
+                    b.HasOne("API.Entities.Course", "Course")
+                        .WithMany("UsersCourse")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.User", "User")
+                        .WithMany("UserCourses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Course");
 
@@ -470,12 +754,23 @@ namespace API.Migrations
                 {
                     b.Navigation("Materials");
 
+                    b.Navigation("ProfessorsCourse");
+
                     b.Navigation("Themes");
+
+                    b.Navigation("UsersCourse");
                 });
 
             modelBuilder.Entity("API.Entities.Theme", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("API.Entities.User", b =>
+                {
+                    b.Navigation("ProfessorCourses");
+
+                    b.Navigation("UserCourses");
                 });
 #pragma warning restore 612, 618
         }

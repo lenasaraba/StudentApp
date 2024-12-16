@@ -14,6 +14,9 @@ namespace API.Entities
         public string Description { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
-        public MaterialType MaterialType { get; set; }
+        public int MaterialTypeId { get; set; }
+        public MaterialType? MaterialType { get; set; }
+        public DateTime CreationDate { get; set; }
+
     }
 }

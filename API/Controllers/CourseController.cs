@@ -26,6 +26,14 @@ namespace API.Controllers
         [HttpGet("getAllCourses")]
         public async Task<ActionResult<List<CourseDto>>>GetCourses()
         {
+            var courses=await _context.Courses.Include(y=>y.Year).Include(s=>s.StudyProgram).Include(c => c.ProfessorsCourse).ThenInclude(pu=>pu.User).Include(c=>c.UsersCourse).ToListAsync();
+            return courses.Select(c=>_mapper.Map<CourseDto>(c)).ToList();
+
+        }
+        [HttpGet("getMyCourses/{id}")]
+        public async Task<ActionResult<List<CourseDto>>>GetMyCourses(string id)
+        {
+            //PROMIJENITI DA PRIKAZUJE KURSEVE NA KOJIMA JE TRENUTNI KORISNIK
             var courses=await _context.Courses.ToListAsync();
             return courses.Select(c=>_mapper.Map<CourseDto>(c)).ToList();
 

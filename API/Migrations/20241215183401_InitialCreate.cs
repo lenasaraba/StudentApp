@@ -57,18 +57,45 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Courses",
+                name: "MaterialTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Courses", x => x.Id);
+                    table.PrimaryKey("PK_MaterialTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StudyPrograms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudyPrograms", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Years",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Years", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,6 +205,35 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Courses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    YearId = table.Column<int>(type: "int", nullable: false),
+                    StudyProgramId = table.Column<int>(type: "int", nullable: false),
+                    CourseCreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Courses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Courses_StudyPrograms_StudyProgramId",
+                        column: x => x.StudyProgramId,
+                        principalTable: "StudyPrograms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Courses_Years_YearId",
+                        column: x => x.YearId,
+                        principalTable: "Years",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CourseMaterial",
                 columns: table => new
                 {
@@ -188,13 +244,48 @@ namespace API.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaterialType = table.Column<int>(type: "int", nullable: false)
+                    MaterialTypeId = table.Column<int>(type: "int", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CourseMaterial", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CourseMaterial_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseMaterial_MaterialTypes_MaterialTypeId",
+                        column: x => x.MaterialTypeId,
+                        principalTable: "MaterialTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfessorCourse",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    EnrollDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    WithdrawDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfessorCourse", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProfessorCourse_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProfessorCourse_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
@@ -227,6 +318,34 @@ namespace API.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserCourse",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    EnrollDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    WithdrawDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserCourse", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserCourse_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserCourse_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -264,6 +383,40 @@ namespace API.Migrations
                 {
                     { 1, null, "Profesor", "PROFESOR" },
                     { 2, null, "Student", "STUDENT" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MaterialTypes",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Video", "Video" },
+                    { 2, "PDF", "PDF" },
+                    { 3, "Link", "Link" },
+                    { 4, "Dokument", "Dokument" },
+                    { 5, "Slika", "Slika" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "StudyPrograms",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "RiI", "Računarstvo i informatika" },
+                    { 2, "AiE", "Automatika i elektronika" },
+                    { 3, "EE", "Elektroenergetika" },
+                    { 4, "ZO", "Zajedničke osnove" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Years",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Prva godina", "Prva godina" },
+                    { 2, "Druga godina", "Druga godina" },
+                    { 3, "Treća godina", "Treća godina" },
+                    { 4, "Četvrta godina", "Četvrta godina" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -311,6 +464,21 @@ namespace API.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseMaterial_MaterialTypeId",
+                table: "CourseMaterial",
+                column: "MaterialTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_StudyProgramId",
+                table: "Courses",
+                column: "StudyProgramId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_YearId",
+                table: "Courses",
+                column: "YearId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Messages_ThemeId",
                 table: "Messages",
                 column: "ThemeId");
@@ -321,6 +489,16 @@ namespace API.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProfessorCourse_CourseId",
+                table: "ProfessorCourse",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfessorCourse_UserId",
+                table: "ProfessorCourse",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Themes_CourseId",
                 table: "Themes",
                 column: "CourseId");
@@ -328,6 +506,16 @@ namespace API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Themes_UserId",
                 table: "Themes",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserCourse_CourseId",
+                table: "UserCourse",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserCourse_UserId",
+                table: "UserCourse",
                 column: "UserId");
         }
 
@@ -356,7 +544,16 @@ namespace API.Migrations
                 name: "Messages");
 
             migrationBuilder.DropTable(
+                name: "ProfessorCourse");
+
+            migrationBuilder.DropTable(
+                name: "UserCourse");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "MaterialTypes");
 
             migrationBuilder.DropTable(
                 name: "Themes");
@@ -366,6 +563,12 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Courses");
+
+            migrationBuilder.DropTable(
+                name: "StudyPrograms");
+
+            migrationBuilder.DropTable(
+                name: "Years");
         }
     }
 }

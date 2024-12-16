@@ -29,6 +29,7 @@ const Account = {
 
 const Course = {
   getAll: () => requests.get("course/getAllCourses"),
+  getMy:(id:string)=>requests.get(`course/getMyCourses/${id}`),
 };
 
 const agent = {

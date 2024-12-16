@@ -69,7 +69,7 @@ export const accountSlice = createSlice({
       state.user = action.payload;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: (builder => {
     builder.addCase(fetchCurrentUser.rejected, (state) => {
       state.user = null;
       localStorage.removeItem("user");
@@ -87,7 +87,7 @@ export const accountSlice = createSlice({
     builder.addMatcher(isAnyOf(signInUser.rejected), (_state, action) => {
       throw action.payload;
     });
-  },
+  }),
 });
 
 export const { signOut, setUser } = accountSlice.actions;

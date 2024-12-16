@@ -6,6 +6,7 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +28,7 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
             var user=await _userManager.FindByEmailAsync(loginDto.Email);
+            
             if(user==null||!await _userManager.CheckPasswordAsync(user, loginDto.Password))
                 return Unauthorized();
             
@@ -59,6 +61,19 @@ namespace API.Controllers
             return StatusCode(201); 
         }
 
-        //currentUser dodati
+        [Authorize] 
+        [HttpGet("currentUser")]
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            var user=await _userManager.FindByNameAsync(User.Identity.Name);
+            //ovim cemo dobiti name claim iz tokena
+
+            return new UserDto
+            {
+                Email=user.Email,
+                Token=await _tokenService.GenerateToken(user),
+                Username=user.UserName,
+            };
+        }
     }
 }
