@@ -67,7 +67,7 @@ export default function Login() {
     }
   }
 
-  const theme = useTheme();
+  // const theme = useTheme();
   //props: { disableCustomTheme?: boolean }
 
   return (

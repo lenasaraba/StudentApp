@@ -75,7 +75,7 @@ function Author({ authors }: AuthorProps) {
             key={index}
             alt={author.user.firstName}
             // src={author.avatar}
-            sx={{ width: 24, height: 24 }}
+            sx={{ width: 24, height: 24, backgroundColor: "text.primary" }}
           >
             {author.user.firstName.charAt(0).toUpperCase()}
           </Avatar>
@@ -89,7 +89,6 @@ function Author({ authors }: AuthorProps) {
     </Box>
   );
 }
-
 
 export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = React.useState<number | null>(
@@ -328,8 +327,8 @@ export default function MainContent() {
             sx={{ height: "100%" }}
           >
             <CourseCardMedia
-               year={courses![4].year}
-               studyProgram={courses![4].studyProgram}
+              year={courses![4].year}
+              studyProgram={courses![4].studyProgram}
               sx={{
                 height: { sm: "auto", md: "50%" },
                 aspectRatio: { sm: "16 / 9", md: "" },

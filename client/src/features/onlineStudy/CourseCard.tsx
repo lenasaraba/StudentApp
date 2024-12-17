@@ -1,4 +1,3 @@
-import { LoadingButton } from "@mui/lab";
 import {
   Card,
   CardHeader,
@@ -10,14 +9,12 @@ import {
   Button,
 } from "@mui/material";
 import { Course } from "../../app/models/course";
-import { useAppDispatch } from "../../app/store/configureStore";
 
 interface Props {
   course: Course;
 }
 
 export default function CourseCard({ course }: Props) {
-  const dispatch = useAppDispatch();
   console.log("Course card:" + course.name);
   return (
     <>

@@ -14,10 +14,10 @@ import { useCallback, useEffect, useState } from "react";
 import {
   fetchCoursesAsync,
   fetchUserCoursesAsync,
-  setCourses,
 } from "../../features/onlineStudy/courseSlice";
 import LoadingComponent from "./LoadingComponent";
 import { fetchCurrentUser } from "../../features/account/accountSlice";
+import { fetchProfessorsAsyn } from "../../features/onlineStudy/professorSlice";
 
 const NAVIGATION: Navigation = [
   {
@@ -127,6 +127,7 @@ export default function App() {
       await dispatch(fetchCurrentUser());
       await dispatch(fetchCoursesAsync());
       await dispatch(fetchUserCoursesAsync());
+      await dispatch(fetchProfessorsAsyn());
     } catch (error: any) {
       console.log(error);
     }

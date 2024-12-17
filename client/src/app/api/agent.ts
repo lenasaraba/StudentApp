@@ -29,12 +29,19 @@ const Account = {
 
 const Course = {
   getAll: () => requests.get("course/getAllCourses"),
-  getMy:(id:string)=>requests.get(`course/getMyCourses/${id}`),
+  getMy: (id: string) => requests.get(`course/getMyCourses/${id}`),
+  getProfessorCourses: (id: number) =>
+    requests.get(`course/getProfessorsCourses/${id}`),
+};
+
+const Professor = {
+  GetAllProfessors: () => requests.get("professor/GetAllProfessors"),
 };
 
 const agent = {
   Account,
   Course,
+  Professor,
 };
 
 export default agent;

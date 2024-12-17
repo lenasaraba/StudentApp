@@ -21,6 +21,8 @@ namespace API.Data
         public DbSet<StudyProgram> StudyPrograms { get; set; } = null!;
         public DbSet<Year> Years { get; set; } = null!;
         public DbSet<MaterialType> MaterialTypes { get; set; } = null!;
+        public DbSet<ProfessorCourse> ProfessorCourses { get; set; } = null!;
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)

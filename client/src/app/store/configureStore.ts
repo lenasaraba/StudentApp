@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { accountSlice } from "../../features/account/accountSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { courseSlice } from "../../features/onlineStudy/courseSlice";
+import { professorSlice } from "../../features/onlineStudy/professorSlice";
 
 export const store = configureStore({
   reducer: {
     account: accountSlice.reducer,
     course: courseSlice.reducer,
+    professor: professorSlice.reducer,
   },
 });
 

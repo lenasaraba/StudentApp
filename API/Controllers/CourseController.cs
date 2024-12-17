@@ -38,5 +38,18 @@ namespace API.Controllers
             return courses.Select(c=>_mapper.Map<CourseDto>(c)).ToList();
 
         }
+
+        [HttpGet("getProfessorsCourses/{id}")]
+        public async Task<ActionResult<List<CourseDto>>>getProfessorsCourses(int id)
+        {
+            var courses = await _context.Courses
+            .Where(c => c.ProfessorsCourse.Any(pc => pc.UserId == id)) 
+            .Include(y=>y.Year).Include(s=>s.StudyProgram).ToListAsync();
+
+            return courses.Select(c=>_mapper.Map<CourseDto>(c)).ToList();
+
+        }
+
+
     }
 }

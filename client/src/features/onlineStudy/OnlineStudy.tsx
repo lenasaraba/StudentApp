@@ -21,8 +21,8 @@
 import Container from "@mui/material/Container";
 import AppAppBar from "./components/AppAppBar";
 import MainContent from "./components/MainContent";
-import Latest from "./components/Latest";
 import { Grid } from "@mui/material";
+import ProfessorList from "./components/ProfessorList";
 // import Footer from './components/Footer';
 
 export default function OnlineStudy() {
@@ -37,19 +37,25 @@ export default function OnlineStudy() {
           // minHeight: "100vh",
           // overflow: "auto",
           // overflowAnchor:'none'
-          alignItems:'center',
-          justifyContent:'center'
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <AppAppBar />
         <Container
-          maxWidth="lg"
+          // maxWidth="lg"
           component="main"
-          sx={{ display: "flex", flexDirection: "column", my: 16, gap: 4,
-            overflowY: 'auto', margin:0}}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            my: 16,
+            gap: 4,
+            margin: 0,
+          }}
         >
           <MainContent />
-          <Latest />
+          {/* <Latest /> */}
+          <ProfessorList />
         </Container>
         {/* <Footer /> */}
       </Grid>
