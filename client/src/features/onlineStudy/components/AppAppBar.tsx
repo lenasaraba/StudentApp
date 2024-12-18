@@ -13,7 +13,7 @@ export default function AppAppBar() {
   return (
     <AppBar
       //ne radi sticky
-      position="sticky" 
+      position="sticky"
       enableColorOnDark
       sx={{
         top: 30,
@@ -22,9 +22,8 @@ export default function AppAppBar() {
         backgroundImage: "none",
         mt: "calc(var(--template-frame-height, 0px) + 28px)",
         textAlign: "center",
-        padding:0,
-        minHeight:0
-
+        padding: 0,
+        minHeight: 0,
       }}
     >
       <Container
@@ -37,12 +36,12 @@ export default function AppAppBar() {
         }}
       >
         <Toolbar
-        disableGutters
-        variant="dense"
+          disableGutters
+          variant="dense"
           sx={{
             borderRadius: "22px",
             // backdropFilter: "blur(36px)",
-            backgroundColor:'secondary.main',
+            backgroundColor: "secondary.main",
             border: "1px solid ",
             borderColor: "text.secondary",
             padding: "0",
@@ -56,19 +55,55 @@ export default function AppAppBar() {
               alignItems: "center",
               px: 0,
               justifyContent: "space-evenly",
-              margin:0,
-              minHeight:0
-
+              margin: 0,
+              minHeight: 0,
             }}
           >
-            <SchoolIcon sx={{ color: "text.secondary", fontWeight:'bold' , margin:0, padding:0 }} />
-            <Box sx={{ display: { xs: "none", md: "flex" }, margin:0, padding:0}}>
-              <Button variant="text" size="small" sx={{color:'text.primary', fontWeight:'bold'}} component={Link} to='/courses?type=all'>
+            <Box
+              component={Link}
+              to="/onlineStudy"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              <SchoolIcon
+                sx={{
+                  color: "text.secondary",
+                  fontWeight: "bold",
+                  margin: 0,
+                  padding: 0,
+                }}
+              />
+            </Box>
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              <Button
+                variant="text"
+                size="small"
+                sx={{ color: "text.primary", fontWeight: "bold" }}
+                component={Link}
+                to="/courses?type=all"
+              >
                 Svi kursevi
               </Button>
             </Box>
-            <Box sx={{ display: { xs: "none", md: "flex" }, margin:0, padding:0 }}>
-              <Button variant="text" size="small" sx={{color:'text.primary', fontWeight:'bold'}} component={Link} to='/courses?type=my'>
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              <Button
+                variant="text"
+                size="small"
+                sx={{ color: "text.primary", fontWeight: "bold" }}
+                component={Link}
+                to="/courses?type=my"
+              >
                 Moje učenje
               </Button>
             </Box>

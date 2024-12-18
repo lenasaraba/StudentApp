@@ -19,7 +19,6 @@ export interface UsersCourse {
   withdrawDate: string;
 }
 
-
 export interface ProfessorsCourse {
   id: number;
   user: User;
@@ -76,11 +75,11 @@ export interface MaterialType {
   description: string;
 }
 
-export interface CoursesParams{
-  orderBy:string
-  searchTerm?:string
-  years:string[]
-  programs:string[]
-  pageNumber:number
-  pageSize:number
+export interface CoursesParams {
+  // orderBy: string;
+  searchTerm?: string;
+  years: string[];
+  studyPrograms: string[];
+  // pageNumber:number
+  // pageSize:number
 }

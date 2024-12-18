@@ -2,11 +2,11 @@ import {
   Card,
   CardHeader,
   Avatar,
-  CardMedia,
   CardContent,
   Typography,
   CardActions,
   Button,
+  Box,
 } from "@mui/material";
 import { Course } from "../../app/models/course";
 import CourseCardMedia from "./components/CourseCardMedia";
@@ -17,10 +17,15 @@ interface Props {
 }
 
 export default function CourseCard({ course }: Props) {
-  console.log("Course card:" + course.name);
+  // console.log("Course card:" + course.name);
   return (
-    <>
-      <Card>
+    <Box sx={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
+      <Card
+        sx={{
+          width: "100%" /* Postavlja karticu da zauzme 100% širine roditelja */,
+          boxSizing: "border-box",
+        }}
+      >
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: "secondary.main" }}>
@@ -59,14 +64,11 @@ export default function CourseCard({ course }: Props) {
             Add to cart
           </LoadingButton> */}
           <Button>Upiši se</Button>
-          <Button
-            component={Link}
-            to={`/courses/${course.id}`} size="small"
-          >
+          <Button component={Link} to={`/courses/${course.id}`} size="small">
             Otvori
           </Button>
         </CardActions>
       </Card>
-    </>
+    </Box>
   );
 }

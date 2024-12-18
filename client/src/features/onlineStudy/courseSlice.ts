@@ -32,50 +32,58 @@ const initialState: CourseState = {
 
 function initParams() {
   return {
-    pageNumber: 1,
-    pageSize: 6,
-    orderBy: "name",
+    // pageNumber: 1,
+    // pageSize: 6,
+    // orderBy: "name",
     years: [],
-    programs: [],
+    studyPrograms: [],
   };
 }
 
-function getAxiosParams(coursesParams: CoursesParams)
-{
-    const params=new URLSearchParams();
+function getAxiosParams(coursesParams: CoursesParams) {
+  const params = new URLSearchParams();
 
-    params.append('pageNumber', coursesParams.pageNumber.toString());
-    params.append('pageSize', coursesParams.pageSize.toString());
-    params.append('orderBy', coursesParams.orderBy.toString());
+  // params.append("pageNumber", coursesParams.pageNumber.toString());
+  // params.append("pageSize", coursesParams.pageSize.toString());
+  // params.append("orderBy", coursesParams.orderBy.toString());
 
-    if(coursesParams.searchTerm)
-        params.append('searchTerm', coursesParams.searchTerm.toString());
-    if(coursesParams.years.length>0)
-        params.append('brands', coursesParams.years.toString());
-    if(coursesParams.programs.length>0)
-        params.append('types', coursesParams.programs.toString());
-
-    return params;
+  if (coursesParams.searchTerm)
+    params.append("searchTerm", coursesParams.searchTerm.toString());
+  if (coursesParams.years.length > 0) {
+    // params.append("years", coursesParams.years.toString());
+    coursesParams.years.forEach((year) => {
+      params.append("years", year);
+    });
+  }
+  if (coursesParams.studyPrograms.length > 0)
+    // params.append("studyPrograms", coursesParams.studyPrograms.toString());
+    coursesParams.studyPrograms.forEach((program) => {
+      params.append("studyPrograms", program);
+    });
+  return params;
 }
 
-export const fetchCoursesAsync = createAsyncThunk<Course[], void, {state:RootState}>(
-  "course/fetchCoursesAsync",
-  async (_, thunkAPI) => {
-    const params=getAxiosParams(thunkAPI.getState().course.coursesParams)
+export const fetchCoursesAsync = createAsyncThunk<
+  Course[],
+  void,
+  { state: RootState }
+>("course/fetchCoursesAsync", async (_, thunkAPI) => {
+  const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
 
-    try {
-      //  return await agent.Course.getAll();
-      const courses = await agent.Course.list(params);
-      thunkAPI.dispatch(setCourses(courses));
-      thunkAPI.dispatch(setMetaData(courses.metaData));
+  try {
+    //  return await agent.Course.getAll();
+    // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAa" + params);
+    const courses = await agent.Course.list(params);
+    thunkAPI.dispatch(setCourses(courses));
+    console.log("FETCH        +" + courses.metaData);
+    thunkAPI.dispatch(setMetaData(courses.metaData));
 
-      return courses;
-    } catch (error: any) {
-      console.log(error.data);
-      return thunkAPI.rejectWithValue({ error: error.data });
-    }
+    return courses;
+  } catch (error: any) {
+    console.log(error.data);
+    return thunkAPI.rejectWithValue({ error: error.data });
   }
-);
+});
 export const fetchUserCoursesAsync = createAsyncThunk<Course[]>(
   "course/fetchUserCoursesAsync",
   async (_, thunkAPI) => {
@@ -144,6 +152,12 @@ export const courseSlice = createSlice({
         ...action.payload,
         pageNumber: 1,
       };
+      console.log(
+        "SET COURSES PARAMS:        +++++++++++" +
+          action.payload +
+          "********************************" +
+          state.coursesParams.studyPrograms
+      );
     },
     setPageNumber: (state, action) => {
       state.coursesLoaded = false;

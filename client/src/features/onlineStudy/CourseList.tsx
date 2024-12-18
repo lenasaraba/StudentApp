@@ -1,11 +1,12 @@
 import {
   Box,
   FormControl,
+  Grid,
   InputAdornment,
   OutlinedInput,
   Typography,
 } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+// import Grid from "@mui/material/Grid2";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import CourseCard from "./CourseCard";
 import { useSearchParams } from "react-router-dom";
@@ -21,6 +22,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import FiltersButtons from "./components/FiltersButtons";
 import AppPagination from "../../app/components/AppPagination";
+import AppAppBar from "./components/AppAppBar";
 
 export function Search() {
   return (
@@ -59,7 +61,8 @@ export default function CourseList() {
 
   const allCourses = useAppSelector((state) => state.course.courses);
   const myCourses = useAppSelector((state) => state.course.myCourses);
-
+  // console.log("COURSE LIST +++++++++++++++++++++++++++++++" + years);
+  // console.log("COURSE LIST +++++++++++++++++++++++++++++++" + programs);
   useEffect(() => {
     if (courseType === "all") {
       dispatch(fetchCoursesAsync());
@@ -94,6 +97,7 @@ export default function CourseList() {
 
   return (
     <Grid container sx={{ display: "flex", direction: "column" }}>
+      <AppAppBar />
       {courseType === "my" ? (
         <Typography
           variant="h2"
@@ -154,19 +158,25 @@ export default function CourseList() {
               />
             ))}
           </Box> */}
+
           <FiltersButtons
             items={years}
             checked={coursesParams.years}
-            onChange={(items: string[]) =>
-              dispatch(setCoursesParams({ years: items }))
-            }
+            onChange={(items: string[]) => {
+              dispatch(setCoursesParams({ years: items }));
+              dispatch(fetchCoursesAsync());
+            }}
           />
           <FiltersButtons
             items={programs}
-            checked={coursesParams.programs}
-            onChange={(items: string[]) =>
-              dispatch(setCoursesParams({ programs: items }))
-            }
+            checked={coursesParams.studyPrograms}
+            onChange={(items: string[]) => {
+              dispatch(setCoursesParams({ studyPrograms: items }));
+              dispatch(fetchCoursesAsync());
+
+              //DODAJEM
+              //dispatch(fetchCoursesAsync());
+            }}
           />
         </Box>
         <Box
@@ -188,7 +198,7 @@ export default function CourseList() {
         sx={{ margin: 4, paddingBottom: 4 }}
       >
         {coursesToDisplay!.map((course) => (
-          <Grid size={{ xs: 12, md: 4 }} key={course.id}>
+          <Grid item xs={12} md={4} key={course.id}>
             {/* {!productsLoaded ? (
                         <ProductCardSkeleton />
                     ): (
@@ -206,8 +216,7 @@ export default function CourseList() {
               dispatch(setPageNumber({ pageNumber: page }))
             }
           />
-        )} 
-
+        )}
       </Box>
     </Grid>
   );
