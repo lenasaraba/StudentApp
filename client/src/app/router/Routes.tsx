@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import Login from "../../features/account/Login";
 import OnlineStudy from "../../features/onlineStudy/OnlineStudy";
 import CourseList from "../../features/onlineStudy/CourseList";
+import Course from "../../features/onlineStudy/Course";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
           {
             path: "courses",
             element: <CourseList />, // Komponenta koja prikazuje kurseve
+          },
+          {
+            path: "courses/:id",
+            element: <Course />, 
           },
         ],
       },

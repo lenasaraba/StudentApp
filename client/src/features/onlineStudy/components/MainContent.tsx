@@ -1,6 +1,4 @@
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -8,9 +6,9 @@ import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { useAppSelector } from "../../../app/store/configureStore";
-import { ProfessorsCourse } from "../../../app/models/course";
 import { format } from "date-fns";
 import CourseCardMedia from "./CourseCardMedia";
+import { Author } from "./Author";
 
 const DateCard = ({ date }: { date: string }) => {
   const dateFormatted = new Date(date); // Pretvori string u Date objekat
@@ -55,40 +53,7 @@ const StyledTypography = styled(Typography)({
   textOverflow: "ellipsis",
 });
 
-interface AuthorProps {
-  authors: ProfessorsCourse[];
-}
 
-function Author({ authors }: AuthorProps) {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        gap: 1,
-        alignItems: "center",
-      }}
-    >
-      <AvatarGroup max={3}>
-        {authors.map((author, index) => (
-          <Avatar
-            key={index}
-            alt={author.user.firstName}
-            // src={author.avatar}
-            sx={{ width: 24, height: 24, backgroundColor: "text.primary" }}
-          >
-            {author.user.firstName.charAt(0).toUpperCase()}
-          </Avatar>
-        ))}
-      </AvatarGroup>
-      <Typography variant="caption">
-        {authors
-          .map((author) => author.user.firstName + " " + author.user.lastName)
-          .join(", ")}
-      </Typography>
-    </Box>
-  );
-}
 
 export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = React.useState<number | null>(

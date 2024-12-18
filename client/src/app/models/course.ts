@@ -75,3 +75,12 @@ export interface MaterialType {
   name: string;
   description: string;
 }
+
+export interface CoursesParams{
+  orderBy:string
+  searchTerm?:string
+  years:string[]
+  programs:string[]
+  pageNumber:number
+  pageSize:number
+}

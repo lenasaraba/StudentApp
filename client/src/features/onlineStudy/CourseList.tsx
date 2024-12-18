@@ -1,33 +1,34 @@
 import {
   Box,
-  Chip,
   FormControl,
-  Grid,
   InputAdornment,
   OutlinedInput,
   Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import CourseCard from "./CourseCard";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
-import { fetchCoursesAsync, fetchUserCoursesAsync } from "./courseSlice";
+import {
+  fetchCoursesAsync,
+  fetchUserCoursesAsync,
+  fetchFilters,
+  setCoursesParams,
+  setPageNumber,
+} from "./courseSlice";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-
-// interface Props {
-//     courses: Course[];
-// }
+import LoadingComponent from "../../app/layout/LoadingComponent";
+import FiltersButtons from "./components/FiltersButtons";
+import AppPagination from "../../app/components/AppPagination";
 
 export function Search() {
   return (
-    <FormControl
-      sx={{ width: { xs: "100%", md: "25ch" } }}
-      variant="outlined"
-    >
+    <FormControl sx={{ width: { xs: "100%", md: "25ch" } }} variant="outlined">
       <OutlinedInput
         size="small"
         id="search"
-        placeholder="Search…"
+        placeholder="Pretraži.."
         sx={{ flexGrow: 1 }}
         startAdornment={
           <InputAdornment position="start" sx={{ color: "text.primary" }}>
@@ -47,6 +48,14 @@ export default function CourseList() {
   const courseType = searchParams.get("type"); // Dobijanje parametra "type"
   //const [courses, setCourses] = useState([]);
   const dispatch = useAppDispatch();
+  const {
+    coursesLoaded,
+    filtersLoaded,
+    years,
+    programs,
+    coursesParams,
+    metaData,
+  } = useAppSelector((state) => state.course);
 
   const allCourses = useAppSelector((state) => state.course.courses);
   const myCourses = useAppSelector((state) => state.course.myCourses);
@@ -61,9 +70,27 @@ export default function CourseList() {
 
   const coursesToDisplay = courseType === "my" ? myCourses : allCourses;
 
-  const handleClick = () => {
-    console.info("You clicked the filter chip.");
-  };
+  // const uniquePrograms = [
+  //   ...new Set(coursesToDisplay!.map((course) => course.studyProgram.name)),
+  // ];
+
+  // const uniqueYears = [
+  //   ...new Set(coursesToDisplay!.map((course) => course.year.name)),
+  // ];
+
+  // const handleClick = (name: string, index: number) => {
+  //   console.log(`You clickes on: ${name}, index: ${index}`);
+  // };
+
+  useEffect(() => {
+    if (!coursesLoaded) dispatch(fetchCoursesAsync());
+  }, [coursesLoaded, dispatch]);
+
+  useEffect(() => {
+    if (!filtersLoaded) dispatch(fetchFilters());
+  }, [dispatch, filtersLoaded]);
+
+  if (!filtersLoaded) return <LoadingComponent message="Loading courses..." />;
 
   return (
     <Grid container sx={{ display: "flex", direction: "column" }}>
@@ -101,53 +128,45 @@ export default function CourseList() {
           alignItems: { xs: "start", md: "center" },
           gap: 4,
           overflow: "auto",
-          ml:4, mr:4,
+          ml: 4,
+          mr: 4,
         }}
       >
-        <Box
-          sx={{
-            display: "inline-flex",
-            flexDirection: "row",
-            gap: 3,
-            overflow: "auto",
-          }}
-        >
-          <Chip onClick={handleClick} size="medium" label="All categories" />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Company"
+        <Box display="flex" flexDirection="column" sx={{ mt: 6 }}>
+          {/* <Box
             sx={{
-              backgroundColor: "transparent",
-              border: "none",
+              display: "inline-flex",
+              flexDirection: "row",
+              gap: 3,
+              overflow: "auto",
             }}
+          >
+            {uniquePrograms.map((name, index) => (
+              <Chip
+                key={index}
+                onClick={() => handleClick(name, index)}
+                size="medium"
+                label={name}
+                sx={{
+                  backgroundColor: "transparent",
+                  border: "none",
+                }}
+              />
+            ))}
+          </Box> */}
+          <FiltersButtons
+            items={years}
+            checked={coursesParams.years}
+            onChange={(items: string[]) =>
+              dispatch(setCoursesParams({ years: items }))
+            }
           />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Product"
-            sx={{
-              backgroundColor: "transparent",
-              border: "none",
-            }}
-          />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Design"
-            sx={{
-              backgroundColor: "transparent",
-              border: "none",
-            }}
-          />
-          <Chip
-            onClick={handleClick}
-            size="medium"
-            label="Engineering"
-            sx={{
-              backgroundColor: "transparent",
-              border: "none",
-            }}
+          <FiltersButtons
+            items={programs}
+            checked={coursesParams.programs}
+            onChange={(items: string[]) =>
+              dispatch(setCoursesParams({ programs: items }))
+            }
           />
         </Box>
         <Box
@@ -162,9 +181,14 @@ export default function CourseList() {
           <Search />
         </Box>
       </Box>
-      <Grid container spacing={4}>
+      <Grid
+        container
+        spacing={4}
+        columns={12}
+        sx={{ margin: 4, paddingBottom: 4 }}
+      >
         {coursesToDisplay!.map((course) => (
-          <Grid item xs={4} key={course.id}>
+          <Grid size={{ xs: 12, md: 4 }} key={course.id}>
             {/* {!productsLoaded ? (
                         <ProductCardSkeleton />
                     ): (
@@ -174,6 +198,17 @@ export default function CourseList() {
           </Grid>
         ))}
       </Grid>
+      <Box sx={{ mb: 2, mt: 2 }}>
+        {metaData && (
+          <AppPagination
+            metaData={metaData}
+            onPageChange={(page: number) =>
+              dispatch(setPageNumber({ pageNumber: page }))
+            }
+          />
+        )} 
+
+      </Box>
     </Grid>
   );
 }

@@ -9,6 +9,8 @@ import {
   Button,
 } from "@mui/material";
 import { Course } from "../../app/models/course";
+import CourseCardMedia from "./components/CourseCardMedia";
+import { Link } from "react-router-dom";
 
 interface Props {
   course: Course;
@@ -30,18 +32,20 @@ export default function CourseCard({ course }: Props) {
             sx: { fontWeight: "bold", color: "primary.main" },
           }}
         />
-        <CardMedia
+        <CourseCardMedia
+          year={course.year}
+          studyProgram={course.studyProgram}
           sx={{
             height: 140,
             backgroundSize: "contain",
             bgcolor: "primary.light",
           }}
           //  image={course.pictureURL}
-          title={course.name}
+          //title={course.name}
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            jedno/drugo
+            {course.studyProgram.name} - {course.year.name}
           </Typography>
         </CardContent>
         <CardActions>
@@ -54,12 +58,12 @@ export default function CourseCard({ course }: Props) {
           >
             Add to cart
           </LoadingButton> */}
-          <Button>Dugmic</Button>
+          <Button>Upiši se</Button>
           <Button
-          //   component={Link}
-          //   to={`/catalog/${product.id}`} size="small"
+            component={Link}
+            to={`/courses/${course.id}`} size="small"
           >
-            View
+            Otvori
           </Button>
         </CardActions>
       </Card>

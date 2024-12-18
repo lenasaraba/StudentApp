@@ -28,10 +28,12 @@ const Account = {
 };
 
 const Course = {
-  getAll: () => requests.get("course/getAllCourses"),
+  list: (params:URLSearchParams) => requests.get("course/getAllCourses", params),
   getMy: (id: string) => requests.get(`course/getMyCourses/${id}`),
   getProfessorCourses: (id: number) =>
     requests.get(`course/getProfessorsCourses/${id}`),
+  fetchFilters: ()=>requests.get('course/filters')
+
 };
 
 const Professor = {
