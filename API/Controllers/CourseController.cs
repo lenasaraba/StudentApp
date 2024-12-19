@@ -16,11 +16,13 @@ namespace API.Controllers
     public class CourseController : BaseAPIController
     {
         private readonly StoreContext _context;
+        private readonly UserManager<User> _userManager;
 
         private readonly IMapper _mapper;
-        public CourseController(StoreContext context, IMapper mapper)
+        public CourseController(StoreContext context, IMapper mapper,UserManager<User> userManager)
         {
             _context = context;
+            _userManager=userManager;
             _mapper = mapper;
         }
         
@@ -30,13 +32,26 @@ namespace API.Controllers
         {
                 // var courses = await _context.Courses.Include(y => y.Year).Include(s => s.StudyProgram).Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User).Include(c => c.UsersCourse).ToListAsync();
                 // return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
+            
 
-                var query=_context.Courses
+
+            var query=_context.Courses
             .Include(y => y.Year)
             .Include(s => s.StudyProgram)
             .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
             .Include(c => c.UsersCourse)
             .AsQueryable();
+
+            if(coursesParams.Type=="my")
+            {
+                var user=await _userManager.FindByNameAsync(User.Identity.Name);
+                query=_context.Courses.Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+            .Include(y => y.Year)
+            .Include(s => s.StudyProgram)
+            .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
+            .Include(c => c.UsersCourse)
+            .AsQueryable();
+            }
             // Filtriranje prema searchTerm
             if (!string.IsNullOrEmpty(coursesParams.SearchTerm))
             {
@@ -62,11 +77,22 @@ namespace API.Controllers
             return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
         }
 
-        [HttpGet("getMyCourses/{id}")]
-        public async Task<ActionResult<List<CourseDto>>> GetMyCourses(string id)
+
+        [HttpGet("getMyCourses/{email}")]
+        public async Task<ActionResult<List<CourseDto>>> GetMyCourses(string email)
         {
-            //PROMIJENITI DA PRIKAZUJE KURSEVE NA KOJIMA JE TRENUTNI KORISNIK
-            var courses = await _context.Courses.ToListAsync();
+            //moze se raditi i bez prosljedjivanja parametra ali eto mozda zatreba
+            // var user=await _userManager.FindByNameAsync(User.Identity.Name);
+
+            // var courses = await _context.Courses
+            // .Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+            // .Include(y => y.Year).Include(s => s.StudyProgram).ToListAsync();
+
+            var user=await _userManager.FindByEmailAsync(email);
+            
+            var courses = await _context.Courses
+            .Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+            .Include(y => y.Year).Include(s => s.StudyProgram).ToListAsync();
             return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
 
         }

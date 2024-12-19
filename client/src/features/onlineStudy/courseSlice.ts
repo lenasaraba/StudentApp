@@ -15,6 +15,7 @@ export interface CourseState {
   programs: string[];
   coursesParams: CoursesParams;
   metaData: MetaData | null;
+  loading: boolean;
 }
 
 const initialState: CourseState = {
@@ -28,6 +29,7 @@ const initialState: CourseState = {
   programs: [],
   coursesParams: initParams(),
   metaData: null,
+  loading: false,
 };
 
 function initParams() {
@@ -35,6 +37,7 @@ function initParams() {
     // pageNumber: 1,
     // pageSize: 6,
     // orderBy: "name",
+    type: "all",
     years: [],
     studyPrograms: [],
   };
@@ -47,6 +50,7 @@ function getAxiosParams(coursesParams: CoursesParams) {
   // params.append("pageSize", coursesParams.pageSize.toString());
   // params.append("orderBy", coursesParams.orderBy.toString());
 
+  if (coursesParams.type) params.append("type", coursesParams.type.toString());
   if (coursesParams.searchTerm)
     params.append("searchTerm", coursesParams.searchTerm.toString());
   if (coursesParams.years.length > 0) {
@@ -72,10 +76,9 @@ export const fetchCoursesAsync = createAsyncThunk<
 
   try {
     //  return await agent.Course.getAll();
-    // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAa" + params);
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAa" + params);
     const courses = await agent.Course.list(params);
     thunkAPI.dispatch(setCourses(courses));
-    console.log("FETCH        +" + courses.metaData);
     thunkAPI.dispatch(setMetaData(courses.metaData));
 
     return courses;
@@ -152,12 +155,6 @@ export const courseSlice = createSlice({
         ...action.payload,
         pageNumber: 1,
       };
-      console.log(
-        "SET COURSES PARAMS:        +++++++++++" +
-          action.payload +
-          "********************************" +
-          state.coursesParams.studyPrograms
-      );
     },
     setPageNumber: (state, action) => {
       state.coursesLoaded = false;
@@ -169,6 +166,9 @@ export const courseSlice = createSlice({
     resetProductParams: (state) => {
       state.coursesParams = initParams();
     },
+    setLoading(state, action) {
+      state.loading = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchFilters.pending, (state) => {
@@ -179,10 +179,25 @@ export const courseSlice = createSlice({
       state.programs = action.payload.programs;
       state.status = "idle";
       state.filtersLoaded = true;
+      state.loading = false;
     });
     builder.addCase(fetchFilters.rejected, (state, action) => {
       state.status = "idle";
       console.log(action.payload);
+    });
+    builder.addCase(fetchUserCoursesAsync.pending, (state) => {
+      state.loading = true; // Postavi loading na true
+    });
+    builder.addCase(fetchUserCoursesAsync.fulfilled, (state) => {
+      state.loading = false; // Postavi loading na true
+      state.coursesLoaded = true;
+    });
+    builder.addCase(fetchCoursesAsync.rejected, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(fetchCoursesAsync.fulfilled, (state) => {
+      state.loading = false; // Postavi loading na true
+      state.coursesLoaded = true;
     });
   },
 });

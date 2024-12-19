@@ -5,6 +5,7 @@ import {
   Button,
   Typography,
   CssBaseline,
+  Modal,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
@@ -12,8 +13,11 @@ import {
   useAppSelector,
 } from "../../../app/store/configureStore";
 import { fetchProfessorCoursesAsync } from "../courseSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CourseCardMedia from "./CourseCardMedia";
+
+// POPRAVITI MODAL DA SE UCITA ZA ODGOVARAJUCEG PROFESORA
+// POPRAVITI IZGLED MODALA
 
 export default function ProfessorList() {
   const dispatch = useAppDispatch();
@@ -29,6 +33,9 @@ export default function ProfessorList() {
     (state) => state.course.professorCourses
   );
 
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return (
     <>
       <CssBaseline />
@@ -122,7 +129,62 @@ export default function ProfessorList() {
                     </Box>
                   ))}
               </Box>
-              <Button sx={{ px: 1, mt: 1 }}>Više...</Button>
+              <Button sx={{ px: 1, mt: 1 }} onClick={handleOpen}>
+                Više...
+              </Button>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: 400,
+                    bgcolor: "background.paper",
+                    border: "2px solid",
+                    borderColor: "background.default",
+                    borderRadius: "20px",
+                    boxShadow: 16,
+                    p: 4,
+                    outline: 0,
+                  }}
+                >
+                  {professorCourses![teacher.id]?.map((course, idx) => (
+                    <Box key={idx} sx={{ mt: 1 }}>
+                      <Typography
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          direction: "row",
+                        }}
+                      >
+                        <CourseCardMedia
+                          year={course.year}
+                          studyProgram={course.studyProgram}
+                          sx={{
+                            display: "inline",
+                            width: 33, // Širina avatara (možeš promeniti prema potrebama)
+                            height: 33, // Visina avatara
+                            borderRadius: "50%", // Za kružni oblik
+                            objectFit: "cover", // Za prilagođavanje slike unutar kružnog oblika
+                          }}
+                        />
+                        &nbsp;&nbsp;
+                        {course.name}
+                      </Typography>
+                    </Box>
+                  ))}
+                  <Button sx={{ px: 1, mt: 5 }} onClick={handleClose}>
+                    Zatvori
+                  </Button>
+                </Box>
+              </Modal>
+
               <Divider component="div" sx={{ my: 2 }} />
               <Typography>Kategorije kurseva:</Typography>
               <Box

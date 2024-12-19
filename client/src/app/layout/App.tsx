@@ -128,7 +128,7 @@ export default function App() {
       await dispatch(fetchCoursesAsync());
       await dispatch(fetchUserCoursesAsync());
       await dispatch(fetchProfessorsAsyn());
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
     }
   }, [dispatch]);

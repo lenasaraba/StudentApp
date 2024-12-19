@@ -1,16 +1,16 @@
 import {
   Box,
+  debounce,
   FormControl,
   Grid,
-  InputAdornment,
-  OutlinedInput,
+  TextField,
   Typography,
 } from "@mui/material";
 // import Grid from "@mui/material/Grid2";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import CourseCard from "./CourseCard";
-import { useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   fetchCoursesAsync,
   fetchUserCoursesAsync,
@@ -23,33 +23,13 @@ import LoadingComponent from "../../app/layout/LoadingComponent";
 import FiltersButtons from "./components/FiltersButtons";
 import AppPagination from "../../app/components/AppPagination";
 import AppAppBar from "./components/AppAppBar";
+import CourseCardSkeleton from "./components/CourseCardSkeleton";
 
-export function Search() {
-  return (
-    <FormControl sx={{ width: { xs: "100%", md: "25ch" } }} variant="outlined">
-      <OutlinedInput
-        size="small"
-        id="search"
-        placeholder="Pretraži.."
-        sx={{ flexGrow: 1 }}
-        startAdornment={
-          <InputAdornment position="start" sx={{ color: "text.primary" }}>
-            <SearchRoundedIcon fontSize="small" />
-          </InputAdornment>
-        }
-        inputProps={{
-          "aria-label": "search",
-        }}
-      />
-    </FormControl>
-  );
-}
 export default function CourseList() {
-  //const {productsLoaded}=useAppSelector(state=>state.catalog)
   const [searchParams] = useSearchParams();
-  const courseType = searchParams.get("type"); // Dobijanje parametra "type"
-  //const [courses, setCourses] = useState([]);
+  const courseType = searchParams.get("type");
   const dispatch = useAppDispatch();
+
   const {
     coursesLoaded,
     filtersLoaded,
@@ -57,21 +37,37 @@ export default function CourseList() {
     programs,
     coursesParams,
     metaData,
+    loading,
   } = useAppSelector((state) => state.course);
 
+  const [searchTerm, setSearchTerm] = useState(coursesParams.searchTerm);
+
+  const debouncedSearch = debounce((event: any) => {
+    dispatch(setCoursesParams({ searchTerm: event.target.value }));
+    dispatch(fetchCoursesAsync());
+  }, 800);
+
   const allCourses = useAppSelector((state) => state.course.courses);
-  const myCourses = useAppSelector((state) => state.course.myCourses);
-  // console.log("COURSE LIST +++++++++++++++++++++++++++++++" + years);
-  // console.log("COURSE LIST +++++++++++++++++++++++++++++++" + programs);
+  // const myCourses = useAppSelector((state) => state.course.courses);
   useEffect(() => {
     if (courseType === "all") {
+      dispatch(setCoursesParams({ type: courseType }));
       dispatch(fetchCoursesAsync());
     } else if (courseType === "my") {
-      dispatch(fetchUserCoursesAsync());
+      dispatch(setCoursesParams({ type: courseType }));
+      dispatch(fetchCoursesAsync());
     }
   }, [courseType, dispatch]);
+  const user = useAppSelector((state) => state.account.user);
+  const navigate = useNavigate();
 
-  const coursesToDisplay = courseType === "my" ? myCourses : allCourses;
+  // const coursesToDisplay = courseType === "my" ? myCourses : allCourses;
+  const coursesToDisplay = allCourses;
+  useEffect(() => {
+    if (courseType === "my" && !user) {
+      navigate("/login"); // Zameni "/login" pravim URL-om za vašu login stranicu
+    }
+  }, [user, courseType, navigate]);
 
   // const uniquePrograms = [
   //   ...new Set(coursesToDisplay!.map((course) => course.studyProgram.name)),
@@ -93,11 +89,16 @@ export default function CourseList() {
     if (!filtersLoaded) dispatch(fetchFilters());
   }, [dispatch, filtersLoaded]);
 
-  if (!filtersLoaded) return <LoadingComponent message="Loading courses..." />;
+  if (!filtersLoaded)
+    return <LoadingComponent message="Učitavanje kurseva..." />;
 
+  if (loading) {
+    return <LoadingComponent message="Učitavanje kurseva..." />;
+  }
   return (
-    <Grid container sx={{ display: "flex", direction: "column" }}>
+    <Grid container sx={{ display: "flex", direction: "column", margin: 0 }}>
       <AppAppBar />
+
       {courseType === "my" ? (
         <Typography
           variant="h2"
@@ -123,6 +124,11 @@ export default function CourseList() {
           Svi kursevi
         </Typography>
       )}
+      {/* {(courseType == "my" && myCourses && myCourses.length > 0) ||
+      (courseType == "all" &&
+        coursesToDisplay &&
+        coursesToDisplay.length > 0) ? (
+        <> */}
       <Box
         sx={{
           display: "flex",
@@ -173,9 +179,6 @@ export default function CourseList() {
             onChange={(items: string[]) => {
               dispatch(setCoursesParams({ studyPrograms: items }));
               dispatch(fetchCoursesAsync());
-
-              //DODAJEM
-              //dispatch(fetchCoursesAsync());
             }}
           />
         </Box>
@@ -188,36 +191,115 @@ export default function CourseList() {
             overflow: "auto",
           }}
         >
-          <Search />
+          <FormControl
+            sx={{ width: { xs: "100%", md: "25ch", padding: 10 } }}
+            variant="outlined"
+          >
+            {/* <OutlinedInput
+              size="small"
+              id="search"
+              placeholder="Pretraži.."
+              sx={{ flexGrow: 1 }}
+              startAdornment={
+                <InputAdornment position="start" sx={{ color: "text.primary" }}>
+                  <SearchRoundedIcon fontSize="small" />
+                </InputAdornment>
+              }
+              inputProps={{
+                "aria-label": "search",
+              }}
+            /> */}
+            <TextField
+              label={
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <SearchRoundedIcon fontSize="small" />
+                  {"  Pretraži"}
+                </Box>
+              }
+              variant="outlined"
+              fullWidth
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  height: 50, // Visina TextField-a
+                  "& input": {
+                    padding: "8px 12px", // Unutrašnji padding za tekst
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  lineHeight: 1.3, // Podešavanje linije labela
+                },
+              }}
+              value={searchTerm || ""}
+              onChange={(event: any) => {
+                setSearchTerm(event.target.value);
+                debouncedSearch(event);
+              }}
+            />
+          </FormControl>
         </Box>
       </Box>
-      <Grid
-        container
-        spacing={4}
-        columns={12}
-        sx={{ margin: 4, paddingBottom: 4 }}
-      >
-        {coursesToDisplay!.map((course) => (
-          <Grid item xs={12} md={4} key={course.id}>
-            {/* {!productsLoaded ? (
-                        <ProductCardSkeleton />
-                    ): (
-                        <ProductCard product={product}/>
-                    )} */}
-            <CourseCard course={course} />
+      {(courseType == "my" &&
+        coursesToDisplay &&
+        coursesToDisplay.length > 0) ||
+      (courseType == "all" &&
+        coursesToDisplay &&
+        coursesToDisplay.length > 0) ? (
+        <>
+          <Grid
+            container
+            spacing={4}
+            columns={12}
+            sx={{ margin: 4, paddingBottom: 4 }}
+          >
+            {coursesToDisplay!.map((course) => (
+              <Grid item xs={12} md={4} key={course.id}>
+                {!coursesLoaded ? (
+                  <CourseCardSkeleton />
+                ) : (
+                  <CourseCard course={course} />
+                )}
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-      <Box sx={{ mb: 2, mt: 2 }}>
-        {metaData && (
-          <AppPagination
-            metaData={metaData}
-            onPageChange={(page: number) =>
-              dispatch(setPageNumber({ pageNumber: page }))
-            }
-          />
-        )}
-      </Box>
+
+          <Box sx={{ mb: 2, mt: 2 }}>
+            {metaData && (
+              <AppPagination
+                metaData={metaData}
+                onPageChange={(page: number) =>
+                  dispatch(setPageNumber({ pageNumber: page }))
+                }
+              />
+            )}
+          </Box>
+        </>
+      ) : (
+        <Box sx={{ display: "flex", flexDirection: "column", mt: 0 }}>
+          {/* //   <Typography
+        //     variant="h2"
+        //     sx={{
+        //       fontFamily: "Raleway, sans-serif",
+        //       paddingTop: 0,
+        //       color: "text.primary",
+        //       ml: 4,
+        //       mt: 0,
+        //     }}
+        //   >
+        //     Moje učenje
+        //   </Typography> */}
+          <Typography
+            variant="h4"
+            sx={{
+              fontFamily: "Raleway, sans-serif",
+              paddingTop: 4,
+              color: "text.primary",
+              ml: 4,
+            }}
+          >
+            Nije pronađen nijedan kurs.
+          </Typography>
+        </Box>
+      )}
     </Grid>
   );
 }

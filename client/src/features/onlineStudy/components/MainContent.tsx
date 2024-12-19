@@ -53,8 +53,6 @@ const StyledTypography = styled(Typography)({
   textOverflow: "ellipsis",
 });
 
-
-
 export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = React.useState<number | null>(
     null
