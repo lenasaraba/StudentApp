@@ -30,7 +30,7 @@ const Card = styled(MuiCard)(() => ({
   margin: "auto",
 }));
 
-const SignInContainer = styled(Stack)(({ theme }) => ({
+const SignInContainer = styled(Stack)(() => ({
   height: "100vh",
   minHeight: "100%",
   backgroundColor: "secondary.main",

@@ -8,6 +8,8 @@ import Login from "../../features/account/Login";
 import OnlineStudy from "../../features/onlineStudy/OnlineStudy";
 import CourseList from "../../features/onlineStudy/CourseList";
 import Course from "../../features/onlineStudy/Course";
+import RequireAuth from "../components/RequireAuth";
+import ProfilePage from "../../features/profile/ProfilePage";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -50,7 +52,15 @@ export const router = createBrowserRouter([
           },
           {
             path: "courses/:id",
-            element: <Course />, 
+            element: <Course />,
+          },
+          {
+            path: "profile",
+            element: (
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            ),
           },
         ],
       },

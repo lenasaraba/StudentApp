@@ -70,13 +70,14 @@ const demoTheme = extendTheme({
         text: {
           primary: "#4D869C",
           secondary: "#89a8b2",
-          disabled: "#19334d",
+          disabled: "#adbac7",
         },
         action: {
           active: "#89a8b2",
           hover: "#7AB2B2",
-          disabled: "#19334d",
-          disabledBackground: "#b3b3b3",
+          //19334d
+          disabled: "#adbac7",
+          disabledBackground: "#6b7d8e",
         },
         background: {
           default: "#EEF7FF",
@@ -92,13 +93,14 @@ const demoTheme = extendTheme({
         text: {
           primary: "#c4e1f6",
           secondary: "#89a8b2",
-          disabled: "#19334d",
+          disabled: "#6c859d",
         },
         action: {
           active: "#89a8b2",
           hover: "#0c1017",
-          disabled: "#19334d",
-          disabledBackground: "#b3b3b3",
+          //19334d
+          disabled: "#6c859d",
+          disabledBackground: "#ced4da",
         },
         background: {
           default: "#0c1017",

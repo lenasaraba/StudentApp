@@ -36,6 +36,8 @@ namespace API.Controllers
                 Email=user.Email,
                 Username=user.UserName,
                 Token=await _tokenService.GenerateToken(user),
+                FirstName=user.FirstName,
+                LastName=user.LastName
             };
         }
 
@@ -73,6 +75,37 @@ namespace API.Controllers
                 Email=user.Email,
                 Token=await _tokenService.GenerateToken(user),
                 Username=user.UserName,
+                FirstName=user.FirstName,
+                LastName=user.LastName
+            };
+        }
+
+        [HttpPost("updateUser")]
+        public async Task<ActionResult<UserDto>> UpdateUser([FromBody] UpdateUserDto userData)
+        {
+            if (userData.FirstName == null || userData.LastName==null)
+            {
+                return BadRequest("Invalid data.");
+            }
+
+            var user=await _userManager.FindByNameAsync(User!.Identity!.Name!);
+            user!.FirstName = userData.FirstName;
+            user.LastName =userData.LastName;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest("Greška prilikom ažuriranja korisničkih podataka.");
+            }
+
+            return new UserDto
+            {
+                Email=user.Email,
+                Token=await _tokenService.GenerateToken(user),
+                Username=user.UserName,
+                FirstName=user.FirstName,
+                LastName=user.LastName
             };
         }
     }

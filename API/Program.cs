@@ -43,7 +43,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        policy => policy.WithOrigins("http://localhost:5173") // Dozvoli zahteve sa front-end domena
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
@@ -96,6 +102,7 @@ app.UseCors(opt =>
 {
     opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:5173");
 });
+
 
 app.UseAuthentication();
 app.UseAuthorization();

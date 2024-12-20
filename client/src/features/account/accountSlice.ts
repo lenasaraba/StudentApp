@@ -38,17 +38,14 @@ export const fetchCurrentUser = createAsyncThunk<User>(
     try {
       const userDto = await agent.Account.currentUser();
       const { ...user } = userDto;
-      // if (basket) thunkAPI.dispatch(setBasket(basket));
       localStorage.setItem("user", JSON.stringify(user));
       return user;
     } catch (error: any) {
-      // console.error("Error fetching user:", error);
       return thunkAPI.rejectWithValue({ error: error.data });
     }
   },
   {
     condition: () => {
-      //console.log(localStorage.getItem("user"));
       if (!localStorage.getItem("user")) {
         return false;
       }
@@ -56,6 +53,23 @@ export const fetchCurrentUser = createAsyncThunk<User>(
   }
 );
 
+interface UpdateUserDto {
+  firstName: string;
+  lastName: string;
+}
+export const updateUser = createAsyncThunk<User, UpdateUserDto>(
+  "account/updateUser",
+  async (userData, thunkAPI) => {
+    try {
+      const userDto = await agent.Account.updateUser(userData); // Pozivanje agenta sa parametrima
+      const { ...user } = userDto;
+      localStorage.setItem("user", JSON.stringify(user));
+      return user;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
 export const accountSlice = createSlice({
   name: "account",
   initialState,
@@ -69,7 +83,7 @@ export const accountSlice = createSlice({
       state.user = action.payload;
     },
   },
-  extraReducers: (builder => {
+  extraReducers: (builder) => {
     builder.addCase(fetchCurrentUser.rejected, (state) => {
       state.user = null;
       localStorage.removeItem("user");
@@ -87,7 +101,7 @@ export const accountSlice = createSlice({
     builder.addMatcher(isAnyOf(signInUser.rejected), (_state, action) => {
       throw action.payload;
     });
-  }),
+  },
 });
 
 export const { signOut, setUser } = accountSlice.actions;

@@ -25,15 +25,16 @@ const Account = {
   register: (values: any) => requests.post("account/register", values),
   currentUser: () => requests.get("account/currentUser"),
   // fetchAddress: ()=>requests.get('account/savedAddress'),
+  updateUser: (userData: any) => requests.post("account/updateUser", userData),
 };
 
 const Course = {
-  list: (params:URLSearchParams) => requests.get("course/getAllCourses", params),
+  list: (params: URLSearchParams) =>
+    requests.get("course/getAllCourses", params),
   getMy: (id: string) => requests.get(`course/getMyCourses/${id}`),
   getProfessorCourses: (id: number) =>
     requests.get(`course/getProfessorsCourses/${id}`),
-  fetchFilters: ()=>requests.get('course/filters')
-
+  fetchFilters: () => requests.get("course/filters"),
 };
 
 const Professor = {
