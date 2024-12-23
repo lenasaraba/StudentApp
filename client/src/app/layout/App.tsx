@@ -139,6 +139,10 @@ export default function App() {
     initApp().then(() => setLoading(false));
   }, [initApp]);
 
+
+  window.scrollTo(0, 0);  // Pomeri na vrh prilikom prve učitavanja stranice
+  
+
   if (loading)
     return <LoadingComponent message="Učitavanje..."></LoadingComponent>;
 
@@ -165,12 +169,14 @@ export default function App() {
   return (
     <>
       {/* <ThemeProvider theme={demoTheme}> */}
+
       <AppProvider
         theme={demoTheme}
         navigation={NAVIGATION}
         branding={BRANDING}
       >
         <Outlet />
+        {/* <ScrollRestoration/> */}
       </AppProvider>
       {/* </ThemeProvider> */}
     </>

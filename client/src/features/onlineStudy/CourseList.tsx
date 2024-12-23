@@ -10,7 +10,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import CourseCard from "./CourseCard";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   fetchCoursesAsync,
   fetchUserCoursesAsync,
@@ -37,15 +37,19 @@ export default function CourseList() {
     programs,
     coursesParams,
     metaData,
-    loading,
+    
   } = useAppSelector((state) => state.course);
 
   const [searchTerm, setSearchTerm] = useState(coursesParams.searchTerm);
 
-  const debouncedSearch = debounce((event: any) => {
-    dispatch(setCoursesParams({ searchTerm: event.target.value }));
-    dispatch(fetchCoursesAsync());
-  }, 800);
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((event: any) => {
+        dispatch(setCoursesParams({ searchTerm: event.target.value }));
+        dispatch(fetchCoursesAsync());
+      }, 1000),
+    [dispatch] // Zavisi samo od dispatch-a
+  );
 
   const allCourses = useAppSelector((state) => state.course.courses);
   // const myCourses = useAppSelector((state) => state.course.courses);
@@ -89,12 +93,18 @@ export default function CourseList() {
     if (!filtersLoaded) dispatch(fetchFilters());
   }, [dispatch, filtersLoaded]);
 
+  useEffect(() => {
+    return () => {
+      debouncedSearch.clear();
+    };
+  }, [debouncedSearch]);
+
   if (!filtersLoaded)
     return <LoadingComponent message="Učitavanje kurseva..." />;
 
-  if (loading) {
-    return <LoadingComponent message="Učitavanje kurseva..." />;
-  }
+  // if (loading) {
+  //   return <LoadingComponent message="Učitavanje kurseva..." />;
+  // }
   return (
     <Grid container sx={{ display: "flex", direction: "column", margin: 0 }}>
       <AppAppBar />
@@ -170,7 +180,7 @@ export default function CourseList() {
             checked={coursesParams.years}
             onChange={(items: string[]) => {
               dispatch(setCoursesParams({ years: items }));
-              dispatch(fetchCoursesAsync());
+              //dispatch(fetchCoursesAsync());
             }}
           />
           <FiltersButtons
@@ -178,7 +188,7 @@ export default function CourseList() {
             checked={coursesParams.studyPrograms}
             onChange={(items: string[]) => {
               dispatch(setCoursesParams({ studyPrograms: items }));
-              dispatch(fetchCoursesAsync());
+              //dispatch(fetchCoursesAsync());
             }}
           />
         </Box>

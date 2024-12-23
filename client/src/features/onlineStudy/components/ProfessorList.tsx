@@ -15,6 +15,8 @@ import {
 import { fetchProfessorCoursesAsync } from "../courseSlice";
 import { useEffect, useState } from "react";
 import CourseCardMedia from "./CourseCardMedia";
+import { Professor } from "../../../app/models/professor";
+import { Link } from "react-router-dom";
 
 // POPRAVITI MODAL DA SE UCITA ZA ODGOVARAJUCEG PROFESORA
 // POPRAVITI IZGLED MODALA
@@ -33,9 +35,18 @@ export default function ProfessorList() {
     (state) => state.course.professorCourses
   );
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [selectedProfessor, setSelectedProfessor] = useState<Professor>(); // Čuva informacije o profesoru
+  const [isModalOpen, setIsModalOpen] = useState(false); // Kontroliše prikaz modala
+
+  const handleOpenModal = (professor: Professor) => {
+    setSelectedProfessor(professor); // Postavi odabranog profesora
+    setIsModalOpen(true); // Otvori modal
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProfessor(undefined); // Očisti odabranog profesora
+    setIsModalOpen(false); // Zatvori modal
+  };
   return (
     <>
       <CssBaseline />
@@ -96,7 +107,6 @@ export default function ProfessorList() {
                   <Typography variant="h5">
                     {teacher.firstName}&nbsp;{teacher.lastName}
                   </Typography>
-                  <Typography></Typography>
                 </div>
               </Box>
               <Divider component="div" sx={{ my: 2 }} />
@@ -129,60 +139,76 @@ export default function ProfessorList() {
                     </Box>
                   ))}
               </Box>
-              <Button sx={{ px: 1, mt: 1 }} onClick={handleOpen}>
+              <Button
+                sx={{ px: 1, mt: 1 }}
+                onClick={() => handleOpenModal(teacher)}
+              >
                 Više...
               </Button>
               <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+                open={isModalOpen}
+                onClose={handleCloseModal}
+                // aria-labelledby="modal-modal-title"
+                // aria-describedby="modal-modal-description"
               >
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: 400,
-                    bgcolor: "background.paper",
-                    border: "2px solid",
-                    borderColor: "background.default",
-                    borderRadius: "20px",
-                    boxShadow: 16,
-                    p: 4,
-                    outline: 0,
-                  }}
-                >
-                  {professorCourses![teacher.id]?.map((course, idx) => (
-                    <Box key={idx} sx={{ mt: 1 }}>
-                      <Typography
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          direction: "row",
-                        }}
-                      >
-                        <CourseCardMedia
-                          year={course.year}
-                          studyProgram={course.studyProgram}
-                          sx={{
-                            display: "inline",
-                            width: 33, // Širina avatara (možeš promeniti prema potrebama)
-                            height: 33, // Visina avatara
-                            borderRadius: "50%", // Za kružni oblik
-                            objectFit: "cover", // Za prilagođavanje slike unutar kružnog oblika
-                          }}
-                        />
-                        &nbsp;&nbsp;
-                        {course.name}
-                      </Typography>
-                    </Box>
-                  ))}
-                  <Button sx={{ px: 1, mt: 5 }} onClick={handleClose}>
-                    Zatvori
-                  </Button>
-                </Box>
+                {selectedProfessor == undefined ? (
+                  <Box>Ispis </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: 400,
+                      bgcolor: "background.paper",
+                      border: "2px solid",
+                      borderColor: "background.default",
+                      borderRadius: "20px",
+                      boxShadow: 16,
+                      p: 4,
+                      outline: 0,
+                    }}
+                  >
+                    {professorCourses![selectedProfessor!.id]?.map(
+                      (course, idx) => (
+                        <Box key={idx} sx={{ mt: 1 }}>
+                          <Typography
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              direction: "row",
+                              color: "primary.main", 
+                              textDecoration: "none", 
+                              "&:visited": {
+                                color: "primary.main",
+                              },
+                            }}
+                            component={Link}
+                            to={`/courses/${course.id}`}
+                          >
+                            <CourseCardMedia
+                              year={course.year}
+                              studyProgram={course.studyProgram}
+                              sx={{
+                                display: "inline",
+                                width: 33, // Širina avatara (možeš promeniti prema potrebama)
+                                height: 33, // Visina avatara
+                                borderRadius: "50%", // Za kružni oblik
+                                objectFit: "cover", // Za prilagođavanje slike unutar kružnog oblika
+                              }}
+                            />
+                            &nbsp;&nbsp;
+                            {course.name}
+                          </Typography>
+                        </Box>
+                      )
+                    )}
+                    <Button sx={{ px: 1, mt: 5 }} onClick={handleCloseModal}>
+                      Zatvori
+                    </Button>
+                  </Box>
+                )}
               </Modal>
 
               <Divider component="div" sx={{ my: 2 }} />

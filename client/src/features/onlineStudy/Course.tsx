@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { ScrollRestoration, useLocation, useNavigationType, useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/store/configureStore";
 import NotFound from "../../app/errors/NotFound";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import CourseCardMedia from "./components/CourseCardMedia";
 import { Author } from "./components/Author";
 
 export default function Course() {
+  
   const [openWeeks, setOpenWeeks] = useState<boolean[]>(Array(10).fill(false));
 
   const toggleWeek = (index: number) => {
@@ -27,7 +28,7 @@ export default function Course() {
       return newState;
     });
   };
-
+  
   const { id } = useParams<{ id: string }>();
   const allCourses = useAppSelector((state) => state.course.courses);
 
@@ -36,6 +37,8 @@ export default function Course() {
   const course = allCourses!.find((i) => i.id === parseInt(id));
 
   if (course == undefined) return <NotFound />;
+
+  
 
   return (
     <Container style={{ marginTop: "2rem" }}>
@@ -102,5 +105,6 @@ export default function Course() {
         ))}
       </List>
     </Container>
+
   );
 }

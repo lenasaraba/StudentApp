@@ -15,7 +15,7 @@ export interface CourseState {
   programs: string[];
   coursesParams: CoursesParams;
   metaData: MetaData | null;
-  loading: boolean;
+  //loading: boolean;
 }
 
 const initialState: CourseState = {
@@ -29,7 +29,7 @@ const initialState: CourseState = {
   programs: [],
   coursesParams: initParams(),
   metaData: null,
-  loading: false,
+  //loading: false,
 };
 
 function initParams() {
@@ -163,12 +163,12 @@ export const courseSlice = createSlice({
     setMetaData: (state, action) => {
       state.metaData = action.payload;
     },
-    resetProductParams: (state) => {
+    resetCoursesParams: (state) => {
       state.coursesParams = initParams();
     },
-    setLoading(state, action) {
-      state.loading = action.payload;
-    },
+    // setLoading(state, action) {
+    //   state.loading = action.payload;
+    // },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchFilters.pending, (state) => {
@@ -179,24 +179,39 @@ export const courseSlice = createSlice({
       state.programs = action.payload.programs;
       state.status = "idle";
       state.filtersLoaded = true;
-      state.loading = false;
+      //state.loading = false;
     });
     builder.addCase(fetchFilters.rejected, (state, action) => {
       state.status = "idle";
       console.log(action.payload);
     });
-    builder.addCase(fetchUserCoursesAsync.pending, (state) => {
-      state.loading = true; // Postavi loading na true
-    });
-    builder.addCase(fetchUserCoursesAsync.fulfilled, (state) => {
-      state.loading = false; // Postavi loading na true
-      state.coursesLoaded = true;
-    });
+    // builder.addCase(fetchUserCoursesAsync.pending, (state) => {
+    //   //state.loading = true; // Postavi loading na true
+    //   state.status='pendingFetchCourses';
+
+    // });
+    // builder.addCase(fetchUserCoursesAsync.fulfilled, (state) => {
+    //   //state.loading = false; // Postavi loading na true
+    //   state.coursesLoaded = true;
+    //   state.status='idle';
+
+    // });
+    // builder.addCase(fetchUserCoursesAsync.rejected, (state) => {
+    //   //state.loading = false;
+    //   state.status='idle';
+
+    // });
+    builder.addCase(fetchCoursesAsync.pending, (state)=>{
+      state.status='pendingFetchCourses'
+  });
     builder.addCase(fetchCoursesAsync.rejected, (state) => {
-      state.loading = false;
+      //state.loading = false;
+      state.status='idle';
+
     });
     builder.addCase(fetchCoursesAsync.fulfilled, (state) => {
-      state.loading = false; // Postavi loading na true
+      //state.loading = false; // Postavi loading na true
+      state.status='idle';
       state.coursesLoaded = true;
     });
   },
@@ -208,6 +223,6 @@ export const {
   setProfessorCourses,
   setCoursesParams,
   setPageNumber,
-  resetProductParams,
+  resetCoursesParams,
   setMetaData,
 } = courseSlice.actions;
