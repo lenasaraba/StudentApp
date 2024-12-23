@@ -10,6 +10,7 @@ import CourseList from "../../features/onlineStudy/CourseList";
 import Course from "../../features/onlineStudy/Course";
 import RequireAuth from "../components/RequireAuth";
 import ProfilePage from "../../features/profile/ProfilePage";
+import ForumPage from "../../features/forum/ForumPage";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -61,6 +62,10 @@ export const router = createBrowserRouter([
                 <ProfilePage />
               </RequireAuth>
             ),
+          },
+          {
+            path: "forum",
+            element: <ForumPage />,
           },
         ],
       },

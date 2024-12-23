@@ -67,7 +67,7 @@ export default function MainContent() {
   };
 
   const courses = useAppSelector((state) => state.course.courses);
-
+  // console.log("Main +++++++++++++++++ " + courses);
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4, margin: 0 }}>
       <div>

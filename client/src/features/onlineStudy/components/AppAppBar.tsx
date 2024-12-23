@@ -4,11 +4,20 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import SchoolIcon from "@mui/icons-material/School";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { resetCoursesParams, fetchCoursesAsync } from "../courseSlice";
+import { useAppDispatch } from "../../../app/store/configureStore";
 
 //STAVITI FIKSNI HEIGHT ZBOG APPAPPBARA
 
 export default function AppAppBar() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const handleNavigate = () => {
+    dispatch(resetCoursesParams());
+    dispatch(fetchCoursesAsync());
+    navigate("/onlineStudy", { replace: true });
+  };
   return (
     <AppBar
       //ne radi sticky
@@ -59,9 +68,15 @@ export default function AppAppBar() {
             }}
           >
             <Box
-              component={Link}
-              to="/onlineStudy"
-              sx={{ display: "flex", alignItems: "center" }}
+              onClick={handleNavigate}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer", // Dodano da miš postane pointer
+                "&:hover": {
+                  cursor: "pointer", // Osigurano i za hover stanje
+                },
+              }}
             >
               <SchoolIcon
                 sx={{

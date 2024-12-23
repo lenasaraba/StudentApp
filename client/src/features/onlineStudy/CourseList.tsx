@@ -13,7 +13,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import {
   fetchCoursesAsync,
-  fetchUserCoursesAsync,
   fetchFilters,
   setCoursesParams,
   setPageNumber,
@@ -37,7 +36,6 @@ export default function CourseList() {
     programs,
     coursesParams,
     metaData,
-    
   } = useAppSelector((state) => state.course);
 
   const [searchTerm, setSearchTerm] = useState(coursesParams.searchTerm);
@@ -102,9 +100,6 @@ export default function CourseList() {
   if (!filtersLoaded)
     return <LoadingComponent message="Učitavanje kurseva..." />;
 
-  // if (loading) {
-  //   return <LoadingComponent message="Učitavanje kurseva..." />;
-  // }
   return (
     <Grid container sx={{ display: "flex", direction: "column", margin: 0 }}>
       <AppAppBar />
@@ -134,11 +129,7 @@ export default function CourseList() {
           Svi kursevi
         </Typography>
       )}
-      {/* {(courseType == "my" && myCourses && myCourses.length > 0) ||
-      (courseType == "all" &&
-        coursesToDisplay &&
-        coursesToDisplay.length > 0) ? (
-        <> */}
+
       <Box
         sx={{
           display: "flex",
@@ -180,7 +171,6 @@ export default function CourseList() {
             checked={coursesParams.years}
             onChange={(items: string[]) => {
               dispatch(setCoursesParams({ years: items }));
-              //dispatch(fetchCoursesAsync());
             }}
           />
           <FiltersButtons
@@ -188,7 +178,6 @@ export default function CourseList() {
             checked={coursesParams.studyPrograms}
             onChange={(items: string[]) => {
               dispatch(setCoursesParams({ studyPrograms: items }));
-              //dispatch(fetchCoursesAsync());
             }}
           />
         </Box>
@@ -285,18 +274,6 @@ export default function CourseList() {
         </>
       ) : (
         <Box sx={{ display: "flex", flexDirection: "column", mt: 0 }}>
-          {/* //   <Typography
-        //     variant="h2"
-        //     sx={{
-        //       fontFamily: "Raleway, sans-serif",
-        //       paddingTop: 0,
-        //       color: "text.primary",
-        //       ml: 4,
-        //       mt: 0,
-        //     }}
-        //   >
-        //     Moje učenje
-        //   </Typography> */}
           <Typography
             variant="h4"
             sx={{

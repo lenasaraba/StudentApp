@@ -75,8 +75,6 @@ export const fetchCoursesAsync = createAsyncThunk<
   const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
 
   try {
-    //  return await agent.Course.getAll();
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAa" + params);
     const courses = await agent.Course.list(params);
     thunkAPI.dispatch(setCourses(courses));
     thunkAPI.dispatch(setMetaData(courses.metaData));
@@ -201,17 +199,16 @@ export const courseSlice = createSlice({
     //   state.status='idle';
 
     // });
-    builder.addCase(fetchCoursesAsync.pending, (state)=>{
-      state.status='pendingFetchCourses'
-  });
+    builder.addCase(fetchCoursesAsync.pending, (state) => {
+      state.status = "pendingFetchCourses";
+    });
     builder.addCase(fetchCoursesAsync.rejected, (state) => {
       //state.loading = false;
-      state.status='idle';
-
+      state.status = "idle";
     });
     builder.addCase(fetchCoursesAsync.fulfilled, (state) => {
       //state.loading = false; // Postavi loading na true
-      state.status='idle';
+      state.status = "idle";
       state.coursesLoaded = true;
     });
   },

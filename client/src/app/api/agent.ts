@@ -41,10 +41,15 @@ const Professor = {
   GetAllProfessors: () => requests.get("professor/GetAllProfessors"),
 };
 
+const Theme = {
+  getAll: () => requests.get("theme/GetAllThemes"),
+};
+
 const agent = {
   Account,
   Course,
   Professor,
+  Theme,
 };
 
 export default agent;
