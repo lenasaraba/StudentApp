@@ -1,4 +1,4 @@
-import { extendTheme } from "@mui/material";
+import { createTheme, extendTheme } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { AppProvider } from "@toolpad/core/react-router-dom";
 import LaunchIcon from "@mui/icons-material/Launch";
@@ -11,13 +11,11 @@ import ForumIcon from "@mui/icons-material/Forum";
 import type { Navigation } from "@toolpad/core";
 import { useAppDispatch } from "../store/configureStore";
 import { useCallback, useEffect, useState } from "react";
-import {
-  fetchCoursesAsync,
-  fetchUserCoursesAsync,
-} from "../../features/onlineStudy/courseSlice";
+import { fetchCoursesAsync } from "../../features/onlineStudy/courseSlice";
 import LoadingComponent from "./LoadingComponent";
 import { fetchCurrentUser } from "../../features/account/accountSlice";
-import { fetchProfessorsAsyn } from "../../features/onlineStudy/professorSlice";
+import { fetchProfessorsAsync } from "../../features/onlineStudy/professorSlice";
+import { fetchThemesAsync } from "../../features/forum/themeSlice";
 
 const NAVIGATION: Navigation = [
   {
@@ -63,31 +61,79 @@ const BRANDING = {
   logo: <SchoolIcon sx={{ fontSize: "2rem" }} />,
 };
 
+// const { palette } = createTheme();
+// const theme = createTheme({
+//   palette: {
+//     myAwesomeColor: palette.augmentColor({ color: purple }),
+//     // Use this code if you want to use an arbitrary color// myAwesomeColor: palette.augmentColor({//   color: {//     main: "#00ff00"//   }// })
+//   },
+// });
+
 const demoTheme = extendTheme({
   colorSchemes: {
+    // light: {
+    //   palette: {
+    //     text: {
+    //       primary: "#4D869C",
+    //       secondary: "#89a8b2",
+    //       disabled: "#adbac7",
+    //     },
+    //     action: {
+    //       active: "#89a8b2",
+    //       hover: "#7AB2B2",
+    //       //19334d
+    //       disabled: "#adbac7",
+    //       disabledBackground: "#6b7d8e",
+    //     },
+    //     background: {
+    //       default: "#EEF7FF",
+    //       // paper: "#CDE8E5",
+    //       paper: "#81BFDA",
+    //     },
+    //     divider: "#CDE8E5",
+    //     primary: { main: "#3a98b9" },
+    //     secondary: { main: "#eef7ff80" },
+    //     common:{
+    //       background:"#6096B4",
+    //       white: "#ffffff",
+    //       black: "#201E43",
+    //       onBackground:"#AFD3E2",
+    //       backgroundChannel:"#67C6E3"
+    //     }
+    //   },
+    // },
     light: {
       palette: {
         text: {
-          primary: "#4D869C",
-          secondary: "#89a8b2",
-          disabled: "#adbac7",
+          primary: "#2e3b4e", // tamno siva-plava za osnovni tekst
+          secondary: "#556070", // prigušena siva za sekundarni tekst
+          disabled: "#a0aab4", // svetlija nijansa za onemogućeni tekst
         },
         action: {
-          active: "#89a8b2",
-          hover: "#7AB2B2",
-          //19334d
-          disabled: "#adbac7",
-          disabledBackground: "#6b7d8e",
+          active: "#5a7d9a", // blago plava za aktivne elemente
+          hover: "#f0f4f8", // veoma svetla siva-plava za hover efekat
+          disabled: "#c7d0d9", // prigušena siva za onemogućene elemente
+          disabledBackground: "#e9eef2", // veoma svetla pozadina za onemogućene elemente
         },
         background: {
-          default: "#EEF7FF",
-          paper: "#CDE8E5",
+          default: "#f7f9fc", // nežno svetlo siva za pozadinu
+          paper: "#e3edf5", // blago plava za kartice i slične elemente
         },
-        divider: "#CDE8E5",
-        primary: { main: "#3a98b9" },
-        secondary: { main: "#eef7ff80" },
+        divider: "#e3edf5", // prigušena svetlo siva za linije razdvajanja
+        primary: { main: "#89a8b2" }, // neutralna plava kao primarna boja
+        secondary: { main: "#c4d4e180" }, // svetlo siva-plava kao sekundarna
+        common: {
+          background: "#e0ecf4", // blago plava za pozadinske akcente
+          white: "#f2f5f9", // prigušena bela
+          black: "#2b3a4a", // tamno siva-plava
+          onBackground: "#607890", // prigušena plava za tekst na pozadini
+          backgroundChannel: "#dce5ee", // svetla pastelna plava za naglašavanje
+        },
       },
-    },
+    }
+    
+    ,
+    
     dark: {
       palette: {
         text: {
@@ -109,6 +155,14 @@ const demoTheme = extendTheme({
         divider: "#212a3e",
         primary: { main: "#608bc1" },
         secondary: { main: "#0c101780" },
+        common:{
+          background:"#608BC1",
+          white: "#27374D",
+          black: "#164863",
+          onBackground:"#B4D4FF",
+          backgroundChannel:'#67C6E3'
+
+        }
       },
     },
   },
@@ -128,8 +182,9 @@ export default function App() {
     try {
       await dispatch(fetchCurrentUser());
       await dispatch(fetchCoursesAsync());
-      await dispatch(fetchUserCoursesAsync());
-      await dispatch(fetchProfessorsAsyn());
+      //await dispatch(fetchUserCoursesAsync());
+      await dispatch(fetchProfessorsAsync());
+      await dispatch(fetchThemesAsync());
     } catch (error: unknown) {
       console.log(error);
     }
@@ -139,9 +194,7 @@ export default function App() {
     initApp().then(() => setLoading(false));
   }, [initApp]);
 
-
-  window.scrollTo(0, 0);  // Pomeri na vrh prilikom prve učitavanja stranice
-  
+  window.scrollTo(0, 0); // Pomeri na vrh prilikom prve učitavanja stranice
 
   if (loading)
     return <LoadingComponent message="Učitavanje..."></LoadingComponent>;

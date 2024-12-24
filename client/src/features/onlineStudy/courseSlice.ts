@@ -76,6 +76,8 @@ export const fetchCoursesAsync = createAsyncThunk<
 
   try {
     const courses = await agent.Course.list(params);
+    console.log('Fetched courses:', courses);  // Proveri šta API vraća
+
     thunkAPI.dispatch(setCourses(courses));
     thunkAPI.dispatch(setMetaData(courses.metaData));
 

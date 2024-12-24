@@ -36,6 +36,7 @@ export interface User {
 }
 
 export interface Theme {
+  id:number;
   title: string;
   description: string;
   date: string;

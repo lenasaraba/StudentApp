@@ -11,6 +11,7 @@ import Course from "../../features/onlineStudy/Course";
 import RequireAuth from "../components/RequireAuth";
 import ProfilePage from "../../features/profile/ProfilePage";
 import ForumPage from "../../features/forum/ForumPage";
+import Theme from "../../features/forum/Theme";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -66,6 +67,10 @@ export const router = createBrowserRouter([
           {
             path: "forum",
             element: <ForumPage />,
+          },
+          {
+            path: "forum/:id",
+            element: <Theme />,
           },
         ],
       },

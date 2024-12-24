@@ -44,12 +44,17 @@ const Professor = {
 const Theme = {
   getAll: () => requests.get("theme/GetAllThemes"),
 };
+const Message = {
+  getAll: ()=>requests.get("theme/GetAllMessages"),
+}
+
 
 const agent = {
   Account,
   Course,
   Professor,
   Theme,
+  Message,
 };
 
 export default agent;

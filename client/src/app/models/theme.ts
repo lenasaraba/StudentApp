@@ -1,17 +1,41 @@
 export interface Theme {
+  id: number;
   title: string;
   description: string;
   date: string;
-  userId: number;
   user: User;
-  courseId: number;
+  course: Course;
   messages: Message[];
 }
 
 export interface Message {
   content: string;
   creationDate: string;
-  userId: number;
+  user: User;
+}
+
+export interface Course {
+  id: number;
+  name: string;
+  description: string;
+  year: Year;
+  studyProgram: Year;
+  courseCreationDate: string;
+  professorsCourse: ProfessorsCourse[];
+}
+
+export interface ProfessorsCourse {
+  id: number;
+  user: User;
+  courseId: number;
+  enrollDate: string;
+  withdrawDate: string;
+}
+
+export interface Year {
+  id: number;
+  name: string;
+  description: string;
 }
 
 export interface User {

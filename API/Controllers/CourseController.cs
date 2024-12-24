@@ -19,37 +19,39 @@ namespace API.Controllers
         private readonly UserManager<User> _userManager;
 
         private readonly IMapper _mapper;
-        public CourseController(StoreContext context, IMapper mapper,UserManager<User> userManager)
+        public CourseController(StoreContext context, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
-            _userManager=userManager;
+            _userManager = userManager;
             _mapper = mapper;
         }
-        
-        
+
+
         [HttpGet("getAllCourses")]
         public async Task<ActionResult<List<CourseDto>>> GetCourses([FromQuery] CourseParams coursesParams)
         {
-                // var courses = await _context.Courses.Include(y => y.Year).Include(s => s.StudyProgram).Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User).Include(c => c.UsersCourse).ToListAsync();
-                // return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
-            
+            // var courses = await _context.Courses.Include(y => y.Year).Include(s => s.StudyProgram).Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User).Include(c => c.UsersCourse).ToListAsync();
+            // return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
 
 
-            var query=_context.Courses
+
+            var query = _context.Courses
             .Include(y => y.Year)
             .Include(s => s.StudyProgram)
             .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
             .Include(c => c.UsersCourse)
+            .Include(t => t.Themes)
             .AsQueryable();
 
-            if(coursesParams.Type=="my")
+            if (coursesParams.Type == "my")
             {
-                var user=await _userManager.FindByNameAsync(User.Identity.Name);
-                query=_context.Courses.Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                query = _context.Courses.Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
             .Include(y => y.Year)
             .Include(s => s.StudyProgram)
             .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
             .Include(c => c.UsersCourse)
+            .Include(t => t.Themes)
             .AsQueryable();
             }
             // Filtriranje prema searchTerm
@@ -78,24 +80,24 @@ namespace API.Controllers
         }
 
 
-        [HttpGet("getMyCourses/{email}")]
-        public async Task<ActionResult<List<CourseDto>>> GetMyCourses(string email)
-        {
-            //moze se raditi i bez prosljedjivanja parametra ali eto mozda zatreba
-            // var user=await _userManager.FindByNameAsync(User.Identity.Name);
+        // [HttpGet("getMyCourses/{email}")]
+        // public async Task<ActionResult<List<CourseDto>>> GetMyCourses(string email)
+        // {
+        //     //moze se raditi i bez prosljedjivanja parametra ali eto mozda zatreba
+        //     // var user=await _userManager.FindByNameAsync(User.Identity.Name);
 
-            // var courses = await _context.Courses
-            // .Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
-            // .Include(y => y.Year).Include(s => s.StudyProgram).ToListAsync();
+        //     // var courses = await _context.Courses
+        //     // .Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+        //     // .Include(y => y.Year).Include(s => s.StudyProgram).ToListAsync();
 
-            var user=await _userManager.FindByEmailAsync(email);
-            
-            var courses = await _context.Courses
-            .Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
-            .Include(y => y.Year).Include(s => s.StudyProgram).ToListAsync();
-            return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
+        //     var user = await _userManager.FindByEmailAsync(email);
 
-        }
+        //     var courses = await _context.Courses
+        //     .Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+        //     .Include(y => y.Year).Include(s => s.StudyProgram).Include(t => t.Themes).ToListAsync();
+        //     return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
+
+        // }
 
         [HttpGet("getProfessorsCourses/{id}")]
         public async Task<ActionResult<List<CourseDto>>> getProfessorsCourses(int id)
@@ -111,8 +113,9 @@ namespace API.Controllers
         public async Task<ActionResult<CourseDto>> GetCourse(int id)
         {
             var course = await _context.Courses
-        .Include(y => y.Year)  
-        .Include(s => s.StudyProgram) 
+        .Include(y => y.Year)
+        .Include(s => s.StudyProgram)
+        .Include(t => t.Themes)
         .FirstOrDefaultAsync(c => c.Id == id);
 
             if (course == null)
@@ -126,11 +129,11 @@ namespace API.Controllers
         [HttpGet("filters")]
         public async Task<IActionResult> GetFilters()
         {
-            var years=await _context.Courses.Select(c=>c.Year!.Name).Distinct().ToListAsync();
-            var programs=await _context.Courses.Select(c=>c.StudyProgram!.Name).Distinct().ToListAsync();
+            var years = await _context.Courses.Select(c => c.Year!.Name).Distinct().ToListAsync();
+            var programs = await _context.Courses.Select(c => c.StudyProgram!.Name).Distinct().ToListAsync();
 
 
-            return Ok(new {years, programs});
+            return Ok(new { years, programs });
         }
 
 

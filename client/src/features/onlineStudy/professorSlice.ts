@@ -12,7 +12,7 @@ const initialState: ProfessorState = {
   status: "idle",
 };
 
-export const fetchProfessorsAsyn = createAsyncThunk<Professor[]>(
+export const fetchProfessorsAsync = createAsyncThunk<Professor[]>(
   "professor/fetchProfessorsAsync",
   async (_, thunkAPI) => {
     try {

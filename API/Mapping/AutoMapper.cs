@@ -8,14 +8,15 @@ namespace API.Mapping
         public AutoMapper()
         {
             CreateMap<Course, CourseDto>();
+            CreateMap<Course, GetThemeCourseDto>();
             CreateMap<CourseMaterial, CourseMaterialDto>();
-            CreateMap<Theme, ThemeDto>();
-            CreateMap<ThemeDto, Theme>();
+            CreateMap<CreateThemeDto, Theme>();
+            CreateMap<Theme, GetThemeDto>();
             CreateMap<User, UserDto>();
             CreateMap<UserCourse, UserCourseDto>();
             CreateMap<ProfessorCourse, ProfessorCourseDto>();
-            CreateMap<MessageDto, Message>();
-            CreateMap<Message, MessageDto>();
+            CreateMap<CreateMessageDto, Message>();
+            CreateMap<Message, GetMessageDto>();
 
 
         }

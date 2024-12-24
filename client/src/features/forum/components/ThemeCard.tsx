@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { Theme } from "../../../app/models/theme";
+import { Link } from "react-router-dom";
 
 interface ThemeCardProps {
   theme: Theme;
@@ -8,10 +9,13 @@ interface ThemeCardProps {
 
 const ThemeCard: React.FC<ThemeCardProps> = ({ theme }) => {
   return (
-    <Card sx={{ maxWidth: 345, margin: 2 }}>
+    <Card sx={{ margin: 2 }}>
       <CardContent>
         {/* Naslov teme */}
-        <Typography variant="h6" component="div" gutterBottom>
+        <Typography variant="h6" gutterBottom  component={Link} to={`/forum/${theme.id}`} sx={{textDecoration: "none", 
+                              "&:visited": {
+                                color: "primary.main",
+                              },}}>
           {theme.title}
         </Typography>
 
@@ -27,7 +31,6 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme }) => {
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" color="text.secondary">
               Postavio: {theme.user?.firstName + " " + theme.user?.lastName}
-              {/* Pretpostavljamo da 'Name' postoji u UserDto */}
             </Typography>
           </Box>
         )}
