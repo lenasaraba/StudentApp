@@ -160,8 +160,8 @@ export default function HomePage() {
                       paddingLeft: 3,
                       paddingRight: 3,
                       borderRadius: 4,
-                      color: "#EEF7FF",
-                      bgcolor: "action.hover",
+                      color: "background.default",
+                      bgcolor: "text.primary",
                       "&:hover": {
                         bgcolor: "primary.main",
                       },

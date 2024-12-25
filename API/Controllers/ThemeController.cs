@@ -24,7 +24,7 @@ namespace API.Controllers
         [HttpGet("GetAllThemes")]
         public async Task<ActionResult<List<GetThemeDto>>> GetAllThemes()
         {
-            var themes = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m=>m.Messages).ThenInclude(u=>u.User).ToListAsync();
+            var themes = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m=>m.Messages).ThenInclude(u=>u.User).Include(c => c.Course).ThenInclude(p=>p.ProfessorsCourse).ThenInclude(u=>u.User).ToListAsync();
 
             return themes.Select(c => _mapper.Map<GetThemeDto>(c)).ToList();
         }

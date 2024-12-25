@@ -12,6 +12,7 @@ export interface Message {
   content: string;
   creationDate: string;
   user: User;
+  themeId?: number;
 }
 
 export interface Course {

@@ -21,6 +21,18 @@ export const fetchMessagesAsync = createAsyncThunk<Message[], void>(
   }
 );
 
+export const createMessage = createAsyncThunk<Message[], Message>(
+  "messages/createMessage",
+  async (newMessage, { rejectWithValue }) => {
+    try {
+      const response = await agent.Message.createMessage(newMessage);
+      return response.data; // Ovo vraća listu poruka sa servera
+    } catch (error: unknown) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const messageSlice = createSlice({
   name: "message",
   initialState,

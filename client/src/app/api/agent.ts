@@ -45,9 +45,9 @@ const Theme = {
   getAll: () => requests.get("theme/GetAllThemes"),
 };
 const Message = {
-  getAll: ()=>requests.get("theme/GetAllMessages"),
-}
-
+  getAll: () => requests.get("theme/GetAllMessages"),
+  createMessage: (values: any) => requests.post("theme/CreateMessage", values),
+};
 
 const agent = {
   Account,
