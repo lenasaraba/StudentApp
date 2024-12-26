@@ -172,19 +172,19 @@ export default function Course() {
                         </Avatar>
                       </ListItemAvatar>
                       <ListItemText sx={{
-                        '& a': {
+                        
                           textDecoration: 'none',  // Uklanja podvlačenje linka
-                          color: 'primary.main',        // Koristi boju teksta iz roditeljskog elementa
+                          color: 'text.primary',        // Koristi boju teksta iz roditeljskog elementa
                           '&:visited': {
-                            color: 'primary.main',      // Zadrži istu boju za visited linkove
+                            color: 'text.primary',      // Zadrži istu boju za visited linkove
                           },
                           '&:hover': {
                             color: 'primary.main',      // Zadrži istu boju pri hover-u
                           },
                           '&:active': {
-                            color: 'primary.main',      // Zadrži istu boju pri aktivnom linku
+                            color: 'text.primary',      // Zadrži istu boju pri aktivnom linku
                           },
-                        }
+                        
                       }}>{theme.title}</ListItemText>
                     </ListItem>
                   ))

@@ -23,13 +23,10 @@ export default function Theme() {
   const messages = useAppSelector((state) => state.message.messages);
   const [messageContent, setMessageContent] = useState("");
   const dispatch = useAppDispatch();
-  // console.log("------------------ID-----------------: "+id);
-  // console.log("------------------THEMES-----------------: "+themes);
 
   if (id == undefined) return <NotFound />;
 
   const theme = themes!.find((i) => i.id === parseInt(id));
-  // console.log(theme?.user);
 
   if (theme == undefined) return <NotFound />;
 
@@ -39,18 +36,18 @@ export default function Theme() {
       sx={{
         display: "flex",
         direction: "column",
-        padding: "0 30px",
+        padding: 4,
         margin: 0,
-        overflowX: "hidden",
+        // overflowX: "hidden",
       }}
     >
       <Grid
         container
         sx={{
           direction: "row",
-          pt: 2,
+          // pt: 2,
           display: "flex",
-          margin: "0 32px",
+          margin: 0,
           justifyContent: "space-around",
           boxSizing: "border-box",
         }}
@@ -60,10 +57,13 @@ export default function Theme() {
             sx={{
               border: "1px solid",
               borderRadius: "20px",
-              borderColor: "text.primary",
+              borderColor: "primary.main",
               height: "100%",
               display: "flex",
               alignItems: "center",
+              padding: 0,
+              pt: 3,
+              px: 2,
             }}
           >
             <Grid container sx={{ padding: 0 }}>
@@ -113,8 +113,11 @@ export default function Theme() {
               sx={{
                 border: "1px solid",
                 borderRadius: "20px",
-                borderColor: "text.primary",
+                borderColor: "primary.main",
                 height: "100%",
+                padding: 0,
+                pt: 3,
+                px: 2,
               }}
             >
               <Typography
@@ -207,19 +210,30 @@ export default function Theme() {
       </Grid>
       <Grid
         container
-        spacing={4}
-        columns={12}
-        direction="column"
-        sx={{ padding: "20px 30px", paddingBottom: 4, boxSizing: "border-box" }}
+        sx={{
+          direction: "column",
+          display: "flex",
+          margin: 0,
+          justifyContent: "space-around",
+          boxSizing: "border-box",
+          padding: 1,
+          mt: 2,
+        }}
       >
         <Typography
           variant="h4"
-          sx={{ display: "block", fontFamily: "Raleway, sans-serif" }}
+          sx={{
+            display: "block",
+            fontFamily: "Raleway, sans-serif",
+            width: "100%",
+          }}
         >
           Poruke
         </Typography>
 
-        <Box
+        <Grid
+          item
+          xs={12}
           sx={{
             boxSizing: "border-box",
             border: "1px solid",
@@ -227,29 +241,57 @@ export default function Theme() {
             borderRadius: "20px",
             position: "relative",
             margin: 0,
-            width: "85vw",
-            scrollbarWidth: "thin", // Za Firefox
-            scrollbarColor: "rgba(63, 78, 90, 0.3) rgba(0, 0, 0, 0.1)", // Za Firefox
+
+            padding: 0,
+            mb: 2,
           }}
         >
-          {" "}
           <Box
             sx={{
-              margin: "0 16px",
+              // margin: "0 16px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               overflow: "auto",
               height: "80vh",
               width: "100%",
+              margin: 0,
+              padding: 1,
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "primary.main", // Boja skrola
+                borderRadius: "8px",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                backgroundColor: "primary.dark", // Boja hvataljke na hover
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "transparent", // Prozirna pozadina skrola
+              },
             }}
           >
-            <ul
-              style={{
-                listStyleType: "none",
-                padding: 5, // Širi prozor za poruke
-
+            <Box
+              sx={{
+                // listStyleType: "none",
+                //padding: 5, // Širi prozor za poruke
+                padding:0,
+                px:2,
                 overflow: "auto",
+                "&::-webkit-scrollbar": {
+                  width: "8px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "primary.main", // Boja skrola
+                  borderRadius: "8px",
+                },
+                "&::-webkit-scrollbar-thumb:hover": {
+                  backgroundColor: "primary.dark", // Boja hvataljke na hover
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "transparent", // Prozirna pozadina skrola
+                },
               }}
             >
               {messages?.filter((message) => message.themeId === theme.id) &&
@@ -372,7 +414,7 @@ export default function Theme() {
                   Započnite razgovor.
                 </Typography>
               )}
-            </ul>
+            </Box>
           </Box>
           <Box
             sx={{
@@ -424,7 +466,7 @@ export default function Theme() {
               Pošalji
             </Button>
           </Box>
-        </Box>
+        </Grid>
       </Grid>
     </Grid>
   );

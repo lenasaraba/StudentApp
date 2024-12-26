@@ -12,9 +12,11 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme }) => {
     <Card sx={{ margin: 2 }}>
       <CardContent>
         {/* Naslov teme */}
-        <Typography variant="h6" gutterBottom  component={Link} to={`/forum/${theme.id}`} sx={{textDecoration: "none", 
+        <Typography variant="h6" gutterBottom  component={Link} to={`/forum/${theme.id}`} sx={{textDecoration: "none", color: "primary.main",
                               "&:visited": {
                                 color: "primary.main",
+                              },"&:hover": {
+                                color: "text.primary",
                               },}}>
           {theme.title}
         </Typography>
