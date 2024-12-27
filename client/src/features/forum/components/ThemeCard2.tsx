@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Avatar, Box } from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 import { Theme } from "../../../app/models/theme";
 import { Link } from "react-router-dom";
 
@@ -6,9 +6,25 @@ interface ThemeCardProps {
   theme: Theme;
 }
 
-export default function ThemeCard({ theme }: ThemeCardProps) {
+export default function ThemeCard2({ theme }: ThemeCardProps) {
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", width: "100%", padding: 0 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        width: "100%",
+        padding: 0,
+        "&:visited": {
+          color: "text.primary", // Zadrži istu boju za visited linkove
+        },
+        "&:hover": {
+          color: "primary.main", // Zadrži istu boju pri hover-u
+        },
+        "&:active": {
+          color: "text.primary", // Zadrži istu boju pri aktivnom linku
+        },
+      }}
+    >
       <Card
         component={Link}
         to={`/forum/${theme.id}`}
@@ -42,23 +58,7 @@ export default function ThemeCard({ theme }: ThemeCardProps) {
             margin: 0,
           }}
         >
-          <Avatar
-            sx={{
-              textAlign: "center",
-              bgcolor: "primary.main",
-              height: 70,
-              width: 70,
-              margin: 0,
-            }}
-          >
-            <Box sx={{ textAlign: "center", fontSize: "25pt", margin: 0 }}>
-              {theme.title.charAt(0).toUpperCase()}
-            </Box>
-          </Avatar>
-
           <Typography
-            component={Link}
-            to={`/forum/${theme.id}`}
             sx={{
               textAlign: "center",
               fontWeight: "bold",

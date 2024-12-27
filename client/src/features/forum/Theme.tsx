@@ -276,8 +276,8 @@ export default function Theme() {
               sx={{
                 // listStyleType: "none",
                 //padding: 5, // Širi prozor za poruke
-                padding:0,
-                px:2,
+                padding: 0,
+                px: 2,
                 overflow: "auto",
                 "&::-webkit-scrollbar": {
                   width: "8px",
@@ -349,7 +349,7 @@ export default function Theme() {
                             >
                               <span>
                                 {message.user.firstName} {message.user.lastName}
-                                {message.user.email === user?.email && (
+                                {theme.user.email === message.user.email && (
                                   <span
                                     style={{
                                       color: "primary.main",
@@ -416,56 +416,58 @@ export default function Theme() {
               )}
             </Box>
           </Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              marginTop: "auto", // Gura input na dno
-              padding: 2,
-              // position: "sticky", // Dodajte ovo za "zalijepljeni" efekat
-              bottom: 0, // Zalijepite dno
-              width: "100%",
-              backgroundColor: "background.paper",
-              borderRadius: "0 0 20px 20px",
-            }}
-          >
-            <TextField
-              fullWidth
-              placeholder="Unesite poruku..."
-              variant="outlined"
-              size="small"
-              sx={{ marginRight: 2 }}
-              value={messageContent}
-              onChange={(e) => setMessageContent(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ textTransform: "none" }}
-              onClick={() => {
-                const localDate = new Date();
-                const offset = localDate.getTimezoneOffset();
-
-                const adjustedDate = new Date(
-                  localDate.getTime() - offset * 60000
-                );
-
-                const newMessage = {
-                  content: messageContent,
-                  themeId: theme.id,
-                  creationDate: adjustedDate.toISOString(),
-                  user: user!,
-                };
-                dispatch(createMessage(newMessage)).then(() => {
-                  dispatch(fetchMessagesAsync());
-                  dispatch(fetchThemesAsync());
-                });
-                setMessageContent(""); // Resetuj polje za unos
+          {user && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                marginTop: "auto", // Gura input na dno
+                padding: 2,
+                // position: "sticky", // Dodajte ovo za "zalijepljeni" efekat
+                bottom: 0, // Zalijepite dno
+                width: "100%",
+                backgroundColor: "background.paper",
+                borderRadius: "0 0 20px 20px",
               }}
             >
-              Pošalji
-            </Button>
-          </Box>
+              <TextField
+                fullWidth
+                placeholder="Unesite poruku..."
+                variant="outlined"
+                size="small"
+                sx={{ marginRight: 2 }}
+                value={messageContent}
+                onChange={(e) => setMessageContent(e.target.value)}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ textTransform: "none" }}
+                onClick={() => {
+                  const localDate = new Date();
+                  const offset = localDate.getTimezoneOffset();
+
+                  const adjustedDate = new Date(
+                    localDate.getTime() - offset * 60000
+                  );
+
+                  const newMessage = {
+                    content: messageContent,
+                    themeId: theme.id,
+                    creationDate: adjustedDate.toISOString(),
+                    user: user!,
+                  };
+                  dispatch(createMessage(newMessage)).then(() => {
+                    dispatch(fetchMessagesAsync());
+                    dispatch(fetchThemesAsync());
+                  });
+                  setMessageContent(""); // Resetuj polje za unos
+                }}
+              >
+                Pošalji
+              </Button>
+            </Box>
+          )}
         </Grid>
       </Grid>
     </Grid>
