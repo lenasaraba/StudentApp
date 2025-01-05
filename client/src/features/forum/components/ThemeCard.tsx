@@ -57,8 +57,6 @@ export default function ThemeCard({ theme }: ThemeCardProps) {
           </Avatar>
 
           <Typography
-            component={Link}
-            to={`/forum/${theme.id}`}
             sx={{
               textAlign: "center",
               fontWeight: "bold",
