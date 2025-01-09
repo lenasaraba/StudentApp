@@ -8,6 +8,14 @@ export interface Theme {
   messages: Message[];
 }
 
+export interface CreateTheme {
+  title: string;
+  description: string;
+  date: string;
+
+  courseId?: number;
+}
+
 export interface Message {
   content: string;
   creationDate: string;

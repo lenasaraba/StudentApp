@@ -43,6 +43,7 @@ const Professor = {
 
 const Theme = {
   getAll: () => requests.get("theme/GetAllThemes"),
+  create: (values: any) => requests.post("theme/CreateTheme", values),
 };
 const Message = {
   getAll: () => requests.get("theme/GetAllMessages"),

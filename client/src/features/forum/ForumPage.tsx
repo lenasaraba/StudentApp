@@ -1,26 +1,16 @@
-import {
-  Box,
-  Divider,
-  Grid,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Divider, Grid, Typography, Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { fetchThemesAsync } from "./themeSlice";
 import { Fragment, useEffect, useState } from "react";
 import ThemeCard from "./components/ThemeCard";
 import ThemeCard2 from "./components/ThemeCard2";
 import forum from "../../assets/forum.png";
-import {
-  useForm,
-  FormProvider,
-} from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./forumpageValidation";
 import ForumForm from "./ForumForm";
 
 export default function ForumPage() {
-
   let methods = useForm({
     mode: "all",
     resolver: yupResolver(validationSchema),
@@ -34,7 +24,7 @@ export default function ForumPage() {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false); // Zatvori modal
+  // const handleClose = () => setOpen(false); // Zatvori modal
 
   //PRIJEDLOG:
   //DA BUDE I OVDJE KAO NA FORUMU POCETNA NEKA, A ONDA DA IMA KAO SVE TEME, STRANICE I TO, I TEME KOJE JE TAJ KORISNIK KREIRAO
@@ -48,9 +38,6 @@ export default function ForumPage() {
     .slice(0, 7);
   const firstFourThemes = topThemes.slice(0, 4); // Prvih 4 elementa
   const lastThreeThemes = topThemes.slice(-3);
-
-
-  
 
   return (
     <FormProvider {...methods}>
@@ -213,9 +200,7 @@ export default function ForumPage() {
           >
             Započni svoju temu
           </Button>
-          <ForumForm open={open} handleClose={handleClose} methods={methods}/>
-
-
+          <ForumForm open={open} setOpen={setOpen} />
         </Box>
       </Grid>
     </FormProvider>

@@ -1,3 +1,4 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import { LoadingButton } from "@mui/lab";
 import {
   Modal,
@@ -10,21 +11,75 @@ import {
   MenuItem,
   Select,
   FormHelperText,
+  Button,
 } from "@mui/material";
-import { useState } from "react";
-import { Controller, useForm, useFormContext } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import { validationSchema } from "./forumpageValidation";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import Theme from "./Theme";
+import { createThemeAsync } from "./themeSlice";
+import { useNavigate } from "react-router-dom";
 
-export default function ForumForm({ open, handleClose, methods }) {
-  const { control, formState, handleSubmit, setValue, clearErrors, trigger } =
-    methods; // Koristite methods iz roditeljskog komponenta
-  const [loading, setLoading] = useState(false);
+interface ForumFormProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
+
+export default function ForumForm({ open, setOpen }: ForumFormProps) {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const courses = useAppSelector((state) => state.course.courses);
+
   const [isFreeTopic, setIsFreeTopic] = useState(false);
+  const methods = useForm({
+    mode: "all",
+    resolver: yupResolver(validationSchema(isFreeTopic)),
+  });
 
-  const onSubmit = (data) => {
+  const { control, setValue, clearErrors, trigger, register } = methods; // Koristite methods iz roditeljskog komponenta
+  const [loading, setLoading] = useState(false);
+  const onSubmit = async (data: FieldValues) => {
     console.log(data);
-    console.log(methods.getValues); // Pristup podacima iz forme
+    const localDate = new Date();
+    const offset = localDate.getTimezoneOffset();
+
+    const adjustedDate = new Date(localDate.getTime() - offset * 60000);
+    const newTheme = {
+      title: data.title,
+      description: data.description,
+      date: adjustedDate.toISOString(),
+      courseId: data.courseId,
+    };
+    console.log(newTheme);
+    const resultAction = await dispatch(createThemeAsync(newTheme));
+
+    if (createThemeAsync.fulfilled.match(resultAction)) {
+      // Preusmeravanje nakon uspešnog kreiranja teme
+      //console.log(resultAction.payload);
+      navigate(`/forum/${resultAction.payload.id}`);
+    } else {
+      console.error("Failed to create theme:", resultAction.payload);
+    }
   };
 
+  useEffect(() => {
+    // Kada se promeni isFreeTopic, restartujemo validaciju
+    trigger();
+  }, [isFreeTopic, trigger]);
+
+  useEffect(() => {
+    if (open) {
+      methods.reset();
+    }
+  }, [open, methods]);
+
+  const handleClose = () => {
+    setOpen(false);
+    setIsFreeTopic(false);
+    // methods.reset();
+  };
+  // console.log(isFreeTopic);
   return (
     <Modal open={open} onClose={handleClose}>
       <form
@@ -62,6 +117,9 @@ export default function ForumForm({ open, handleClose, methods }) {
                   label="Naziv"
                   variant="outlined"
                   fullWidth
+                  {...register("title", {
+                    required: "Title is required.",
+                  })}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message || ""}
                 />
@@ -73,6 +131,7 @@ export default function ForumForm({ open, handleClose, methods }) {
             <Controller
               name="description"
               control={control}
+              defaultValue=""
               render={({ field, fieldState }) => (
                 <TextField
                   {...field}
@@ -83,34 +142,48 @@ export default function ForumForm({ open, handleClose, methods }) {
                   rows={4}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message || ""}
+                  {...register("description", {
+                    required: "description is required.",
+                  })}
                 />
               )}
             />
           </Grid>
           <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isFreeTopic}
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    setIsFreeTopic(isChecked);
-                    console.log(
-                      "----------------A----------A--------------A------------"
-                    );
-                    console.log(methods.formState);
-                    if (isChecked) {
-                      setValue("courseId", "");
-                      clearErrors("courseId");
-                    } else {
-                      setValue("courseId", "", { shouldValidate: true });
-                      trigger();
-                    }
-                  }}
-                  color="primary"
+            <Controller
+              // defaultValue={isFreeTopic}
+              name="freeTopic"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      {...field}
+                      name="freeTopic"
+                      checked={isFreeTopic}
+                      value={isFreeTopic}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setIsFreeTopic(isChecked);
+                        // console.log(
+                        //   "----------------A----------A--------------A------------"
+                        // );
+                        // console.log(methods.formState);
+                        if (isChecked) {
+                          setValue("courseId", "0");
+                          clearErrors("courseId");
+                        } else {
+                          setValue("courseId", "0", { shouldValidate: true });
+                          trigger();
+                        }
+                        setValue("freeTopic", isChecked);
+                      }}
+                      color="primary"
+                    />
+                  }
+                  label="Slobodna tema"
                 />
-              }
-              label="Slobodna tema"
+              )}
             />
           </Grid>
           {/* Kurs */}
@@ -127,10 +200,10 @@ export default function ForumForm({ open, handleClose, methods }) {
                       {...field}
                       labelId="courseId-label"
                       label="Kurs"
-                      value={field.value || ""}
+                      value={field.value || "0"}
                       error={!!fieldState.error}
                       onChange={(e) => {
-                        setValue("courseId", e.target.value || "", {
+                        setValue("courseId", e.target.value || "0", {
                           shouldValidate: true,
                         });
                         if (fieldState.error) {
@@ -138,15 +211,24 @@ export default function ForumForm({ open, handleClose, methods }) {
                         }
                         trigger();
                       }}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 200,
+                            overflowY: "auto",
+                          },
+                        },
+                      }}
                     >
-                      <MenuItem value="">Nema kursa</MenuItem>
-                      <MenuItem value={1}>Kurs 1</MenuItem>
-                      <MenuItem value={2}>Kurs 2</MenuItem>
-                      <MenuItem value={3}>Kurs 3</MenuItem>
-                      {/* Dodaj ovde ostale kurseve prema potrebi */}
+                      <MenuItem value={0}>Nema kursa</MenuItem>
+                      {courses?.map((course) => (
+                        <MenuItem key={course.id} value={course.id}>
+                          {course.name}
+                        </MenuItem>
+                      ))}
                     </Select>
                     {fieldState.error && (
-                      <FormHelperText sx={{color:'red'}}>
+                      <FormHelperText sx={{ color: "error.main" }}>
                         {fieldState.error?.message || "Greška u izboru kursa"}
                       </FormHelperText>
                     )}
@@ -157,7 +239,12 @@ export default function ForumForm({ open, handleClose, methods }) {
           </Grid>
 
           {/* Dugme za submit */}
-          <Grid item xs={12} sx={{ display: "flex", justifyContent: "center" }}>
+          <Grid
+            item
+            xs={12}
+            sx={{ display: "flex", justifyContent: "space-evenly" }}
+          >
+            <Button onClick={handleClose}>Odustani</Button>
             <LoadingButton
               loading={loading}
               disabled={!methods.formState.isValid}
@@ -165,7 +252,7 @@ export default function ForumForm({ open, handleClose, methods }) {
               variant="contained"
               color="primary"
             >
-              Pošaljite
+              Pošalji
             </LoadingButton>
           </Grid>
         </Grid>

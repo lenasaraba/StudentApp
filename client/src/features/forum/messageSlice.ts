@@ -25,6 +25,7 @@ export const createMessage = createAsyncThunk<Message[], Message>(
   "messages/createMessage",
   async (newMessage, { rejectWithValue }) => {
     try {
+      console.log(newMessage);
       const response = await agent.Message.createMessage(newMessage);
       return response.data; // Ovo vraća listu poruka sa servera
     } catch (error: unknown) {

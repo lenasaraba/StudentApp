@@ -108,7 +108,7 @@ export default function Theme() {
 
         {theme.course && <Divider sx={{ marginY: 2 }} />}
         <Grid item xs={6} sx={{ padding: 1 }}>
-          {theme.course && (
+          {theme.course ? (
             <CardContent
               sx={{
                 border: "1px solid",
@@ -204,6 +204,29 @@ export default function Theme() {
               >
                 Idi na kurs
               </Button>
+            </CardContent>
+          ) : (
+            <CardContent
+              sx={{
+                border: "1px solid",
+                borderRadius: "20px",
+                borderColor: "primary.main",
+                height: "100%",
+                padding: 0,
+                pt: 3,
+                px: 2,
+              }}
+            >
+              <Typography
+                variant="button"
+                sx={{ fontSize: "10pt", fontWeight: "bold" }}
+              >
+                Kategorija
+              </Typography>
+              <Divider />
+              <Typography variant="body1" sx={{ mt: 2, fontSize: "16pt" }}>
+                Slobodna tema
+              </Typography>{" "}
             </CardContent>
           )}
         </Grid>
