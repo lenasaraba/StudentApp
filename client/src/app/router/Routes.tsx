@@ -12,6 +12,7 @@ import RequireAuth from "../components/RequireAuth";
 import ProfilePage from "../../features/profile/ProfilePage";
 import ForumPage from "../../features/forum/ForumPage";
 import Theme from "../../features/forum/Theme";
+import Themes from "../../features/forum/Themes";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
           {
             path: "forum/:id",
             element: <Theme />,
+          },
+          {
+            path: "themes",
+            element: <Themes />, // Komponenta koja prikazuje teme
           },
         ],
       },

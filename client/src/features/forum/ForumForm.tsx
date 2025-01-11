@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { validationSchema } from "./forumpageValidation";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
-import Theme from "./Theme";
+// import Theme from "./Theme";
 import { createThemeAsync } from "./themeSlice";
 import { useNavigate } from "react-router-dom";
 

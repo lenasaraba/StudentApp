@@ -9,12 +9,14 @@ import { useForm, FormProvider } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./forumpageValidation";
 import ForumForm from "./ForumForm";
+import ForumAppBar from "./components/ForumAppBar";
 
 export default function ForumPage() {
-  let methods = useForm({
+  const methods = useForm({
     mode: "all",
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema(true)),
   });
+  //OVO TRUE SAM DODALA DA NE CRVENI
 
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -31,6 +33,10 @@ export default function ForumPage() {
   //POCETNA FINO DA SE UREDI
   //TEMPLEJT ZA FORUM NA TEAMSU
   //POGLEDATI KURS I RADITI SVE STO SE TICE UPLOADA, I NA KURS I NA FORUM
+
+  //DODATI MOZDA UPLOAD FAJLOVA U PORUKU NA FORUMU, 
+  // KAO AKO IMAJU NEKO PITANJE ZA NEKI FAJL 
+
 
   const newArray = [...(themes || [])];
   const topThemes = newArray
@@ -71,6 +77,7 @@ export default function ForumPage() {
             Postavljajte pitanja ili potražite temu koja vam je potrebna.
           </Typography>
         </Grid>
+        <ForumAppBar />
 
         <Box
           component="fieldset"

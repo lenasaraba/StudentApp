@@ -46,7 +46,7 @@ export default function CourseList() {
         dispatch(setCoursesParams({ searchTerm: event.target.value }));
         dispatch(fetchCoursesAsync());
       }, 1000),
-    [dispatch] // Zavisi samo od dispatch-a
+    [dispatch] // Zavisi samo od dispatch-ap
   );
 
   const allCourses = useAppSelector((state) => state.course.courses);

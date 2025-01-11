@@ -15,6 +15,6 @@ namespace API.Entities
         public int CourseId { get; set; } 
         public Course? Course { get; set; }
         public DateTime EnrollDate { get; set; }
-        public DateTime WithdrawDate { get; set; }
+        public DateTime? WithdrawDate { get; set; }
     }
 }

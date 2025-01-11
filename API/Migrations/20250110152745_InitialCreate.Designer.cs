@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20241215183401_InitialCreate")]
+    [Migration("20250110152745_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -201,7 +201,7 @@ namespace API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("WithdrawDate")
+                    b.Property<DateTime?>("WithdrawDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -311,6 +311,9 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("CourseId")
                         .HasColumnType("int");
@@ -430,7 +433,7 @@ namespace API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("WithdrawDate")
+                    b.Property<DateTime?>("WithdrawDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

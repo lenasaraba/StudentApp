@@ -6,6 +6,7 @@ export interface Theme {
   user: User;
   course: Course;
   messages: Message[];
+  active: string;
 }
 
 export interface CreateTheme {
@@ -54,4 +55,14 @@ export interface User {
   token: string;
   firstName: string;
   lastName: string;
+}
+
+export interface ThemesParams {
+  // orderBy: string;
+  searchTerm?: string;
+  themeStatus?: string;
+  category?: string;
+  type: string;
+  // pageNumber:number
+  // pageSize:number
 }

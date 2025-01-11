@@ -1,3 +1,74 @@
 Latest.tsx -- mozda za forum
                 
-                
+                // function RowMenu() {
+//   return (
+//     <Dropdown>
+//       <MenuButton
+//         slots={{ root: IconButton }}
+//         slotProps={{ root: { variant: "plain", color: "neutral", size: "sm" } }}
+//       >
+//         <MoreHorizRoundedIcon />
+//       </MenuButton>
+//       <Menu size="sm" sx={{ minWidth: 140 }}>
+//         <MenuItem>Edit</MenuItem>
+//         <MenuItem>Rename</MenuItem>
+//         <MenuItem>Move</MenuItem>
+//         <Divider />
+//         <MenuItem color="danger">Delete</MenuItem>
+//       </Menu>
+//     </Dropdown>
+//   );
+// }
+
+
+
+
+<th style={{ textAlign: "center", padding: 1 }}>
+                <Checkbox
+                  size="sm"
+                  indeterminate={
+                    selected.length > 0 && selected.length !== allThemes!.length
+                  }
+                  checked={selected.length === allThemes!.length}
+                  onChange={(event) => {
+                    setSelected(
+                      event.target.checked
+                        ? allThemes!.map((row) => row.id.toString())
+                        : []
+                    );
+                  }}
+                  color={
+                    selected.length > 0 || selected.length === allThemes!.length
+                      ? "primary"
+                      : undefined
+                  }
+                  sx={{ verticalAlign: "text-bottom" }}
+                />
+              </th>
+
+
+
+
+<td style={{ textAlign: "center", width: 120 }}>
+                    <Checkbox
+                      size="sm"
+                      checked={selected.includes(theme.id.toString())}
+                      color={
+                        selected.includes(theme.id.toString())
+                          ? "primary"
+                          : undefined
+                      }
+                      onChange={(event) => {
+                        setSelected((ids) =>
+                          event.target.checked
+                            ? ids.concat(theme.id.toString())
+                            : ids.filter(
+                                (itemId) =>
+                                  itemId.toString() !== theme.id.toString()
+                              )
+                        );
+                      }}
+                      slotProps={{ checkbox: { sx: { textAlign: "left" } } }}
+                      sx={{ verticalAlign: "text-bottom" }}
+                    />
+                  </td>

@@ -10,6 +10,7 @@ namespace API.DTOs
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
+        public bool Active { get; set; }
         public DateTime Date { get; set; }
         public UserDto User { get; set; } = default!; // Obavezno, jer uvek vraćaš korisnika koji je kreirao temu
         public GetThemeCourseDto? Course { get; set; } 

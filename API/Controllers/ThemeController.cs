@@ -1,6 +1,7 @@
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.RequestHelpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,19 +23,90 @@ namespace API.Controllers
         }
 
         [HttpGet("GetAllThemes")]
-        public async Task<ActionResult<List<GetThemeDto>>> GetAllThemes()
+        public async Task<ActionResult<List<GetThemeDto>>> GetAllThemes([FromQuery] ThemeParams themeParams)
         {
-            var themes = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m=>m.Messages).ThenInclude(u=>u.User).Include(c => c.Course).ThenInclude(p=>p.ProfessorsCourse).ThenInclude(u=>u.User).ToListAsync();
 
+            var query = _context.Themes.Include(u => u.User)
+            .Include(c => c.Course).ThenInclude(y => y.Year)
+            .Include(c => c.Course).ThenInclude(s => s.StudyProgram)
+            .Include(m => m.Messages).ThenInclude(u => u.User)
+            .Include(c => c.Course).ThenInclude(p => p.ProfessorsCourse)
+            .ThenInclude(u => u.User).AsQueryable();
+            //var themes = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m=>m.Messages).ThenInclude(u=>u.User).Include(c => c.Course).ThenInclude(p=>p.ProfessorsCourse).ThenInclude(u=>u.User).ToListAsync();
+
+            if (themeParams.Type == "my")
+            {
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                query = _context.Themes.Where(c => c.User.Email == user!.Email)
+           .Include(u => u.User)
+            .Include(c => c.Course).ThenInclude(y => y.Year)
+            .Include(c => c.Course).ThenInclude(s => s.StudyProgram)
+            .Include(m => m.Messages).ThenInclude(u => u.User)
+            .Include(c => c.Course).ThenInclude(p => p.ProfessorsCourse)
+            .ThenInclude(u => u.User).AsQueryable();
+            }
+            // Filtriranje prema searchTerm
+            if (!string.IsNullOrEmpty(themeParams.SearchTerm))
+            {
+                query = query.Where(t =>
+                    t.Title.Contains(themeParams.SearchTerm) ||
+                    t.Description!.Contains(themeParams.SearchTerm));
+            }
+            if (themeParams.ThemeStatus != "Sve")
+            {
+                if (themeParams.ThemeStatus == "Aktivno")
+                {
+                    query = query.Where(t => t.Active == true);
+                }
+                else if (themeParams.ThemeStatus == "Završeno")
+                {
+                    query = query.Where(t => t.Active == false);
+                }
+            }
+
+
+            // Filtriranje prema kategoriji
+            if (themeParams.Category == "freetopic")
+            {
+                query = query.Where(t =>
+                    t.Course == null);
+            }
+            else if (themeParams.Category != "all" && !string.IsNullOrEmpty(themeParams.Category))
+            {
+                query = query.Where(t => t.Course!.Name == themeParams.Category); // Teme sa specifičnim kursom
+            }
+
+            var themes = await query.ToListAsync();
             return themes.Select(c => _mapper.Map<GetThemeDto>(c)).ToList();
         }
 
         [HttpGet("GetTheme")]
         public async Task<ActionResult<GetThemeDto>> GetTheme(int id)
         {
-            var theme = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m=>m.Messages).ThenInclude(u=>u.User).Include(c => c.Course).ThenInclude(p=>p.ProfessorsCourse).ThenInclude(u=>u.User).FirstOrDefaultAsync(t=>t.Id==id);
+            var theme = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m => m.Messages).ThenInclude(u => u.User).Include(c => c.Course).ThenInclude(p => p.ProfessorsCourse).ThenInclude(u => u.User).FirstOrDefaultAsync(t => t.Id == id);
 
             return _mapper.Map<GetThemeDto>(theme);
+        }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            var categories = await _context.Themes
+                    .Select(t => t.Course == null ? "freetopic" : t.Course.Name)
+                    .Distinct()
+                    .ToListAsync();
+
+            // Dodavanje "SVE" na početak liste
+            categories.Insert(0, "Sve");
+            var activeStatus = await _context.Themes
+                        .Select(t => t.Active ? "Aktivno" : "Zatvoreno")
+                        .Distinct()
+                        .ToListAsync();
+
+            activeStatus.Insert(0, "Sve");
+
+
+            return Ok(new { categories, activeStatus });
         }
 
         [Authorize]
@@ -47,19 +119,23 @@ namespace API.Controllers
 
             //POGLEDATI
             theme.User = user;
-            if(newTheme.CourseId!=0){
-            var course = await _context.Courses. Include(y => y.Year)
-            .Include(s => s.StudyProgram)
-            .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
-            .Include(c => c.UsersCourse)
-            .Include(t => t.Themes).FirstOrDefaultAsync(c => c.Id == newTheme.CourseId);
-            if (course != null)
+            if (newTheme.CourseId != 0)
             {
-                theme.Course = course;
-                theme.CourseId = newTheme.CourseId;
-            }}
+                var course = await _context.Courses.Include(y => y.Year)
+                .Include(s => s.StudyProgram)
+                .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
+                .Include(c => c.UsersCourse)
+                .Include(t => t.Themes).FirstOrDefaultAsync(c => c.Id == newTheme.CourseId);
+                if (course != null)
+                {
+                    theme.Course = course;
+                    theme.CourseId = newTheme.CourseId;
+                }
+            }
             else
-                theme.CourseId=null;
+                theme.CourseId = null;
+
+            theme.Active = true;
 
             //nema poente jer themeDto nema kurs (ne dozvoljava jer i kurs ima teme pa se pravi ciklus)
             //nekako ucitati kurs ako postoji?
@@ -67,8 +143,8 @@ namespace API.Controllers
             _context.Themes.Add(theme);
             await _context.SaveChangesAsync();
             // var themes = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m=>m.Messages).ThenInclude(u=>u.User);
-            var themeDto=_mapper.Map<GetThemeDto>(theme);
-            return CreatedAtAction(nameof(GetTheme), new{id=themeDto.Id}, themeDto);
+            var themeDto = _mapper.Map<GetThemeDto>(theme);
+            return CreatedAtAction(nameof(GetTheme), new { id = themeDto.Id }, themeDto);
 
         }
 
@@ -93,7 +169,7 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
 
 
-            var messages = await _context.Messages.Include(u => u.User).Include(t=>t.Theme).ToListAsync();
+            var messages = await _context.Messages.Include(u => u.User).Include(t => t.Theme).ToListAsync();
 
             return messages.Select(c => _mapper.Map<GetMessageDto>(c)).ToList();
         }
@@ -101,7 +177,7 @@ namespace API.Controllers
         [HttpGet("GetAllMessages")]
         public async Task<ActionResult<List<GetMessageDto>>> GetAllMessages()
         {
-            var messages = await _context.Messages.Include(u => u.User).Include(t=>t.Theme).ToListAsync();
+            var messages = await _context.Messages.Include(u => u.User).Include(t => t.Theme).ToListAsync();
 
             return messages.Select(c => _mapper.Map<GetMessageDto>(c)).ToList();
         }
