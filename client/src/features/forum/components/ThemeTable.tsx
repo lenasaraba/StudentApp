@@ -1,5 +1,5 @@
 // /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ColorPaletteProp } from "@mui/joy/styles";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
@@ -11,18 +11,7 @@ import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import Table from "@mui/joy/Table";
 import Sheet from "@mui/joy/Sheet";
-import Checkbox from "@mui/joy/Checkbox";
-import {
-  debounce,
-  Grid,
-  Paper,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-} from "@mui/material";
+import { debounce, TableBody, Theme } from "@mui/material";
 import { Typography as MuiTypo } from "@mui/material";
 
 import { Link as JoyLink } from "@mui/joy";
@@ -41,6 +30,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchFilters, fetchThemesAsync, setThemesParams } from "../themeSlice";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 
+import MenuItem from "@mui/material/MenuItem";
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -64,10 +54,12 @@ function getComparator<Key extends keyof never>(
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
-
-export default function ThemeTable() {
+interface ThemeTableProps {
+  theme: Theme; // Define the 'theme' prop type
+}
+export default function ThemeTable({ theme }: ThemeTableProps) {
   const [order, setOrder] = useState<Order>("desc");
-  const [selected, setSelected] = useState<readonly string[]>([]);
+  // const [selected, setSelected] = useState<readonly string[]>([]);
   //const [open, setOpen] = React.useState(false);
   const dispatch = useAppDispatch();
 
@@ -77,14 +69,17 @@ export default function ThemeTable() {
   const { themeStatus, category, filtersLoaded, themesParams, themesLoaded } =
     useAppSelector((state) => state.theme);
 
-  console.log(themeStatus);
-  console.log(category);
+  // console.log(themeStatus);
+  // console.log(category);
 
   const [searchTerm, setSearchTerm] = useState(themesParams.searchTerm);
 
   const debouncedSearch = useMemo(
     () =>
       debounce((event: any) => {
+        // console.log(
+        //   "-----------------------------------------------" + event.target.value
+        // );
         dispatch(setThemesParams({ searchTerm: event.target.value }));
         dispatch(fetchThemesAsync());
       }, 1000),
@@ -94,6 +89,7 @@ export default function ThemeTable() {
   const allThemes = useAppSelector((state) => state.theme.themes);
 
   useEffect(() => {
+    console.log(themesType);
     dispatch(setThemesParams({ type: themesType }));
     dispatch(fetchThemesAsync());
   }, [themesType, dispatch]);
@@ -123,32 +119,94 @@ export default function ThemeTable() {
 
   if (!filtersLoaded) return <LoadingComponent message="Učitavanje tema..." />;
 
-  console.log({ themeStatus });
+  // console.log({ themeStatus });
   const renderFilters = () => (
     <>
       <FormControl size="sm">
-        <FormLabel>Status</FormLabel>
+        <FormLabel sx={{ color: theme.palette.primary.main }}>Status</FormLabel>
         <Select
           size="sm"
           placeholder="Status"
           slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
+          onChange={(event, value) => {
+            // console.log("Selected value:", value);
+            dispatch(setThemesParams({ themeStatus: value }));
+            dispatch(fetchThemesAsync());
+          }}
+          sx={{
+            backgroundColor: theme.palette.background.paper,
+            borderColor: theme.palette.background.default,
+            color: theme.palette.primary.main,
+
+            "&:hover": {
+              backgroundColor: theme.palette.action.hover, // Hover effect on the select button
+            },
+            "&.Mui-focused": {
+              borderColor: theme.palette.primary.main, // Focus state for the select component
+            },
+          }}
         >
           {themeStatus &&
             themeStatus.length > 0 &&
             themeStatus.map((status, index) => (
-              <Option key={index} value={status}>
+              <Option
+                key={index}
+                value={status}
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  color: theme.palette.primary.main,
+                }}
+              >
                 {status}
               </Option>
             ))}
         </Select>
       </FormControl>
       <FormControl size="sm">
-        <FormLabel>Kategorija</FormLabel>
-        <Select size="sm" placeholder="Kategorija">
+        <FormLabel sx={{ color: theme.palette.primary.main }}>
+          Kategorija
+        </FormLabel>
+        <Select
+          size="sm"
+          placeholder="Kategorija"
+          onChange={(event, value) => {
+            console.log("Selected category:", value);
+            dispatch(setThemesParams({ category: value }));
+            dispatch(fetchThemesAsync());
+          }}
+          sx={{
+            backgroundColor: theme.palette.background.paper,
+            borderColor: theme.palette.background.default,
+            color: theme.palette.primary.main,
+
+            "&:hover": {
+              backgroundColor: theme.palette.action.hover, // Hover effect on the select button
+            },
+            "&.Mui-focused": {
+              borderColor: theme.palette.primary.main, // Focus state for the select component
+            },
+          }}
+          slotProps={{
+            listbox: {
+              sx: {
+                maxHeight: "300px",
+                color: "red",
+              },
+            },
+          }}
+        >
           {category &&
             category.length > 0 &&
             category.map((cat, index) => (
-              <Option key={index} value={cat}>
+              <Option
+                key={index}
+                value={cat}
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  color: theme.palette.primary.main,
+                  "&:hover": { backgroundColor: "#f0f0f0" },
+                }}
+              >
                 {cat}
               </Option>
             ))}
@@ -172,11 +230,22 @@ export default function ThemeTable() {
         }}
       >
         <FormControl sx={{ flex: 1 }} size="sm">
-          <FormLabel>Pretraži prema ključnoj riječi</FormLabel>
+          <FormLabel sx={{ color: theme.palette.primary.main }}>
+            Pretraži prema ključnoj riječi
+          </FormLabel>
           <Input
             size="sm"
             placeholder="Pretraga.."
             startDecorator={<SearchIcon />}
+            onChange={(event: any) => {
+              setSearchTerm(event.target.value);
+              debouncedSearch(event);
+            }}
+            sx={{
+              backgroundColor: theme.palette.background.paper,
+              borderColor: theme.palette.background.default,
+              color: theme.palette.primary.main,
+            }}
           />
         </FormControl>
         {renderFilters()}
@@ -190,9 +259,11 @@ export default function ThemeTable() {
           width: "100%",
           borderRadius: "sm",
           flexShrink: 1,
-          overflow: "auto",
+          // overflow: "auto",
           minHeight: 0,
           mt: 2,
+          borderColor: theme.palette.background.paper,
+          backgroundColor: "transparent",
         }}
       >
         <Table
@@ -200,80 +271,175 @@ export default function ThemeTable() {
           stickyHeader
           hoverRow
           sx={{
-            "--TableCell-headBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableCell-headBackground": theme.palette.background.paper,
             "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableRow-hoverBackground": theme.palette.background.default,
             "--TableCell-paddingY": "8px",
             "--TableCell-paddingX": "12px",
+            backgroundColor: theme.palette.background.paper,
+            display: "block",
+            tableLayout: "fixed", // Dodajemo fixed layout za preciznije pozicioniranje
           }}
         >
-          <thead>
-            <tr>
-              <th style={{ padding: "12px 12px" }}>
+          <thead style={{ width: "100%", display: "flex" }}>
+            <tr
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between", // Koristimo space-between da rasporedimo sadržaj
+                alignItems: "center", // Osiguravamo da su stavke poravnate
+              }}
+            >
+              <th style={{ width: "25%", flex: 1 }}>
                 <JoyLink
                   underline="none"
                   color="primary"
                   component="button"
                   onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
                   endDecorator={<ArrowDropDownIcon />}
-                  sx={[
-                    {
-                      fontWeight: "lg",
-                      "& svg": {
-                        transition: "0.2s",
-                        transform:
-                          order === "desc" ? "rotate(0deg)" : "rotate(180deg)",
-                      },
+                  sx={{
+                    fontWeight: "lg",
+                    "& svg": {
+                      transition: "0.2s",
+                      transform:
+                        order === "desc" ? "rotate(0deg)" : "rotate(180deg)",
                     },
-                  ]}
+                    color: theme.palette.primary.main,
+                  }}
                 >
                   {order === "asc" ? "Najstarije" : "Najnovije"}
                 </JoyLink>
               </th>
-              <th style={{ padding: "12px 12px" }}>Datum</th>
-              <th style={{ padding: "12px 12px" }}>Status</th>
-              <th style={{ padding: "12px 12px" }}>Kreator</th>
+              <th
+                style={{
+                  // padding: "12px 12px",
+                  color: theme.palette.primary.main,
+                  width: "25%",
+                  flex: 1,
+                }}
+              >
+                Datum
+              </th>
+              <th
+                style={{
+                  // padding: "12px 12px",
+                  color: theme.palette.primary.main,
+                  width: "25%",
+                  flex: 1,
+                }}
+              >
+                Status
+              </th>
+              <th
+                style={{
+                  color: theme.palette.primary.main,
+                  width: "25%",
+                }}
+              >
+                Kreator
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <TableBody
+            sx={{
+              height: "52vh",
+              overflowY: "auto",
+              backgroundColor: theme.palette.background.default,
+              display: "block",
+              width: "100%",
+              "&::-webkit-scrollbar": {
+                width: "8px",
+              },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: theme.palette.background.paper, // Boja skrola
+                borderRadius: "8px",
+              },
+              "&::-webkit-scrollbar-thumb:hover": {
+                backgroundColor: theme.palette.primary.dark, // Boja hvataljke na hover
+              },
+              "&::-webkit-scrollbar-track": {
+                backgroundColor: "transparent", // Prozirna pozadina skrola
+              },
+            }}
+          >
             {allThemes &&
-              [...allThemes].sort(getComparator(order, "id")).map((theme) => (
-                <tr key={theme.id}>
-                  <td>
+              [...allThemes].sort(getComparator(order, "id")).map((theme1) => (
+                <tr
+                  key={theme1.id}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between", // Koristimo space-between da rasporedimo sadržaj
+                    alignItems: "center", // Osiguravamo da su stavke poravnate
+                    padding: "8px 0", // Povećavamo visinu redova za bolju vidljivost
+                  }}
+                >
+                  <td
+                    style={{
+                      padding: "0 12px",
+                      flex: 1,
+                      height: "fit-content",
+                      border: 0,
+                    }}
+                  >
                     <div>
                       <MuiTypo
                         component={Link}
-                        to={`../forum/${theme.id}`}
+                        to={`../forum/${theme1.id}`}
                         style={{
                           textDecoration: "none",
-                          color: "inherit",
+                          color: theme.palette.action.active,
                           cursor: "pointer",
                         }}
                       >
-                        {theme.title}
+                        {theme1.title}
                       </MuiTypo>
-                      <MuiTypo>{theme.description}</MuiTypo>
+                      <MuiTypo
+                        sx={{
+                          color: theme.palette.action.active,
+                        }}
+                      >
+                        {theme1.description}
+                      </MuiTypo>
                     </div>
                   </td>
-                  <td>
-                    {/* DATUM TREBA FINO UREDITI FORMAT */}
-
-                    <Typography level="body-xs">
-                      {new Date(theme.date).toLocaleTimeString("sr-RS", {
+                  <td
+                    style={{
+                      padding: "0 12px",
+                      flex: 1,
+                      height: "fit-content",
+                      border: 0,
+                    }}
+                  >
+                    <Typography
+                      level="body-xs"
+                      sx={{
+                        color: theme.palette.action.active,
+                      }}
+                    >
+                      {new Date(theme1.date).toLocaleTimeString("sr-RS", {
                         hour: "2-digit",
                         minute: "2-digit",
                         second: "2-digit",
-                      })}<span style={{color:'light'}}>{"  |  "}</span>
-                      {new Date(theme.date).toLocaleDateString("sr-RS", {
+                      })}
+                      <span style={{ color: "light" }}>{"  |  "}</span>
+                      {new Date(theme1.date).toLocaleDateString("sr-RS", {
                         day: "2-digit",
                         month: "2-digit",
                         year: "numeric",
                       })}
                     </Typography>
                   </td>
-                  <td>
+                  <td
+                    style={{
+                      padding: "0 12px",
+                      flex: 1,
+                      height: "fit-content",
+                      border: 0,
+                    }}
+                  >
                     <Chip
                       variant="soft"
                       size="sm"
@@ -281,36 +447,56 @@ export default function ThemeTable() {
                         {
                           true: <CheckRoundedIcon />,
                           false: <BlockIcon />,
-                        }[theme.active]
+                        }[theme1.active]
                       }
                       color={
                         {
                           true: "success",
                           false: "danger",
-                        }[theme.active] as ColorPaletteProp
+                        }[theme1.active] as ColorPaletteProp
                       }
                     >
-                      {theme.active ? "Aktivno" : "Završeno"}
+                      {theme1.active ? "Aktivno" : "Zatvoreno"}
                     </Chip>
                   </td>
-                  <td>
+                  <td
+                    style={{
+                      padding: "0 12px",
+                      flex: 1,
+                      height: "fit-content",
+                      border: 0,
+                    }}
+                  >
                     <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                      <Avatar size="sm">
-                        {theme.user.firstName.charAt(0).toUpperCase()}
+                      <Avatar
+                        size="sm"
+                        sx={{ bgcolor: theme.palette.primary.main }}
+                      >
+                        {theme1.user.firstName.charAt(0).toUpperCase()}
                       </Avatar>
                       <div>
-                        <Typography level="body-xs">
-                          {theme.user.firstName} {theme.user.lastName}
+                        <Typography
+                          level="body-xs"
+                          sx={{
+                            color: theme.palette.action.active,
+                          }}
+                        >
+                          {theme1.user.firstName} {theme1.user.lastName}
                         </Typography>
-                        <Typography level="body-xs">
-                          {theme.user.email}
+                        <Typography
+                          level="body-xs"
+                          sx={{
+                            color: theme.palette.action.active,
+                          }}
+                        >
+                          {theme1.user.email}
                         </Typography>
                       </div>
                     </Box>
                   </td>
                 </tr>
               ))}
-          </tbody>
+          </TableBody>
         </Table>
       </Sheet>
     </>

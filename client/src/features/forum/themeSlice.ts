@@ -43,6 +43,7 @@ function getAxiosParams(themesParams: ThemesParams) {
     params.append("searchTerm", themesParams.searchTerm.toString());
   if (themesParams.category)
     params.append("category", themesParams.category.toString());
+  if (themesParams.type) params.append("type", themesParams.type.toString());
   return params;
 }
 
@@ -52,7 +53,7 @@ export const fetchThemesAsync = createAsyncThunk<
   { state: RootState }
 >("theme/fetchThemesAsync", async (_, thunkAPI) => {
   const params = getAxiosParams(thunkAPI.getState().theme.themesParams);
-
+  console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" + params);
   try {
     const themes = await agent.Theme.getAll(params);
     thunkAPI.dispatch(setThemes(themes));
@@ -99,6 +100,7 @@ export const themeSlice = createSlice({
         ...state.themesParams,
         ...action.payload,
       };
+      console.log(state.themesParams);
     },
     resetThemesParams: (state) => {
       state.themesParams = initParams();
@@ -120,7 +122,6 @@ export const themeSlice = createSlice({
     });
     builder.addCase(fetchFilters.fulfilled, (state, action) => {
       console.log(action.payload);
-
       state.category = action.payload.categories;
       state.themeStatus = action.payload.activeStatus;
       state.status = "idle";

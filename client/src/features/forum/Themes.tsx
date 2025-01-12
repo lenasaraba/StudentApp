@@ -1,5 +1,4 @@
 import { CssVarsProvider } from "@mui/joy/styles";
-import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import Link from "@mui/joy/Link";
@@ -9,18 +8,17 @@ import ForumIcon from "@mui/icons-material/Forum";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
 import { useSearchParams } from "react-router-dom";
-import { useAppDispatch } from "../../app/store/configureStore";
 import ThemeTable from "./components/ThemeTable";
+import { useTheme } from "@mui/material";
 
 export default function Themes() {
   const [searchParams] = useSearchParams();
   const themesType = searchParams.get("type");
-  const dispatch = useAppDispatch();
-
+  const theme = useTheme();
   return (
     <CssVarsProvider disableTransitionOnChange>
-      <CssBaseline />
-      <Box sx={{ display: "flex"}}>
+      {/* <CssBaseline /> */}
+      <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
         <Box
           component="main"
           className="MainContent"
@@ -31,12 +29,13 @@ export default function Themes() {
               sm: "calc(12px + var(--Header-height))",
               md: 3,
             },
-            pb: { xs: 2, sm: 2, md: 3},
+            pb: { xs: 2, sm: 2, md: 3 },
             flex: 1,
             display: "flex",
             flexDirection: "column",
             minWidth: 0,
             gap: 1,
+            backgroundColor: theme.palette.background.default,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -74,11 +73,19 @@ export default function Themes() {
               justifyContent: "space-between",
             }}
           >
-            <Typography level="h2" component="h1" sx={{p:0, m:0}}>
+            <Typography
+              level="h2"
+              component="h1"
+              sx={{
+                p: 0,
+                m: 0,
+                color: theme.palette.primary.main,
+              }}
+            >
               Teme
             </Typography>
           </Box>
-          <ThemeTable />
+          <ThemeTable theme={theme} />
           {/* <ThemeList /> */}
           {/* OVO SE NE PRIKAZUJE NA LAPTOPU, ALI FINO IZGLEDA, POGLEDATI */}
         </Box>

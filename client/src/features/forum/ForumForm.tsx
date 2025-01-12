@@ -165,10 +165,6 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
                       onChange={(e) => {
                         const isChecked = e.target.checked;
                         setIsFreeTopic(isChecked);
-                        // console.log(
-                        //   "----------------A----------A--------------A------------"
-                        // );
-                        // console.log(methods.formState);
                         if (isChecked) {
                           setValue("courseId", "0");
                           clearErrors("courseId");

@@ -14,6 +14,9 @@ export const validationSchema = (isFreeTopic: boolean) =>
     description: yup.string().required("Opis je obavezan"),
     courseId: isFreeTopic
       ? yup.string() // Ako je slobodna tema, validacija nije obavezna za courseId
-      : yup.string().required("Kurs je obavezan"), // Ako nije slobodna tema, kurs je obavezan
+      : yup
+          .string()
+          .required("Kurs je obavezan")
+          .notOneOf(["0"], "Kurs je obavezan"), // Ako nije slobodna tema, kurs je obavezan
     freeTopic: yup.boolean(),
   });

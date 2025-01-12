@@ -58,7 +58,7 @@ namespace API.Controllers
                 {
                     query = query.Where(t => t.Active == true);
                 }
-                else if (themeParams.ThemeStatus == "Završeno")
+                else if (themeParams.ThemeStatus == "Zatvoreno")
                 {
                     query = query.Where(t => t.Active == false);
                 }
@@ -66,12 +66,12 @@ namespace API.Controllers
 
 
             // Filtriranje prema kategoriji
-            if (themeParams.Category == "freetopic")
+            if (themeParams.Category == "Slobodna tema")
             {
                 query = query.Where(t =>
                     t.Course == null);
             }
-            else if (themeParams.Category != "all" && !string.IsNullOrEmpty(themeParams.Category))
+            else if (( themeParams.Category != "all" && themeParams.Category!="Sve") && !string.IsNullOrEmpty(themeParams.Category))
             {
                 query = query.Where(t => t.Course!.Name == themeParams.Category); // Teme sa specifičnim kursom
             }
@@ -92,7 +92,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetFilters()
         {
             var categories = await _context.Themes
-                    .Select(t => t.Course == null ? "freetopic" : t.Course.Name)
+                    .Select(t => t.Course == null ? "Slobodna tema" : t.Course.Name)
                     .Distinct()
                     .ToListAsync();
 
