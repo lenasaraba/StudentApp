@@ -3,7 +3,7 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import ForumIcon from '@mui/icons-material/Forum';
+import ForumIcon from "@mui/icons-material/Forum";
 import { Link, useNavigate } from "react-router-dom";
 // import { resetCoursesParams, fetchCoursesAsync } from "../courseSlice";
 import { useAppDispatch } from "../../../app/store/configureStore";
@@ -70,7 +70,7 @@ export default function ForumAppBar() {
             }}
           >
             <Box
-              onClick={handleNavigate}
+              // onClick={handleNavigate}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -79,6 +79,8 @@ export default function ForumAppBar() {
                   cursor: "pointer", // Osigurano i za hover stanje
                 },
               }}
+              component={Link}
+              to="/forum"
             >
               <ForumIcon
                 sx={{

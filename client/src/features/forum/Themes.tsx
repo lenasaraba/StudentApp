@@ -1,17 +1,19 @@
 import { CssVarsProvider } from "@mui/joy/styles";
 import Box from "@mui/joy/Box";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
-import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
 import ForumIcon from "@mui/icons-material/Forum";
 
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import ThemeTable from "./components/ThemeTable";
 import { useTheme } from "@mui/material";
+import { useAppDispatch } from "../../app/store/configureStore";
+import { resetThemesParams } from "./themeSlice";
 
 export default function Themes() {
+  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const themesType = searchParams.get("type");
   const theme = useTheme();
@@ -45,14 +47,21 @@ export default function Themes() {
               separator={<ChevronRightRoundedIcon fontSize="small" />}
               sx={{ pl: 0 }}
             >
-              <Link
+              {/* <Link
                 underline="none"
                 color="neutral"
                 href="../forum"
                 aria-label="Forum"
+              > */}
+              <Box
+                component={Link}
+                to="/forum"
+                onClick={() => dispatch(resetThemesParams())}
               >
                 <ForumIcon />
-              </Link>
+              </Box>
+
+              {/* </Link> */}
               <Typography
                 component={Typography}
                 color="neutral"

@@ -27,10 +27,15 @@ import {
   useAppSelector,
 } from "../../../app/store/configureStore";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchFilters, fetchThemesAsync, setThemesParams } from "../themeSlice";
+import {
+  fetchFilters,
+  fetchThemesAsync,
+  resetThemesParams,
+  setThemesParams,
+} from "../themeSlice";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
+import TableRowSkeleton from "./TableRowSkeleton";
 
-import MenuItem from "@mui/material/MenuItem";
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -59,20 +64,23 @@ interface ThemeTableProps {
 }
 export default function ThemeTable({ theme }: ThemeTableProps) {
   const [order, setOrder] = useState<Order>("desc");
-  // const [selected, setSelected] = useState<readonly string[]>([]);
-  //const [open, setOpen] = React.useState(false);
+
   const dispatch = useAppDispatch();
 
   const [searchParams] = useSearchParams();
   const themesType = searchParams.get("type");
-
-  const { themeStatus, category, filtersLoaded, themesParams, themesLoaded } =
-    useAppSelector((state) => state.theme);
-
-  // console.log(themeStatus);
-  // console.log(category);
+  console.log("111111111111111111111111111111111111111 " + searchParams);
+  const {
+    themeStatus,
+    category,
+    filtersLoaded,
+    themesParams,
+    themesLoaded,
+    status,
+  } = useAppSelector((state) => state.theme);
 
   const [searchTerm, setSearchTerm] = useState(themesParams.searchTerm);
+  console.log("2222222222222222222222222222222222222 " + searchTerm);
 
   const debouncedSearch = useMemo(
     () =>
@@ -80,6 +88,7 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
         // console.log(
         //   "-----------------------------------------------" + event.target.value
         // );
+        setSearchTerm(event.target.value);
         dispatch(setThemesParams({ searchTerm: event.target.value }));
         dispatch(fetchThemesAsync());
       }, 1000),
@@ -88,8 +97,9 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
 
   const allThemes = useAppSelector((state) => state.theme.themes);
 
+  //themestype: my ili all
   useEffect(() => {
-    console.log(themesType);
+    // console.log(themesType);
     dispatch(setThemesParams({ type: themesType }));
     dispatch(fetchThemesAsync());
   }, [themesType, dispatch]);
@@ -117,8 +127,15 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
     };
   }, [debouncedSearch]);
 
+  console.log(
+    "444444444444444444444444444444444444444444444 " + themesParams.searchTerm,
+    themesParams.category
+  );
+  // console.log(filtersLoaded)
   if (!filtersLoaded) return <LoadingComponent message="Učitavanje tema..." />;
 
+  // if (themeStatus.includes("pending") || !themesLoaded)
+  // return <TableRowSkeleton />;
   // console.log({ themeStatus });
   const renderFilters = () => (
     <>
@@ -186,6 +203,7 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
               borderColor: theme.palette.primary.main, // Focus state for the select component
             },
           }}
+          //ne znam sta je
           slotProps={{
             listbox: {
               sx: {
@@ -204,6 +222,7 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                 sx={{
                   backgroundColor: theme.palette.background.paper,
                   color: theme.palette.primary.main,
+                  //ne radi
                   "&:hover": { backgroundColor: "#f0f0f0" },
                 }}
               >
@@ -343,7 +362,7 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
           </thead>
           <TableBody
             sx={{
-              height: "52vh",
+              maxHeight: "50vh",
               overflowY: "auto",
               backgroundColor: theme.palette.background.default,
               display: "block",
@@ -363,7 +382,10 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
               },
             }}
           >
-            {allThemes &&
+            {!status.includes("pending") || themesLoaded ? (
+              <TableRowSkeleton />
+            ) : (
+              allThemes &&
               [...allThemes].sort(getComparator(order, "id")).map((theme1) => (
                 <tr
                   key={theme1.id}
@@ -495,7 +517,8 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                     </Box>
                   </td>
                 </tr>
-              ))}
+              ))
+            )}
           </TableBody>
         </Table>
       </Sheet>
