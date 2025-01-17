@@ -1,9 +1,9 @@
 import { CssVarsProvider } from "@mui/joy/styles";
 import Box from "@mui/joy/Box";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
-import Typography from "@mui/joy/Typography";
+import {Typography, Button} from "@mui/joy";
 import ForumIcon from "@mui/icons-material/Forum";
-
+import AddIcon from "@mui/icons-material/Add";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
 import { Link, useSearchParams } from "react-router-dom";
@@ -11,12 +11,17 @@ import ThemeTable from "./components/ThemeTable";
 import { useTheme } from "@mui/material";
 import { useAppDispatch } from "../../app/store/configureStore";
 import { resetThemesParams } from "./themeSlice";
+import { useState } from "react";
+// import ThemeList from "./components/ThemeList";
 
 export default function Themes() {
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const themesType = searchParams.get("type");
   const theme = useTheme();
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
   return (
     <CssVarsProvider disableTransitionOnChange>
       {/* <CssBaseline /> */}
@@ -45,7 +50,7 @@ export default function Themes() {
               size="sm"
               aria-label="breadcrumbs"
               separator={<ChevronRightRoundedIcon fontSize="small" />}
-              sx={{ pl: 0 }}
+              sx={{ pl:0}}
             >
               {/* <Link
                 underline="none"
@@ -56,16 +61,27 @@ export default function Themes() {
               <Box
                 component={Link}
                 to="/forum"
+                sx={{ display: "flex", alignItems: "center"}}
+
                 onClick={() => dispatch(resetThemesParams())}
               >
-                <ForumIcon />
+                <ForumIcon sx={{
+                  color: theme.palette.text.primary,
+                  // fontWeight: "bold",
+                  
+                  "&:hover": {
+                    color: theme.palette.action.focus, // Promijeni boju na hover
+                  },
+                }}/>
               </Box>
 
               {/* </Link> */}
               <Typography
                 component={Typography}
                 color="neutral"
-                sx={{ fontSize: 12, fontWeight: 500 }}
+                sx={{ fontSize: 12, fontWeight: 500, "&:hover": {
+                    color: theme.palette.action.focus, // Promijeni boju na hover
+                  },}}
               >
                 {themesType === "my" ? "Moje teme" : "Sve teme"}
               </Typography>
@@ -93,6 +109,23 @@ export default function Themes() {
             >
               Teme
             </Typography>
+            <Button
+              component="a"
+              href="/createTheme"
+              //onClick={handleOpen}
+              sx={{
+                backgroundColor: theme.palette.primary.dark,
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "20px",
+                fontSize: "16px",
+                "&:hover": {
+                  backgroundColor: theme.palette.primary.light,
+                },
+              }}
+            >
+              <AddIcon />
+            </Button>
           </Box>
           <ThemeTable theme={theme} />
           {/* <ThemeList /> */}

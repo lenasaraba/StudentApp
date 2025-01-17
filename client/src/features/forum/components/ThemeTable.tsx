@@ -1,6 +1,6 @@
 // /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useEffect, useMemo, useState } from "react";
-import { ColorPaletteProp } from "@mui/joy/styles";
+// import { ColorPaletteProp } from "@mui/joy/styles";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
 import Chip from "@mui/joy/Chip";
@@ -292,12 +292,13 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
           sx={{
             "--TableCell-headBackground": theme.palette.background.paper,
             "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground": theme.palette.background.default,
+            "--TableRow-hoverBackground": theme.palette.action.focus,
             "--TableCell-paddingY": "8px",
             "--TableCell-paddingX": "12px",
             backgroundColor: theme.palette.background.paper,
             display: "block",
             tableLayout: "fixed", // Dodajemo fixed layout za preciznije pozicioniranje
+            width: "100%",
           }}
         >
           <thead style={{ width: "100%", display: "flex" }}>
@@ -334,7 +335,7 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                 style={{
                   // padding: "12px 12px",
                   color: theme.palette.primary.main,
-                  width: "25%",
+                  // width: "25%",
                   flex: 1,
                 }}
               >
@@ -342,9 +343,18 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
               </th>
               <th
                 style={{
+                  color: theme.palette.primary.main,
+                  //  width: "25%",
+                  flex: 1,
+                }}
+              >
+                Kategorija
+              </th>
+              <th
+                style={{
                   // padding: "12px 12px",
                   color: theme.palette.primary.main,
-                  width: "25%",
+                  // width: "25%",
                   flex: 1,
                 }}
               >
@@ -353,7 +363,8 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
               <th
                 style={{
                   color: theme.palette.primary.main,
-                  width: "25%",
+                  // width: "25%",
+                  flex: 1,
                 }}
               >
                 Kreator
@@ -382,7 +393,7 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
               },
             }}
           >
-            {!status.includes("pending") || themesLoaded ? (
+            {status.includes("pending") || !themesLoaded ? (
               <TableRowSkeleton />
             ) : (
               allThemes &&
@@ -396,6 +407,10 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                     justifyContent: "space-between", // Koristimo space-between da rasporedimo sadržaj
                     alignItems: "center", // Osiguravamo da su stavke poravnate
                     padding: "8px 0", // Povećavamo visinu redova za bolju vidljivost
+                    transition: "background-color 0.3s ease", // Efekat prelaza boje
+                    // "&:hover": {
+                    //   backgroundColor: "#f0f0f0", // Pozadina na hover (možeš promeniti boju)
+                    // },
                   }}
                 >
                   <td
@@ -410,10 +425,22 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                       <MuiTypo
                         component={Link}
                         to={`../forum/${theme1.id}`}
-                        style={{
+                        sx={{
                           textDecoration: "none",
                           color: theme.palette.action.active,
                           cursor: "pointer",
+                          overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+                          display: "-webkit-box", // Neophodno za multi-line truncation
+                          WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+                          WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
+                          lineHeight: "1", // Podešava razmak između linija
+                          height: "1em", // Fiksna visina: broj linija * lineHeight
+                          textOverflow: "ellipsis", // Dodaje tri tačke
+                          fontWeight: "normal", // Normalna težina teksta inicijalno
+                          "&:hover": {
+                            color: theme.palette.primary.main, // Boja za hover stanje
+                            fontWeight: "bold", // Boldovanje na hover
+                          },
                         }}
                       >
                         {theme1.title}
@@ -421,6 +448,13 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                       <MuiTypo
                         sx={{
                           color: theme.palette.action.active,
+                          overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+                          display: "-webkit-box", // Neophodno za multi-line truncation
+                          WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+                          WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
+                          lineHeight: "1", // Podešava razmak između linija
+                          height: "1em", // Fiksna visina: broj linija * lineHeight
+                          textOverflow: "ellipsis", // Dodaje tri tačke
                         }}
                       >
                         {theme1.description}
@@ -462,6 +496,25 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                       border: 0,
                     }}
                   >
+                    <Typography
+                      sx={{
+                        color: theme.palette.action.active,
+                      }}
+                    >
+                      {" "}
+                      {theme1.course != null
+                        ? theme1.course.name
+                        : "Slobodna tema"}
+                    </Typography>
+                  </td>
+                  <td
+                    style={{
+                      padding: "0 12px",
+                      flex: 1,
+                      height: "fit-content",
+                      border: 0,
+                    }}
+                  >
                     <Chip
                       variant="soft"
                       size="sm"
@@ -471,12 +524,13 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
                           false: <BlockIcon />,
                         }[theme1.active]
                       }
-                      color={
-                        {
-                          true: "success",
-                          false: "danger",
-                        }[theme1.active] as ColorPaletteProp
-                      }
+                      sx={{
+                        backgroundColor: theme1.active
+                          ? theme.palette.text.primaryChannel
+                          : theme.palette.text.secondaryChannel, // Prilagođene boje
+                        color: "#fff", // Tekst u beloj boji
+                        borderRadius: "16px", // Primer prilagođenog oblika
+                      }}
                     >
                       {theme1.active ? "Aktivno" : "Zatvoreno"}
                     </Chip>

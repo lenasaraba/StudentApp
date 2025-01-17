@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import CourseCardMedia from "./CourseCardMedia";
 import { Professor } from "../../../app/models/professor";
 import { Link } from "react-router-dom";
+import SlideDots from "./SlideDots";
+import SlideCard from "./SlideCard";
 
 // POPRAVITI MODAL DA SE UCITA ZA ODGOVARAJUCEG PROFESORA
 // POPRAVITI IZGLED MODALA
@@ -35,6 +37,8 @@ export default function ProfessorList() {
     (state) => state.course.professorCourses
   );
 
+  // console.log({...professorCourses})
+
   const [selectedProfessor, setSelectedProfessor] = useState<Professor>(); // Čuva informacije o profesoru
   const [isModalOpen, setIsModalOpen] = useState(false); // Kontroliše prikaz modala
 
@@ -49,7 +53,7 @@ export default function ProfessorList() {
   };
   return (
     <>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <Box
         sx={{
           display: "flex",
@@ -65,8 +69,8 @@ export default function ProfessorList() {
         >
           Profesori
         </Typography>
-        <Grid container spacing={6} columns={12} sx={{ mr: 4, ml: 4 }}>
-          {professors!.map((teacher, index) => (
+        <Grid container spacing={6} columns={12} sx={{}}>
+          {professors!.slice(0, 4).map((teacher, index) => (
             <Grid
               key={index}
               size={{ xs: 12, md: 6 }}
@@ -94,7 +98,6 @@ export default function ProfessorList() {
                 <Avatar
                   key={index}
                   alt={teacher.firstName}
-                  // src={author.avatar}
                   sx={{
                     width: 41,
                     height: 41,
@@ -104,153 +107,37 @@ export default function ProfessorList() {
                   {teacher.firstName.charAt(0).toUpperCase()}
                 </Avatar>
                 <div>
-                  <Typography variant="h5">
+                  <Typography variant="h5" fontFamily="Raleway, sans-serif">
                     {teacher.firstName}&nbsp;{teacher.lastName}
                   </Typography>
                 </div>
               </Box>
               <Divider component="div" sx={{ my: 2 }} />
-              <Box sx={{ gap: 2 }}>
-                {professorCourses![teacher.id]
-                  ?.slice(0, 3) // Uzimamo najviše prva tri kursa
-                  .map((course, idx) => (
-                    <Box key={idx} sx={{ mt: 1 }}>
-                      <Typography
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          direction: "row",
-                        }}
-                      >
-                        <CourseCardMedia
-                          year={course.year}
-                          studyProgram={course.studyProgram}
-                          sx={{
-                            display: "inline",
-                            width: 33, // Širina avatara (možeš promeniti prema potrebama)
-                            height: 33, // Visina avatara
-                            borderRadius: "50%", // Za kružni oblik
-                            objectFit: "cover", // Za prilagođavanje slike unutar kružnog oblika
-                          }}
-                        />
-                        &nbsp;&nbsp;
-                        {course.name}
-                      </Typography>
-                    </Box>
-                  ))}
-              </Box>
-              <Button
-                sx={{ px: 1, mt: 1 }}
-                onClick={() => handleOpenModal(teacher)}
-              >
-                Više...
-              </Button>
-              <Modal
-                open={isModalOpen}
-                onClose={handleCloseModal}
-                // aria-labelledby="modal-modal-title"
-                // aria-describedby="modal-modal-description"
-              >
-                {selectedProfessor == undefined ? (
-                  <Box>Ispis </Box>
-                ) : (
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: 400,
-                      bgcolor: "background.paper",
-                      border: "2px solid",
-                      borderColor: "background.default",
-                      borderRadius: "20px",
-                      boxShadow: 16,
-                      p: 4,
-                      outline: 0,
-                    }}
-                  >
-                    {professorCourses![selectedProfessor!.id]?.map(
-                      (course, idx) => (
-                        <Box key={idx} sx={{ mt: 1 }}>
-                          <Typography
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              direction: "row",
-                              color: "primary.main", 
-                              textDecoration: "none", 
-                              "&:visited": {
-                                color: "primary.main",
-                              },
-                            }}
-                            component={Link}
-                            to={`/courses/${course.id}`}
-                          >
-                            <CourseCardMedia
-                              year={course.year}
-                              studyProgram={course.studyProgram}
-                              sx={{
-                                display: "inline",
-                                width: 33, // Širina avatara (možeš promeniti prema potrebama)
-                                height: 33, // Visina avatara
-                                borderRadius: "50%", // Za kružni oblik
-                                objectFit: "cover", // Za prilagođavanje slike unutar kružnog oblika
-                              }}
-                            />
-                            &nbsp;&nbsp;
-                            {course.name}
-                          </Typography>
-                        </Box>
-                      )
-                    )}
-                    <Button sx={{ px: 1, mt: 5 }} onClick={handleCloseModal}>
-                      Zatvori
-                    </Button>
-                  </Box>
-                )}
-              </Modal>
+
+              {(professorCourses && professorCourses[teacher.id]!=undefined) ? (
+                <SlideCard courses={professorCourses[teacher.id]} />
+              ) : (
+                <Typography>Nema kurseva</Typography> // ili neki drugi indikator
+              )}
+             
 
               <Divider component="div" sx={{ my: 2 }} />
-              <Typography>Kategorije kurseva:</Typography>
-              <Box
-                sx={{
-                  mt: 1.5,
-                  display: "flex",
-                  gap: 1,
-                }}
-              >
-                {[
-                  ...new Set(
-                    professorCourses![teacher.id]?.map((course) => {
-                      return course.studyProgram.name;
-                    })
-                  ),
-                ].map((program, idx) => (
-                  <Typography
-                    sx={{
-                      border: "1px solid ",
-                      borderColor: "text.primary",
-                      pl: 1.5,
-                      pr: 1.5,
-                      py: 1,
-                      borderRadius: "20px",
-                      fontSize: "12pt",
-                      display: "flex",
-                      alignItems: "center",
-                      textAlign: "center",
-                    }}
-                    key={idx}
-                  >
-                    {program}
-                  </Typography>
-                ))}
-                {/* {professorCourses![teacher.id]?.map((course, idx) => (
-                  <Box key={idx} sx={{ mt: 1 }}>
-                    <Typography> {course.studyProgram.name}</Typography>
-                  </Box>
-                ))} */}
-              </Box>
+              
+              {professorCourses && professorCourses[teacher.id] ? (
+                <SlideDots
+                  programs={[
+                    ...new Set(
+                      professorCourses[teacher.id]?.map((course) => {
+                        return course.studyProgram.name;
+                      })
+                    ),
+                  ]}
+                />
+              ) : (
+                <Typography fontFamily="Raleway, sans-serif">
+                  Nema smjerova
+                </Typography>
+              )}
             </Grid>
           ))}
         </Grid>

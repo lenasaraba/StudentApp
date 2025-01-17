@@ -26,7 +26,8 @@ export const signInUser = createAsyncThunk<User, FieldValues>(
 
       return user;
     } catch (error: any) {
-      return thunkAPI.rejectWithValue({ error: error.data });
+      console.log("-----------------------------------greska")
+      return thunkAPI.rejectWithValue({error:error.data})
     }
   }
 );
@@ -84,6 +85,11 @@ export const accountSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(signInUser.rejected, (_state, action) => {
+      // toast.error("Neuspješna prijava")
+
+      throw action.payload;
+    });
     builder.addCase(fetchCurrentUser.rejected, (state) => {
       state.user = null;
       localStorage.removeItem("user");
@@ -98,9 +104,7 @@ export const accountSlice = createSlice({
       }
     );
 
-    builder.addMatcher(isAnyOf(signInUser.rejected), (_state, action) => {
-      throw action.payload;
-    });
+    
   },
 });
 

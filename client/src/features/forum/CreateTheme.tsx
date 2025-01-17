@@ -22,12 +22,7 @@ import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { createThemeAsync } from "./themeSlice";
 import { useNavigate } from "react-router-dom";
 
-interface ForumFormProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-export default function ForumForm({ open, setOpen }: ForumFormProps) {
+export default function CreateTheme() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const courses = useAppSelector((state) => state.course.courses);
@@ -38,8 +33,20 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
     resolver: yupResolver(validationSchema(isFreeTopic)),
   });
 
-  const { control, setValue, clearErrors, trigger, register } = methods; // Koristite methods iz roditeljskog komponenta
+  const {
+    control,
+    setValue,
+    trigger,
+    clearErrors,
+    register,
+    formState: { errors },
+  } = methods;
+
+  //   const { control, setValue, clearErrors, trigger, register } = methods; // Koristite methods iz roditeljskog komponenta
   const [loading, setLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  //   const {formState: { isSubmitting, errors, isValid }}=useForm();
   const onSubmit = async (data: FieldValues) => {
     console.log(data);
     const localDate = new Date();
@@ -56,58 +63,67 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
     const resultAction = await dispatch(createThemeAsync(newTheme));
 
     if (createThemeAsync.fulfilled.match(resultAction)) {
- 
       navigate(`/forum/${resultAction.payload.id}`);
     } else {
       console.error("Failed to create theme:", resultAction.payload);
     }
   };
-
   useEffect(() => {
-    trigger();
-  }, [isFreeTopic, trigger]);
-
-  useEffect(() => {
-    if (open) {
-      methods.reset();
+    if (isInitialized) {
+      trigger();
+      console.log(isInitialized);
+    } else {
+      setIsInitialized(true);
     }
-  }, [open, methods]);
+  }, [isFreeTopic, trigger]);
+  const navigate1 = useNavigate();
 
   const handleClose = () => {
-    setOpen(false);
-    setIsFreeTopic(false);
+    navigate1(-1);
   };
+
   return (
-    <Modal open={open} onClose={handleClose}>
-     <form
+    <Grid
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+      }}
+    >
+      <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        style={{
-          height: "100%",
-          margin: "auto",
-          display: "flex",
-          alignItems: "center",
-        }}
+        style={{ width: "40%", padding: 8 }}
       >
         <Grid
           container
-          spacing={2}
+          spacing={3}
           sx={{
+            direction: "column",
+            gap: 4,
             width: "100%",
-            maxWidth: "600px",
-            margin: "auto",
-            padding: 6,
+            padding: 2,
+            paddingX: 4,
             backgroundColor: "background.default",
             borderRadius: "20px",
             border: "2px solid",
             borderColor: "primary.main",
-            display:"flex",
-            flexDirection:"column"
+            display: "flex",
+            flexDirection: "column",
+            // boxSizing: "border-box",
+            height: "75%",
+            maxHeight: "75%",
           }}
         >
-          <Typography variant="h6" sx={{textAlign:"center", fontFamily:"Raleway, sans-serif"}} mb={2}>
+          <Typography
+            variant="h6"
+            sx={{ textAlign: "center", fontFamily: "Raleway, sans-serif" }}
+            mb={2}
+          >
             Kreiranje teme
           </Typography>
-          <Grid item xs={12}>
+
+          <Grid  sx={{ paddingLeft: 0 }}>
             <Controller
               name="title"
               control={control}
@@ -123,11 +139,12 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
                   })}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message || ""}
+                  sx={{ height: "3rem", maxHeight: "3rem" }}
                 />
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid  sx={{ padding: 0 }}>
             <Controller
               name="description"
               control={control}
@@ -139,17 +156,18 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
                   variant="outlined"
                   fullWidth
                   multiline
-                  rows={4}
+                  rows={5}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message || ""}
                   {...register("description", {
-                    required: "description is required.",
+                    required: "Description is required.",
                   })}
+                  sx={{ height: "9rem", maxHeight: "9rem" }}
                 />
               )}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid  sx={{ padding: 0 }}>
             <Controller
               name="freeTopic"
               control={control}
@@ -157,6 +175,7 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      sx={{ height: "2rem", maxHeight: "2rem" }}
                       {...field}
                       name="freeTopic"
                       checked={isFreeTopic}
@@ -181,21 +200,28 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
               )}
             />
           </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth disabled={isFreeTopic}>
-              {" "}
+          <Grid  sx={{ padding: 0 }}>
+            <FormControl
+              fullWidth
+              disabled={isFreeTopic}
+              sx={{ height: "3rem", maxHeight: "3rem" }}
+              error={!!errors.courseId} // Dinamičko upravljanje greškom na FormControl
+            >
               <InputLabel id="courseId-label">Kurs</InputLabel>
               <Controller
                 name="courseId"
                 control={control}
+                rules={{
+                  required: "Izbor kursa je obavezan!", // Pravilo validacije
+                }}
                 render={({ field, fieldState }) => (
                   <>
                     <Select
                       {...field}
                       labelId="courseId-label"
-                      label="Kurs"
                       value={field.value || "0"}
-                      error={!!fieldState.error}
+                      label="Kurs"
+                      error={!!fieldState.error} // Dinamičko upravljanje greškom na Select komponenti
                       onChange={(e) => {
                         setValue("courseId", e.target.value || "0", {
                           shouldValidate: true,
@@ -208,9 +234,15 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
                       MenuProps={{
                         PaperProps: {
                           style: {
-                            maxHeight: 200,
+                            maxHeight: 120,
                             overflowY: "auto",
                           },
+                        },
+                      }}
+                      sx={{
+                        color: fieldState.error ? "error.main" : "inherit", // Menja boju teksta
+                        "& .MuiSelect-icon": {
+                          color: fieldState.error ? "error.main" : "inherit", // Menja boju ikone
                         },
                       }}
                     >
@@ -222,7 +254,7 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
                       ))}
                     </Select>
                     {fieldState.error && (
-                      <FormHelperText sx={{ color: "error.main" }}>
+                      <FormHelperText>
                         {fieldState.error?.message || "Greška u izboru kursa"}
                       </FormHelperText>
                     )}
@@ -233,9 +265,8 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
           </Grid>
 
           <Grid
-            item
-            xs={12}
-            sx={{ display: "flex", justifyContent: "space-evenly" }}
+            
+            sx={{ display: "flex", justifyContent: "space-evenly", padding: 0 }}
           >
             <Button onClick={handleClose}>Odustani</Button>
             <LoadingButton
@@ -249,7 +280,7 @@ export default function ForumForm({ open, setOpen }: ForumFormProps) {
             </LoadingButton>
           </Grid>
         </Grid>
-      </form> 
-    </Modal>
+      </form>
+    </Grid>
   );
 }

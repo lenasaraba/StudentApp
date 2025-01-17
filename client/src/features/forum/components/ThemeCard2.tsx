@@ -62,9 +62,18 @@ export default function ThemeCard2({ theme }: ThemeCardProps) {
             sx={{
               textAlign: "center",
               fontWeight: "bold",
-              fontSize: "18pt",
+              fontSize: "clamp(12pt, 18pt, 20pt)",
               fontFamily: "Raleway, sans-serif",
               textDecoration: "none", // Uklanja podvlačenje linka
+
+              overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+              display: "-webkit-box", // Neophodno za multi-line truncation
+              WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+              WebkitLineClamp: 2, // Maksimalan broj linija (menjajte po potrebi)
+              lineHeight: "1.2", // Podešava razmak između linija
+              height: "2.4em", // Fiksna visina: broj linija * lineHeight
+              textOverflow: "ellipsis", // Dodaje tri tačke
+
               color: "text.primary", // Koristi boju teksta iz roditeljskog elementa
               "&:visited": {
                 color: "text.primary", // Zadrži istu boju za visited linkove
@@ -95,7 +104,18 @@ export default function ThemeCard2({ theme }: ThemeCardProps) {
           <Typography variant="body2" color="text.secondary">
             Opis: <br />{" "}
           </Typography>
-          <Typography sx={{ color: "text.primary" }}>
+          <Typography
+            sx={{
+              color: "text.primary",
+              overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+              display: "-webkit-box", // Neophodno za multi-line truncation
+              WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+              WebkitLineClamp: 3, // Maksimalan broj linija (menjajte po potrebi)
+              lineHeight: "1", // Podešava razmak između linija
+              height: "3em", // Fiksna visina: broj linija * lineHeight
+              textOverflow: "ellipsis", // Dodaje tri tačke
+            }}
+          >
             {theme.description}
           </Typography>
 

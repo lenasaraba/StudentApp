@@ -70,7 +70,6 @@ export default function ForumAppBar() {
             }}
           >
             <Box
-              // onClick={handleNavigate}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -84,10 +83,15 @@ export default function ForumAppBar() {
             >
               <ForumIcon
                 sx={{
-                  color: "text.secondary",
+                  color: "text.primary",
                   fontWeight: "bold",
                   margin: 0,
                   padding: 0,
+                  transition: "all 0.9s ease", // Dodaje animaciju
+                  // backgroundColor: "transparent",
+                  "&:hover": {
+                    color: "background.paper", // Promijeni boju na hover
+                  },
                 }}
               />
             </Box>
@@ -101,7 +105,18 @@ export default function ForumAppBar() {
               <Button
                 variant="text"
                 size="small"
-                sx={{ color: "text.primary", fontWeight: "bold" }}
+                sx={{
+                  paddingX: 2,
+                  borderRadius: "25pt",
+                  color: "text.primary",
+                  fontWeight: "bold",
+                  transition: "all 0.9s ease", // Dodaje animaciju
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    color: "action.hover", // Promijeni boju na hover
+                    backgroundColor: "action.active",
+                  },
+                }}
                 component={Link}
                 to="/themes?type=all"
               >
@@ -118,7 +133,18 @@ export default function ForumAppBar() {
               <Button
                 variant="text"
                 size="small"
-                sx={{ color: "text.primary", fontWeight: "bold" }}
+                sx={{
+                  paddingX: 2,
+                  borderRadius: "25pt",
+                  color: "text.primary",
+                  fontWeight: "bold",
+                  transition: "all 0.9s ease", // Dodaje animaciju
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    color: "action.hover", // Promijeni boju na hover
+                    backgroundColor: "action.active",
+                  },
+                }}
                 component={Link}
                 to="/themes?type=my"
               >

@@ -49,30 +49,24 @@ export default function OnlineStudy() {
           display: "flex",
           direction: "column",
           position: "relative",
-          // minHeight: "100vh",
-          // overflow: "auto",
-          // overflowAnchor:'none'
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <AppAppBar />
-        <Container
-          // maxWidth="lg"
-          component="main"
+        <Grid
+          container
           sx={{
             display: "flex",
             flexDirection: "column",
-            my: 16,
-            gap: 4,
             margin: 0,
+            paddingX: 10,
+            paddingY: 3,
           }}
         >
+          <AppAppBar />
           <MainContent />
-          {/* <Latest /> */}
           <ProfessorList />
-        </Container>
-        {/* <Footer /> */}
+        </Grid>
       </Grid>
     </>
   );

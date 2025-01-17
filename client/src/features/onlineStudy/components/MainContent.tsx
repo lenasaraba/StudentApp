@@ -9,6 +9,10 @@ import { useAppSelector } from "../../../app/store/configureStore";
 import { format } from "date-fns";
 import CourseCardMedia from "./CourseCardMedia";
 import { Author } from "./Author";
+import { Divider } from "@mui/material";
+import Theme from "../../forum/Theme";
+import { BorderColor } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 const DateCard = ({ date }: { date: string }) => {
   const dateFormatted = new Date(date); // Pretvori string u Date objekat
@@ -22,10 +26,12 @@ const SyledCard = styled(Card)(({ theme }) => ({
   flexDirection: "column",
   padding: 0,
   height: "100%",
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.secondary.main,
   "&:hover": {
     backgroundColor: "transparent",
     cursor: "pointer",
+    border: "1px solid",
+    borderColor: theme.palette.background.paper,
   },
   "&:focus-visible": {
     outline: "3px solid",
@@ -37,11 +43,11 @@ const SyledCard = styled(Card)(({ theme }) => ({
 const SyledCardContent = styled(CardContent)({
   display: "flex",
   flexDirection: "column",
-  gap: 4,
+  // gap: 4,
   padding: 16,
-  flexGrow: 1,
+  // flexGrow: 1,
   "&:last-child": {
-    paddingBottom: 16,
+    // paddingBottom: 16,
   },
 });
 
@@ -67,14 +73,34 @@ export default function MainContent() {
   };
 
   const courses = useAppSelector((state) => state.course.courses);
-  // console.log("Main +++++++++++++++++ " + courses);
+
+  const newArray = [...(courses || [])];
+  const topCourses = newArray
+    ?.sort((a, b) => b.usersCourse.length - a.usersCourse.length)
+    .slice(0, 5);
+  const firstTwoCourses = topCourses.slice(0, 2); // Prvih 4 elementa
+  const lastThreeCourses = topCourses.slice(-3);
+
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 4, margin: 0 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+        margin: 0,
+        padding: 0,
+      }}
+    >
       <div>
         <Typography
           variant="h2"
-          gutterBottom
-          sx={{ fontFamily: "Raleway, sans-serif", paddingTop: 4 }}
+          // gutterBottom
+          sx={{
+            fontFamily: "Raleway, sans-serif",
+            marginY: 4,
+            fontWeight: "bolder",
+            color: "primary.main",
+          }}
         >
           Online učenje
         </Typography>
@@ -82,253 +108,233 @@ export default function MainContent() {
           Pronađite kurs koji vam odgovara
         </Typography>
       </div>
+      <Divider />
 
       <Grid container spacing={2} columns={12}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <SyledCard
-            variant="outlined"
-            onFocus={() => handleFocus(0)}
-            onBlur={handleBlur}
-            tabIndex={0}
-            className={focusedCardIndex === 0 ? "Mui-focused" : ""}
-          >
-            <CourseCardMedia
-              year={courses![0].year}
-              studyProgram={courses![0].studyProgram}
+        {firstTwoCourses.map((course, index) => (
+          <Grid key={index} size={{ xs: 12, md: 6 }}>
+            <SyledCard
+              variant="outlined"
+              onFocus={() => handleFocus(index)}
+              onBlur={handleBlur}
+              tabIndex={index}
+              className={focusedCardIndex === index ? "Mui-focused" : ""}
               sx={{
-                aspectRatio: "16 / 9",
-                borderBottom: "1px solid",
-                borderColor: "divider",
-              }}
-            />
-            <SyledCardContent>
-              <Typography gutterBottom variant="caption" component="div">
-                {courses![0].studyProgram.name}
-              </Typography>
-              <Typography gutterBottom variant="h6" component="div">
-                {courses![0].name}
-              </Typography>
-              <StyledTypography
-                variant="body2"
-                color="text.secondary"
-                gutterBottom
-              >
-                {courses![0].description}
-              </StyledTypography>
-            </SyledCardContent>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 2,
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "16px",
+                // backgroundColor:"secondary.main",
+
+                border: "none",
+                borderRadius: "16px",
+                boxShadow: (theme) =>
+                  `0px 4px 12px ${theme.palette.mode === "light" ? "#ddd" : "#333"}`,
+                overflow: "hidden",
+                position: "relative",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-5px)",
+                  boxShadow: (theme) =>
+                    `0px 8px 24px ${theme.palette.mode === "light" ? "#bbb" : "#111"}`,
+                },
               }}
             >
-              <Author authors={courses![0].professorsCourse} />
-              <Typography variant="caption">
-                <DateCard date={courses![0].courseCreationDate.split("T")[0]} />
-              </Typography>
-            </Box>
-          </SyledCard>
-        </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <SyledCard
-            variant="outlined"
-            onFocus={() => handleFocus(1)}
-            onBlur={handleBlur}
-            tabIndex={0}
-            className={focusedCardIndex === 1 ? "Mui-focused" : ""}
-          >
-            <CourseCardMedia
-              year={courses![1].year}
-              studyProgram={courses![1].studyProgram}
-              sx={{
-                aspectRatio: "16 / 9",
-                borderBottom: "1px solid",
-                borderColor: "divider",
-              }}
-            />
-            <SyledCardContent>
-              <Typography gutterBottom variant="caption" component="div">
-                {courses![1].studyProgram.name}
-              </Typography>
-              <Typography gutterBottom variant="h6" component="div">
-                {courses![1].name}
-              </Typography>
-              <StyledTypography
-                variant="body2"
-                color="text.secondary"
-                gutterBottom
+              {/* Sekcija slike sa "overlay" efektom */}
+              <Box
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                  height: "200px", // Fiksna visina slike
+                  overflow: "hidden",
+                }}
               >
-                {courses![1].description}
-              </StyledTypography>
-            </SyledCardContent>
-            <Box
+                <CourseCardMedia
+                  year={course.year}
+                  studyProgram={course.studyProgram}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    filter: "brightness(0.75)", // Tamniji filter da bi tekst bio čitljiv
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: "16px",
+                    left: "16px",
+                    color: "white",
+                    zIndex: 2,
+                    display:"flex",
+                    flexDirection:"column",
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    fontFamily="Raleway, sans-serif"
+                    sx={{ opacity: 0.8}}
+                  >
+                    {course.studyProgram.name}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    fontFamily="Raleway, sans-serif"
+                    sx={{
+                      fontWeight: 700,
+                      textDecoration: "none", // Uklanja podrazumevanu dekoraciju za Link
+                      color: "text.primary", // Podešava boju na primarnu boju teksta
+                      "&:hover": {
+                        color: "primary.main", // Opcionalno, boja pri hoveru
+                      },
+                       backdropFilter:"blur(30px)" 
+                    }}
+                    component={Link}
+                    to={`/courses/${course.id}`}
+                  >
+                    {course.name}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Glavni sadržaj kursa */}
+              <Box
+                sx={{
+                  padding: "16px",
+                  backgroundColor: "inherit",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
+              >
+                <StyledTypography
+                  variant="body2"
+                  color="text.secondary"
+                  fontFamily="Raleway, sans-serif"
+                >
+                  {course.description}
+                </StyledTypography>
+
+                <Divider sx={{ my: 1 }} />
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  {/* Autori kursa */}
+                  <Author authors={course.professorsCourse} />
+
+                  {/* Datum kreiranja */}
+                  <Typography
+                    variant="caption"
+                    fontFamily="Raleway, sans-serif"
+                    color="text.secondary"
+                  >
+                    <DateCard date={course.courseCreationDate.split("T")[0]} />
+                  </Typography>
+                </Box>
+              </Box>
+            </SyledCard>
+          </Grid>
+        ))}
+      </Grid>
+      <Grid container spacing={2} columns={12}>
+        {lastThreeCourses.map((course, index) => (
+          <Grid key={index} size={{ xs: 12, md: 4 }}>
+            <SyledCard
+              variant="outlined"
+              onFocus={() => handleFocus(index)}
+              onBlur={handleBlur}
+              tabIndex={index}
+              className={focusedCardIndex === index ? "Mui-focused" : ""}
               sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 2,
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "16px",
+                // backgroundColor:"secondary.main",
+                justifyContent: "space-evenly",
+                height: "100%",
+                border: "none",
+                borderRadius: "16px",
+                boxShadow: (theme) =>
+                  `0px 4px 12px ${theme.palette.mode === "light" ? "#ddd" : "#333"}`,
+                overflow: "hidden",
+                position: "relative",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-5px)",
+                  boxShadow: (theme) =>
+                    `0px 8px 24px ${theme.palette.mode === "light" ? "#bbb" : "#111"}`,
+                },
               }}
             >
-              <Author authors={courses![1].professorsCourse} />
-              <Typography variant="caption">
-                <DateCard date={courses![1].courseCreationDate.split("T")[0]} />
-              </Typography>
-            </Box>
-          </SyledCard>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <SyledCard
-            variant="outlined"
-            onFocus={() => handleFocus(2)}
-            onBlur={handleBlur}
-            tabIndex={0}
-            className={focusedCardIndex === 2 ? "Mui-focused" : ""}
-            sx={{ height: "100%" }}
-          >
-            <CourseCardMedia
-              year={courses![2].year}
-              studyProgram={courses![2].studyProgram}
-              sx={{
-                height: { sm: "auto", md: "50%" },
-                aspectRatio: { sm: "16 / 9", md: "" },
-              }}
-            />
-            <SyledCardContent>
-              <Typography gutterBottom variant="caption" component="div">
-                {courses![2].studyProgram.name}
-              </Typography>
-              <Typography gutterBottom variant="h6" component="div">
-                {courses![2].name}
-              </Typography>
-              <StyledTypography
-                variant="body2"
-                color="text.secondary"
-                gutterBottom
+              <CourseCardMedia
+                year={course.year}
+                studyProgram={course.studyProgram}
+                sx={{
+                  height: { sm: "auto", md: "50%" },
+                  aspectRatio: { sm: "16 / 9", md: "" },
+                  filter: "brightness(0.75)", // Tamniji filter da bi tekst bio čitljiv
+                }}
+              />
+              <Box
+                sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
               >
-                {courses![2].description}
-              </StyledTypography>
-            </SyledCardContent>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 2,
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "16px",
-              }}
-            >
-              <Author authors={courses![2].professorsCourse} />
-              <Typography variant="caption">
-                <DateCard date={courses![2].courseCreationDate.split("T")[0]} />
-              </Typography>
-            </Box>
-          </SyledCard>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <SyledCard
-            variant="outlined"
-            onFocus={() => handleFocus(5)}
-            onBlur={handleBlur}
-            tabIndex={0}
-            className={focusedCardIndex === 5 ? "Mui-focused" : ""}
-            sx={{ height: "100%" }}
-          >
-            <CourseCardMedia
-              year={courses![3].year}
-              studyProgram={courses![3].studyProgram}
-              sx={{
-                height: { sm: "auto", md: "50%" },
-                aspectRatio: { sm: "16 / 9", md: "" },
-              }}
-            />
-            <SyledCardContent>
-              <Typography gutterBottom variant="caption" component="div">
-                {courses![3].studyProgram.name}
-              </Typography>
-              <Typography gutterBottom variant="h6" component="div">
-                {courses![3].name}
-              </Typography>
-              <StyledTypography
-                variant="body2"
-                color="text.secondary"
-                gutterBottom
-              >
-                {courses![3].description}
-              </StyledTypography>
-            </SyledCardContent>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 2,
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "16px",
-              }}
-            >
-              <Author authors={courses![3].professorsCourse} />
-              <Typography variant="caption">
-                <DateCard date={courses![3].courseCreationDate.split("T")[0]} />
-              </Typography>
-            </Box>
-          </SyledCard>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
-          <SyledCard
-            variant="outlined"
-            onFocus={() => handleFocus(5)}
-            onBlur={handleBlur}
-            tabIndex={0}
-            className={focusedCardIndex === 5 ? "Mui-focused" : ""}
-            sx={{ height: "100%" }}
-          >
-            <CourseCardMedia
-              year={courses![4].year}
-              studyProgram={courses![4].studyProgram}
-              sx={{
-                height: { sm: "auto", md: "50%" },
-                aspectRatio: { sm: "16 / 9", md: "" },
-              }}
-            />
-            <SyledCardContent>
-              <Typography gutterBottom variant="caption" component="div">
-                {courses![4].studyProgram.name}
-              </Typography>
-              <Typography gutterBottom variant="h6" component="div">
-                {courses![4].name}
-              </Typography>
-              <StyledTypography
-                variant="body2"
-                color="text.secondary"
-                gutterBottom
-              >
-                {courses![4].description}
-              </StyledTypography>
-            </SyledCardContent>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: 2,
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "16px",
-              }}
-            >
-              <Author authors={courses![4].professorsCourse} />
-              <Typography variant="caption">
-                <DateCard date={courses![4].courseCreationDate.split("T")[0]} />
-              </Typography>
-            </Box>
-          </SyledCard>
-        </Grid>
+                <SyledCardContent sx={{ pb: 0 }}>
+                  <Typography
+                    // gutterBottom
+                    variant="caption"
+                    component="div"
+                    fontFamily="Raleway, sans-serif"
+                    fontSize="clamp(10px, 12px, 14px)"
+                  >
+                    {course.studyProgram.name}
+                  </Typography>
+                  <Typography
+                    // gutterBottom
+                    variant="h6"
+                    // component="div"
+                    fontFamily="Raleway, sans-serif"
+                    fontSize="clamp(12px, 14px, 16px)"
+                    fontWeight="bolder"
+                    component={Link}
+                    to={`/courses/${course.id}`}
+                    sx={{ textDecoration: "none", color: "text.primary", overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+                      display: "-webkit-box", // Neophodno za multi-line truncation
+                      WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+                      WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
+                      lineHeight: "1", // Podešava razmak između linija
+                      height: "1em", // Fiksna visina: broj linija * lineHeight
+                      textOverflow: "ellipsis", // Dodaje tri tačke
+                      }}
+                  >
+                    {course.name}
+                  </Typography>
+                  <StyledTypography
+                    variant="body2"
+                    color="text.secondary"
+                    // gutterBottom
+                    fontFamily="Raleway, sans-serif"
+                    fontSize="clamp(10px, 12px, 14px)"
+                  >
+                    {course.description}
+                  </StyledTypography>
+                </SyledCardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: 2,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: 2,
+                  }}
+                >
+                  <Author authors={course.professorsCourse} />
+                  <Typography variant="caption">
+                    <DateCard date={course.courseCreationDate.split("T")[0]} />
+                  </Typography>
+                </Box>
+              </Box>
+            </SyledCard>
+          </Grid>
+        ))}
       </Grid>
     </Box>
   );

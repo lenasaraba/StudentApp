@@ -155,6 +155,21 @@ export default function Login() {
               type="submit"
               fullWidth
               variant="contained"
+              sx={{
+                backgroundColor:"common.background",
+                color:"common.onBackground",
+                border:"1px solid",
+                borderColor:"transparent",
+                "&:hover":{backgroundColor:"secondary.main",
+                  border:"1px solid",
+                  borderColor:"common.onBackground"
+                },
+                "&.MuiLoadingButton-loading": {
+                  backgroundColor: "background.paper", // Boja tokom učitavanja
+                  border:"2px solid",
+                  borderColor:"background.default"
+                },
+              }}
             >
               Prijavi se
             </LoadingButton>

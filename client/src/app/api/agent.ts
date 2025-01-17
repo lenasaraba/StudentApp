@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { store } from "../store/configureStore";
+import { router } from "../router/Routes";
+import { toast } from "react-toastify";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 axios.defaults.withCredentials = true;
@@ -11,6 +13,52 @@ axios.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+const sleep=()=>new Promise(resolve=>setTimeout(resolve, 500));
+
+
+axios.interceptors.response.use(async response =>{
+  await sleep();
+  //console.log(response)
+  // const pagination=response.headers['pagination'];    //PAGINATION MORA MALIM SLOVIMA
+  // if(pagination){
+  //     response.data=new PaginatedResponse(response.data, JSON.parse(pagination))
+  //     //console.log(response);
+  // }
+  return response
+}, (error: AxiosError)=>{
+  //console.log('caught by interceptor');
+  //const 
+  //destrukturiramo propertije koje uzimamo iz error response
+  const {data, status}=error.response as AxiosResponse;
+  switch(status){
+      case 400:
+          // if(data.errors){
+          //    const modelStateErrors: string[]=[];
+          //    for(const key in data.errors){
+          //     if(data.errors[key]){
+          //         modelStateErrors.push(data.errors[key]);
+          //     }
+          //    } 
+          //    throw modelStateErrors.flat();
+          // }
+          toast.error(data.title);
+          break;
+      case 401:
+          toast.error("Neuspješna prijava");
+          break;
+      case 404:
+          toast.error(data.title);
+          break;
+      case 500:
+          toast.error(data.title);
+          //router.navigate('/server-error', {state: {error: data}});
+          break;
+      default:
+          break;
+  }
+  return Promise.reject(error.response);
+})
+
 
 const requests = {
   get: (url: string, params?: URLSearchParams) =>

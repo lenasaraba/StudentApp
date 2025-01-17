@@ -1,6 +1,6 @@
 import { Box, Divider, Grid, Typography, Button } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
-import { fetchThemesAsync } from "./themeSlice";
+import { fetchThemesAsync, resetThemesParams } from "./themeSlice";
 import { Fragment, useEffect, useState } from "react";
 import ThemeCard from "./components/ThemeCard";
 import ThemeCard2 from "./components/ThemeCard2";
@@ -10,6 +10,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSchema } from "./forumpageValidation";
 import ForumForm from "./ForumForm";
 import ForumAppBar from "./components/ForumAppBar";
+import { useTheme } from "@emotion/react";
+import JoyForumForm from "./JoyForumForm";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 export default function ForumPage() {
   const methods = useForm({
@@ -20,24 +23,26 @@ export default function ForumPage() {
 
   const dispatch = useAppDispatch();
   useEffect(() => {
+    dispatch(resetThemesParams());
     dispatch(fetchThemesAsync());
   }, [dispatch]);
-  const { themes } = useAppSelector((state) => state.theme);
+
+
+  const { themes, themesLoaded, status } = useAppSelector((state) => state.theme);
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false); // Zatvori modal
 
-  //PRIJEDLOG:
-  //DA BUDE I OVDJE KAO NA FORUMU POCETNA NEKA, A ONDA DA IMA KAO SVE TEME, STRANICE I TO, I TEME KOJE JE TAJ KORISNIK KREIRAO
-  //POCETNA FINO DA SE UREDI
-  //TEMPLEJT ZA FORUM NA TEAMSU
+
+
   //POGLEDATI KURS I RADITI SVE STO SE TICE UPLOADA, I NA KURS I NA FORUM
 
   //DODATI MOZDA UPLOAD FAJLOVA U PORUKU NA FORUMU, 
   // KAO AKO IMAJU NEKO PITANJE ZA NEKI FAJL 
 
 
+  const themeApp=useTheme();
   const newArray = [...(themes || [])];
   const topThemes = newArray
     ?.sort((a, b) => b.messages.length - a.messages.length) // Sortiraj prema broju poruka opadajuće
@@ -45,6 +50,7 @@ export default function ForumPage() {
   const firstFourThemes = topThemes.slice(0, 4); // Prvih 4 elementa
   const lastThreeThemes = topThemes.slice(-3);
 
+  if(!themesLoaded || status.includes('pending')) return <LoadingComponent message="Učitavanje tema..."/>
   return (
     <FormProvider {...methods}>
       <Grid
@@ -207,7 +213,7 @@ export default function ForumPage() {
           >
             Započni svoju temu
           </Button>
-          <ForumForm open={open} setOpen={setOpen} />
+          <ForumForm open={open} setOpen={setOpen}/>
         </Box>
       </Grid>
     </FormProvider>

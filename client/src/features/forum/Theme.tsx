@@ -15,6 +15,7 @@ import {
 import { createMessage, fetchMessagesAsync } from "./messageSlice";
 import { useState } from "react";
 import { fetchThemesAsync } from "./themeSlice";
+import { Author } from "../onlineStudy/components/Author";
 
 export default function Theme() {
   const { id } = useParams<{ id: string }>();
@@ -169,12 +170,11 @@ export default function Theme() {
                 <Typography variant="subtitle2" fontWeight="bold">
                   Profesori:
                 </Typography>
-                {theme.course.professorsCourse.map((professor, index) => (
                   <Box
                     key="index"
                     sx={{ display: "flex", flexDirection: "row" }}
                   >
-                    <Avatar
+                    {/* <Avatar
                       key={index}
                       alt={professor.user.firstName}
                       // src={author.avatar}
@@ -190,9 +190,10 @@ export default function Theme() {
                     <Typography>
                       {professor.user.firstName}&nbsp;
                       {professor.user.lastName}
-                    </Typography>
+                    </Typography> */}
+                    <Author  authors={theme.course.professorsCourse}/>
                   </Box>
-                ))}
+              
               </Box>
               <Button
                 variant="contained"
@@ -465,6 +466,7 @@ export default function Theme() {
               <Button
                 variant="contained"
                 color="primary"
+                disabled={messageContent==""}
                 sx={{ textTransform: "none" }}
                 onClick={() => {
                   const localDate = new Date();

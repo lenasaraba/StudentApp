@@ -7,8 +7,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import { Link, useNavigate } from "react-router-dom";
 import { resetCoursesParams, fetchCoursesAsync } from "../courseSlice";
 import { useAppDispatch } from "../../../app/store/configureStore";
-
-//STAVITI FIKSNI HEIGHT ZBOG APPAPPBARA
+import { Grid } from "@mui/joy";
 
 export default function AppAppBar() {
   const navigate = useNavigate();
@@ -19,41 +18,47 @@ export default function AppAppBar() {
     navigate("/onlineStudy", { replace: true });
   };
   return (
-    <AppBar
-      //ne radi sticky
-      position="sticky"
-      enableColorOnDark
+    <Box
+      //enableColorOnDark
       sx={{
-        top: 30,
+        // width:"50%",
+        // top: 30,
         boxShadow: 0,
-        bgcolor: "transparent",
+        bgcolor: "background.paper",
+        borderRadius: "22px",
+
         backgroundImage: "none",
-        mt: "calc(var(--template-frame-height, 0px) + 28px)",
-        textAlign: "center",
+        // mt: 10,
+        //textAlign: "center",
         padding: 0,
-        minHeight: 0,
+        display:"flex",
+        flexDirection:"column",
+        justifyContent:"center",
       }}
     >
-      <Container
-        maxWidth="lg"
+      <Grid
+        // maxWidth="lg"
         sx={{
+          // position: "fixed",
           display: "flex",
-          direction: "row",
+          flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
+          padding: 0,
+          margin: 0,
+          width: "100%",
         }}
       >
         <Toolbar
-          disableGutters
+          // disableGutters
           variant="dense"
           sx={{
-            borderRadius: "22px",
             // backdropFilter: "blur(36px)",
-            backgroundColor: "secondary.main",
-            border: "1px solid ",
-            borderColor: "text.secondary",
-            padding: "0",
-            width: "60%",
+            // backgroundColor: "secondary.main",
+            // border: "1px solid ",
+            // borderColor: "text.secondary",
+            padding: 0,
+            width: "70%",
           }}
         >
           <Box
@@ -68,6 +73,35 @@ export default function AppAppBar() {
             }}
           >
             <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  paddingX: 2,
+                  borderRadius: "25pt",
+                  color: "text.primary",
+                  fontWeight: "bold",
+                  transition: "all 0.5s ease", // Dodaje animaciju
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    color: "action.hover", // Promijeni boju na hover
+                    backgroundColor: "action.active",
+                  },
+                  fontFamily: "Raleway, sans-serif",
+                }}
+                component={Link}
+                to="/courses?type=all"
+              >
+                Svi kursevi
+              </Button>
+            </Box>
+            <Box
               onClick={handleNavigate}
               sx={{
                 display: "flex",
@@ -80,13 +114,19 @@ export default function AppAppBar() {
             >
               <SchoolIcon
                 sx={{
-                  color: "text.secondary",
+                  color: "text.primary",
                   fontWeight: "bold",
                   margin: 0,
                   padding: 0,
+                  transition: "all 0.5s ease", // Dodaje animaciju
+                  // backgroundColor: "transparent",
+                  "&:hover": {
+                    color: "primary.main", // Promijeni boju na hover
+                  },
                 }}
               />
             </Box>
+            
             <Box
               sx={{
                 display: { xs: "none", md: "flex" },
@@ -97,24 +137,19 @@ export default function AppAppBar() {
               <Button
                 variant="text"
                 size="small"
-                sx={{ color: "text.primary", fontWeight: "bold" }}
-                component={Link}
-                to="/courses?type=all"
-              >
-                Svi kursevi
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                display: { xs: "none", md: "flex" },
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              <Button
-                variant="text"
-                size="small"
-                sx={{ color: "text.primary", fontWeight: "bold" }}
+                sx={{
+                  paddingX: 2,
+                  borderRadius: "25pt",
+                  color: "text.primary",
+                  fontWeight: "bold",
+                  transition: "all 0.5s ease", // Dodaje animaciju
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    color: "action.hover", // Promijeni boju na hover
+                    backgroundColor: "action.active",
+                  },
+                  fontFamily: "Raleway, sans-serif",
+                }}
                 component={Link}
                 to="/courses?type=my"
               >
@@ -123,7 +158,7 @@ export default function AppAppBar() {
             </Box>
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+      </Grid>
+    </Box>
   );
 }
