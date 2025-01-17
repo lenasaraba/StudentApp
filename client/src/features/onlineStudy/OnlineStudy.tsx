@@ -36,6 +36,9 @@ export default function OnlineStudy() {
   //   }
   // }, [dispatch, location.pathname]);
 
+
+  //
+
   const { status: courseStatus } = useAppSelector((state) => state.course);
   console.log(courseStatus);
   if (courseStatus.includes("pending"))

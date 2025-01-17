@@ -81,6 +81,10 @@ export default function MainContent() {
   const firstTwoCourses = topCourses.slice(0, 2); // Prvih 4 elementa
   const lastThreeCourses = topCourses.slice(-3);
 
+
+  //NAPRAVITI NA STRANICI JEDNOJ IZLISTAVANJE SVIH PROFESORA ISTO KAO THEME TABLE SA FILTERIMA
+  //PROMIJENITI IZGLED SVI KURSEVI I MOJE UČENJE
+
   return (
     <Box
       sx={{
