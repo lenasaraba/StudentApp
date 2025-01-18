@@ -5,7 +5,10 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
-import { useAppSelector } from "../../../app/store/configureStore";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../app/store/configureStore";
 import { format } from "date-fns";
 import CourseCardMedia from "./CourseCardMedia";
 import { Author } from "./Author";
@@ -13,6 +16,7 @@ import { Divider } from "@mui/material";
 import Theme from "../../forum/Theme";
 import { BorderColor } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { fetchCoursesAsync, resetCoursesParams } from "../courseSlice";
 
 const DateCard = ({ date }: { date: string }) => {
   const dateFormatted = new Date(date); // Pretvori string u Date objekat
@@ -29,7 +33,7 @@ const SyledCard = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.secondary.main,
   "&:hover": {
     backgroundColor: "transparent",
-    cursor: "pointer",
+    // cursor: "pointer",
     border: "1px solid",
     borderColor: theme.palette.background.paper,
   },
@@ -81,7 +85,6 @@ export default function MainContent() {
   const firstTwoCourses = topCourses.slice(0, 2); // Prvih 4 elementa
   const lastThreeCourses = topCourses.slice(-3);
 
-
   //NAPRAVITI NA STRANICI JEDNOJ IZLISTAVANJE SVIH PROFESORA ISTO KAO THEME TABLE SA FILTERIMA
   //PROMIJENITI IZGLED SVI KURSEVI I MOJE UČENJE
 
@@ -109,7 +112,7 @@ export default function MainContent() {
           Online učenje
         </Typography>
         <Typography sx={{ fontFamily: "Raleway, sans-serif" }}>
-          Pronađite kurs koji vam odgovara
+          Pronađite kurs koji vam odgovara.
         </Typography>
       </div>
       <Divider />
@@ -166,14 +169,14 @@ export default function MainContent() {
                     left: "16px",
                     color: "white",
                     zIndex: 2,
-                    display:"flex",
-                    flexDirection:"column",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
                   <Typography
                     variant="caption"
                     fontFamily="Raleway, sans-serif"
-                    sx={{ opacity: 0.8}}
+                    sx={{ opacity: 0.8, paddingX: 1.5 }}
                   >
                     {course.studyProgram.name}
                   </Typography>
@@ -183,11 +186,14 @@ export default function MainContent() {
                     sx={{
                       fontWeight: 700,
                       textDecoration: "none", // Uklanja podrazumevanu dekoraciju za Link
-                      color: "text.primary", // Podešava boju na primarnu boju teksta
+                      color: "#c4e1f6", // Podešava boju na primarnu boju teksta
                       "&:hover": {
                         color: "primary.main", // Opcionalno, boja pri hoveru
                       },
-                       backdropFilter:"blur(30px)" 
+                      backdropFilter: "blur(30px)",
+                      borderRadius: "20pt",
+                      paddingX: 1.5,
+                      backgroundColor: "#0c101780",
                     }}
                     component={Link}
                     to={`/courses/${course.id}`}
@@ -280,7 +286,7 @@ export default function MainContent() {
               <Box
                 sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
               >
-                <SyledCardContent sx={{ pb: 0 }}>
+                <SyledCardContent sx={{ pb: 0, gap: 0.5 }}>
                   <Typography
                     // gutterBottom
                     variant="caption"
@@ -299,14 +305,17 @@ export default function MainContent() {
                     fontWeight="bolder"
                     component={Link}
                     to={`/courses/${course.id}`}
-                    sx={{ textDecoration: "none", color: "text.primary", overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+                    sx={{
+                      textDecoration: "none",
+                      color: "text.primary",
+                      overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
                       display: "-webkit-box", // Neophodno za multi-line truncation
                       WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
                       WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
                       lineHeight: "1", // Podešava razmak između linija
-                      height: "1em", // Fiksna visina: broj linija * lineHeight
+                      height: "1.2em", // Fiksna visina: broj linija * lineHeight
                       textOverflow: "ellipsis", // Dodaje tri tačke
-                      }}
+                    }}
                   >
                     {course.name}
                   </Typography>

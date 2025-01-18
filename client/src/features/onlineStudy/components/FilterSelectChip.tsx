@@ -5,10 +5,11 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { Grid, Typography } from "@mui/material";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { StudyProgram, Year } from "../../../app/models/course";
 
 interface Props {
-  programs: string[];
-  years: string[];
+  programs: StudyProgram[];
+  years: Year[];
   onChange: (pr: string[], yr: string[]) => void;
 }
 
@@ -51,22 +52,28 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
   }, [alignLeft]); // Re-render kad se alignLeft promeni
 
   useEffect(() => {
-    if (boxRef.current) setBoxWidth(boxRef.current.offsetWidth);
-    console.log(typographyWidth, typographyWidth2, boxWidth, boxWidth2);
-  }, []);
+    const updateWidths = () => {
+      if (boxRef.current) setBoxWidth(boxRef.current.offsetWidth);
+      if (boxRef2.current) setBoxWidth2(boxRef2.current.offsetWidth);
+    };
 
+    // Poziv funkcije prilikom mountanja da inicijalizujemo vrijednosti
+    updateWidths();
+
+    // Dodavanje event listener-a za promjenu veličine prozora
+    window.addEventListener("resize", updateWidths);
+
+    // Čišćenje event listener-a prilikom unmountanja
+    return () => {
+      window.removeEventListener("resize", updateWidths);
+    };
+  }, []);
   useEffect(() => {
     if (typographyRef2.current) {
       setTypographyWidth2(typographyRef2.current.offsetWidth); // Dohvatamo širinu
     }
     console.log(typographyWidth, typographyWidth2, boxWidth, boxWidth2);
-  }, [alignRight]); // Re-render kad se alignLeft promeni
-
-  useEffect(() => {
-    if (boxRef2.current) setBoxWidth2(boxRef2.current.offsetWidth);
-    console.log(typographyWidth, typographyWidth2, boxWidth, boxWidth2);
-  }, []);
-
+  }, [alignRight]);
   const toggleYears = () => {
     setIsOpenY((prev) => !prev); // Prebacivanje između otvoreno/zatvoreno
     setAlignLeft((prev) => !prev); // Menja poravnanje teksta
@@ -158,7 +165,7 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
           {isOpenP &&
             programs.map((program) => (
               <Grid
-                key={program} // Premesti `key` na spoljašnji `Grid`
+                key={program.id} // Premesti `key` na spoljašnji `Grid`
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -168,11 +175,11 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={selectedPrograms.includes(program)}
-                      onChange={(e) => handleProgramChange(e, program)}
+                      checked={selectedPrograms.includes(program.name)}
+                      onChange={(e) => handleProgramChange(e, program.name)}
                     />
                   }
-                  label={program}
+                  label={program.name}
                   sx={{ margin: 0 }}
                   slotProps={{
                     typography: {
@@ -212,33 +219,34 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
           onClick={toggleYears}
         >
           <Typography
-  ref={typographyRef}
-  sx={{
-    width: "fit-content",
-    fontSize: "clamp(12px, 14px, 16px)",
-    fontFamily: "Raleway, sans-serif",
-    display: "flex",
-    alignItems: "center",
-    position: "relative",
-    textAlign:
-      typographyWidth > 0 && boxWidth > 0
-        ? alignLeft
-          ? "left"
-          : "right"
-        : "auto", // Neutralna vrednost dok se širine ne izračunaju
-    left:
-      typographyWidth > 0 && boxWidth > 0
-        ? alignLeft
-          ? "0" // Pomeranje na početak
-          : `${boxWidth - typographyWidth}px` // Pomeranje na kraj box-a
-        : "auto", // Neutralna vrednost dok se širine ne izračunaju
-    visibility: typographyWidth > 0 && boxWidth > 0 ? "visible" : "hidden", // Sakrij dok se ne izračunaju širine
-    transition:
-      typographyWidth > 0 && boxWidth > 0
-        ? "left 0.8s ease-in-out"
-        : "none",
-  }}
->
+            ref={typographyRef}
+            sx={{
+              width: "fit-content",
+              fontSize: "clamp(12px, 14px, 16px)",
+              fontFamily: "Raleway, sans-serif",
+              display: "flex",
+              alignItems: "center",
+              position: "relative",
+              textAlign:
+                typographyWidth > 0 && boxWidth > 0
+                  ? alignLeft
+                    ? "left"
+                    : "right"
+                  : "auto", // Neutralna vrednost dok se širine ne izračunaju
+              left:
+                typographyWidth > 0 && boxWidth > 0
+                  ? alignLeft
+                    ? "0" // Pomeranje na početak
+                    : `${boxWidth - typographyWidth}px` // Pomeranje na kraj box-a
+                  : "auto", // Neutralna vrednost dok se širine ne izračunaju
+              visibility:
+                typographyWidth > 0 && boxWidth > 0 ? "visible" : "hidden", // Sakrij dok se ne izračunaju širine
+              transition:
+                typographyWidth > 0 && boxWidth > 0
+                  ? "left 0.8s ease-in-out"
+                  : "none",
+            }}
+          >
             <FilterAltIcon />
             Godine
           </Typography>
@@ -255,7 +263,7 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
           {isOpenY &&
             years.map((year) => (
               <Grid
-                key={year} // Premesti `key` na spoljašnji `Grid`
+                key={year.id} // Premesti `key` na spoljašnji `Grid`
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -263,14 +271,14 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
                 }} // Stil za poravnanje pojedinačnog elementa
               >
                 <FormControlLabel
-                  key={year}
+                  key={year.id}
                   control={
                     <Checkbox
-                      checked={selectedYears.includes(year)}
-                      onChange={(e) => handleYearChange(e, year)}
+                      checked={selectedYears.includes(year.name)}
+                      onChange={(e) => handleYearChange(e, year.name)}
                     />
                   }
-                  label={year}
+                  label={year.name}
                   sx={{ margin: 0 }}
                   slotProps={{
                     typography: {

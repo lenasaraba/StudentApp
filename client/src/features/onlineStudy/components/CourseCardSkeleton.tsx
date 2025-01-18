@@ -9,8 +9,15 @@ import {
 
 export default function CourseCardSkeleton() {
   return (
-    <Grid item xs component={Card}>
+    <Card
+      sx={{
+        width: "100%", // Kartica zauzima 100% širine roditelja
+        borderRadius: "20pt",
+        boxSizing: "border-box",
+      }}
+    >
       <CardHeader
+        sx={{ width: "300px" }}
         avatar={
           <Skeleton
             animation="wave"
@@ -23,24 +30,28 @@ export default function CourseCardSkeleton() {
           <Skeleton
             animation="wave"
             height={10}
-            width="80%"
-            style={{ marginBottom: 6 }}
+            width="100%"
+            sx={{ marginBottom: 1 }}
           />
         }
       />
-      <Skeleton sx={{ height: 190 }} animation="wave" variant="rectangular" />
+      <Skeleton
+        sx={{ height: 140, width: "100%" }}
+        animation="wave"
+        variant="rectangular"
+      />
       <CardContent>
         <>
-          <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
-          <Skeleton animation="wave" height={10} width="80%" />
+          <Skeleton animation="wave" height={10} sx={{ marginBottom: 1 }} />
+          <Skeleton animation="wave" height={10} width="100%" />
         </>
       </CardContent>
-      <CardActions>
+      <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
         <>
-          <Skeleton animation="wave" height={10} width="40%" />
-          <Skeleton animation="wave" height={10} width="20%" />
+          <Skeleton animation="wave" height={30} width="40%" />
+          <Skeleton animation="wave" height={30} width="20%" />
         </>
       </CardActions>
-    </Grid>
+    </Card>
   );
 }

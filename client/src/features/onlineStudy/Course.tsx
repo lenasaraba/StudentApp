@@ -24,6 +24,7 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import CourseCardMedia from "./components/CourseCardMedia";
 import { Author } from "./components/Author";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 // function generate(element: React.ReactElement<unknown>) {
 //   return [0, 1, 2].map((value) =>
@@ -32,8 +33,6 @@ import { Author } from "./components/Author";
 //     })
 //   );
 // }
-
-
 
 //IZLISTATI TEME NA DNU MOZDA KAO SLIDE DOTS ILI CARDS
 
@@ -55,7 +54,7 @@ export default function Course() {
   };
 
   const { id } = useParams<{ id: string }>();
-  const allCourses = useAppSelector((state) => state.course.courses);
+  const allCourses = useAppSelector((state) => state.course.allCourses);
 
   const topOfPageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -71,9 +70,12 @@ export default function Course() {
   if (id == undefined) return <NotFound />;
 
   const course = allCourses!.find((i) => i.id === parseInt(id));
-
-  if (course == undefined) return <NotFound />;
-
+  if (!course) {
+    // return <LoadingComponent message={"Učitavanje kursa..."} />;
+  }
+  console.log("ID ------------ " + course?.id, id);
+  if (course == undefined || course == null) return <NotFound />;
+  console.log({ ...course });
   // console.log({...course});
   return (
     <>
@@ -169,28 +171,29 @@ export default function Course() {
                           <OpenInNewIcon />
                         </IconButton>
                       }
-                      
                     >
                       <ListItemAvatar>
                         <Avatar sx={{ backgroundColor: "primary.main" }}>
                           <ForumIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText sx={{
-                        
-                          textDecoration: 'none',  // Uklanja podvlačenje linka
-                          color: 'text.primary',        // Koristi boju teksta iz roditeljskog elementa
-                          '&:visited': {
-                            color: 'text.primary',      // Zadrži istu boju za visited linkove
+                      <ListItemText
+                        sx={{
+                          textDecoration: "none", // Uklanja podvlačenje linka
+                          color: "text.primary", // Koristi boju teksta iz roditeljskog elementa
+                          "&:visited": {
+                            color: "text.primary", // Zadrži istu boju za visited linkove
                           },
-                          '&:hover': {
-                            color: 'primary.main',      // Zadrži istu boju pri hover-u
+                          "&:hover": {
+                            color: "primary.main", // Zadrži istu boju pri hover-u
                           },
-                          '&:active': {
-                            color: 'text.primary',      // Zadrži istu boju pri aktivnom linku
+                          "&:active": {
+                            color: "text.primary", // Zadrži istu boju pri aktivnom linku
                           },
-                        
-                      }}>{theme.title}</ListItemText>
+                        }}
+                      >
+                        {theme.title}
+                      </ListItemText>
                     </ListItem>
                   ))
                 ) : (
@@ -201,7 +204,7 @@ export default function Course() {
               </List>
             </Demo>
           </Grid>
-          <Grid item xs={6} />
+          <Grid item xs={3} />
         </Grid>
       </Container>
     </>

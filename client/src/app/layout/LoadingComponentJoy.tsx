@@ -1,16 +1,13 @@
-import {
-  Backdrop,
-  Box,
-  CircularProgress,
-  extendTheme,
-  Typography,
-} from "@mui/material";
+import React from "react";
+import { CssVarsProvider } from "@mui/joy/styles";
+import { Box, Typography } from "@mui/joy";
+import { CircularProgress, extendTheme } from "@mui/material";
 
 interface Props {
   message?: string;
 }
 
-export default function LoadingComponent({ message = "Loading..." }: Props) {
+export default function LoadingComponentJoy({ message = "Loading..." }: Props) {
   const theme = extendTheme({
     colorSchemes: {
       light: {
@@ -87,37 +84,39 @@ export default function LoadingComponent({ message = "Loading..." }: Props) {
         : "dark"
       : "dark",
   });
+
   return (
-    <Backdrop
-      open={true}
-      invisible={true}
+    // <CssVarsProvider theme={theme}>
+    <Box
       sx={{
-        backgroundColor: theme.palette.background.default,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        bgcolor: theme.palette.background.default,
         color: theme.palette.primary.main,
+        position: "relative",
+        flexDirection: "column",
       }}
     >
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
+      <CircularProgress
+        size={100}
+        sx={{ color: theme.palette.text.secondary }}
+      ></CircularProgress>
+      <Typography
+        level="h2"
+        sx={{
+          //   position: "fixed",
+          //   top: "60%",
+          color: theme.palette.primary.main,
+          fontFamily: "Raleway, sans-serif",
+          fontWeight: "normal",
+          pt: 3,
+        }}
       >
-        <CircularProgress
-          size={100}
-          sx={{ color: theme.palette.text.secondary }}
-        ></CircularProgress>
-        <Typography
-          variant="h4"
-          sx={{
-            justifyContent: "center",
-            position: "fixed",
-            top: "60%",
-            fontFamily: "Raleway, sans-serif",
-          }}
-        >
-          {message}
-        </Typography>
-      </Box>
-    </Backdrop>
+        {message}
+      </Typography>
+    </Box>
+    // </CssVarsProvider>
   );
 }

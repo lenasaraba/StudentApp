@@ -1,18 +1,26 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Course, CoursesParams } from "../../app/models/course";
+import {
+  Course,
+  CoursesParams,
+  CreateCourse,
+  StudyProgram,
+  Year,
+} from "../../app/models/course";
 import agent from "../../app/api/agent";
 import { RootState } from "../../app/store/configureStore";
 import { MetaData } from "../../app/models/pagination";
 
 export interface CourseState {
   courses: Course[] | null;
+  allCourses: Course[] | null;
+
   myCourses: Course[] | null;
   professorCourses: Record<number, Course[]> | null;
   status: string;
   filtersLoaded: boolean;
   coursesLoaded: boolean;
-  years: string[];
-  programs: string[];
+  years: Year[] | null;
+  programs: StudyProgram[] | null;
   coursesParams: CoursesParams;
   metaData: MetaData | null;
   //loading: boolean;
@@ -21,12 +29,13 @@ export interface CourseState {
 const initialState: CourseState = {
   courses: null,
   myCourses: null,
+  allCourses: null,
   professorCourses: {},
   status: "idle",
   coursesLoaded: false,
   filtersLoaded: false,
-  years: [],
-  programs: [],
+  years: null,
+  programs: null,
   coursesParams: initParams(),
   metaData: null,
   //loading: false,
@@ -34,8 +43,8 @@ const initialState: CourseState = {
 
 function initParams() {
   return {
-    // pageNumber: 1,
-    // pageSize: 6,
+    pageNumber: 1,
+    pageSize: 6,
     // orderBy: "name",
     type: "all",
     years: [],
@@ -46,8 +55,8 @@ function initParams() {
 function getAxiosParams(coursesParams: CoursesParams) {
   const params = new URLSearchParams();
 
-  // params.append("pageNumber", coursesParams.pageNumber.toString());
-  // params.append("pageSize", coursesParams.pageSize.toString());
+  params.append("pageNumber", coursesParams.pageNumber.toString());
+  params.append("pageSize", coursesParams.pageSize.toString());
   // params.append("orderBy", coursesParams.orderBy.toString());
 
   if (coursesParams.type) params.append("type", coursesParams.type.toString());
@@ -76,10 +85,31 @@ export const fetchCoursesAsync = createAsyncThunk<
 
   try {
     const courses = await agent.Course.list(params);
-    // console.log('Fetched courses:', courses);  // Proveri šta API vraća
+    console.log("Fetched courses:", courses); // Proveri šta API vraća
 
-    thunkAPI.dispatch(setCourses(courses));
+    thunkAPI.dispatch(setCourses(courses.items));
     thunkAPI.dispatch(setMetaData(courses.metaData));
+
+    return courses.items;
+  } catch (error: any) {
+    console.log(error.data);
+    return thunkAPI.rejectWithValue({ error: error.data });
+  }
+});
+
+export const fetchCoursesListAsync = createAsyncThunk<
+  Course[],
+  void,
+  { state: RootState }
+>("course/fetchCoursesAsync", async (_, thunkAPI) => {
+  const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
+
+  try {
+    const courses = await agent.Course.fullList(params);
+    console.log("Fetched courses:", courses); // Proveri šta API vraća
+
+    thunkAPI.dispatch(setAllCourses(courses));
+    // thunkAPI.dispatch(setMetaData(courses.metaData));
 
     return courses;
   } catch (error: any) {
@@ -87,6 +117,7 @@ export const fetchCoursesAsync = createAsyncThunk<
     return thunkAPI.rejectWithValue({ error: error.data });
   }
 });
+
 export const fetchUserCoursesAsync = createAsyncThunk<Course[]>(
   "course/fetchUserCoursesAsync",
   async (_, thunkAPI) => {
@@ -134,12 +165,30 @@ export const fetchFilters = createAsyncThunk(
   }
 );
 
+export const createCourseAsync = createAsyncThunk<Course, CreateCourse>(
+  "course/createCourse",
+  async (newCourse, thunkAPI) => {
+    try {
+      const response = await agent.Course.create(newCourse);
+      // console.log(respo)
+      return response; // Ovo vraća listu poruka sa servera
+    } catch (error: unknown) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const courseSlice = createSlice({
   name: "course",
   initialState,
   reducers: {
     setCourses: (state, action) => {
+      // console.log(action.payload);
       state.courses = action.payload;
+    },
+    setAllCourses: (state, action) => {
+      // console.log(action.payload);
+      state.allCourses = action.payload;
     },
     setMyCourses: (state, action) => {
       state.myCourses = action.payload;
@@ -171,6 +220,28 @@ export const courseSlice = createSlice({
     // },
   },
   extraReducers: (builder) => {
+    builder.addCase(createCourseAsync.fulfilled, (state, action) => {
+      console.log(action.payload);
+      state.status = "succeeded"; // Ažuriramo status kako bismo pokazali da je operacija uspešna
+      console.log("2222222222222222222" + state.status);
+
+      if (state.allCourses) {
+        console.log("State.allcourses push");
+        state.allCourses.push(action.payload);
+        console.log(state.allCourses);
+      } else {
+        console.log("State.allcourses push");
+        state.allCourses = [action.payload];
+      }
+      if (state.courses) {
+        console.log("State.courses push");
+        state.courses.push(action.payload);
+        console.log(state.courses);
+      } else {
+        console.log("State.courses push");
+        state.courses = [action.payload];
+      }
+    });
     builder.addCase(fetchFilters.pending, (state) => {
       state.status = "pendingFetchFilters";
     });
@@ -213,11 +284,31 @@ export const courseSlice = createSlice({
       state.status = "idle";
       state.coursesLoaded = true;
     });
+    // builder.addCase(createCourseAsync.fulfilled, (state, action) => {
+    //   state.status = "succeeded"; // Ažuriramo status kako bismo pokazali da je operacija uspešna
+    //   if (state.allCourses) {
+    //     console.log("State.allcourses push");
+    //     state.allCourses.push(action.payload);
+    //     console.log(state.allCourses);
+    //   } else {
+    //     console.log("State.allcourses push");
+    //     state.allCourses = [action.payload];
+    //   }
+    //   if (state.courses) {
+    //     console.log("State.courses push");
+    //     state.courses.push(action.payload);
+    //     console.log(state.courses);
+    //   } else {
+    //     console.log("State.courses push");
+    //     state.courses = [action.payload];
+    //   }
+    // });
   },
 });
 
 export const {
   setCourses,
+  setAllCourses,
   setMyCourses,
   setProfessorCourses,
   setCoursesParams,

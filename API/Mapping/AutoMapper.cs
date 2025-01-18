@@ -15,9 +15,13 @@ namespace API.Mapping
             CreateMap<User, UserDto>();
             CreateMap<UserCourse, UserCourseDto>();
             CreateMap<ProfessorCourse, ProfessorCourseDto>();
+            CreateMap<ProfessorCourseDto, ProfessorCourse>();
+
             CreateMap<CreateMessageDto, Message>();
             CreateMap<Message, GetMessageDto>();
 
+            CreateMap<Course, CreateCourseDto>();
+            CreateMap<CreateCourseDto, Course>();
 
         }
     }

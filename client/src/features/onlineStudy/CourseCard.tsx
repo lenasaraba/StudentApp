@@ -19,42 +19,45 @@ interface Props {
 export default function CourseCard({ course }: Props) {
   // console.log("Course card:" + course.name);
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
-      <Card
-        sx={{
-          width: "100%" /* Postavlja karticu da zauzme 100% širine roditelja */,
-          boxSizing: "border-box",
+    <Card
+      sx={{
+        // width: "100%" /* Postavlja karticu da zauzme 100% širine roditelja */,
+        boxSizing: "border-box",
+        borderRadius: "20pt",
+        backgroundColor: "secondary.main",
+        border: "2px solid",
+        borderColor: "background.paper",
+      }}
+    >
+      <CardHeader
+        avatar={
+          <Avatar sx={{ bgcolor: "primary.main" }}>
+            {course.name.charAt(0).toUpperCase()}
+          </Avatar>
+        }
+        title={course.name}
+        titleTypographyProps={{
+          sx: { fontWeight: "bold", color: "primary.main" },
         }}
-      >
-        <CardHeader
-          avatar={
-            <Avatar sx={{ bgcolor: "secondary.main" }}>
-              {course.name.charAt(0).toUpperCase()}
-            </Avatar>
-          }
-          title={course.name}
-          titleTypographyProps={{
-            sx: { fontWeight: "bold", color: "primary.main" },
-          }}
-        />
-        <CourseCardMedia
-          year={course.year}
-          studyProgram={course.studyProgram}
-          sx={{
-            height: 140,
-            backgroundSize: "contain",
-            bgcolor: "primary.light",
-          }}
-          //  image={course.pictureURL}
-          //title={course.name}
-        />
-        <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            {course.studyProgram.name} - {course.year.name}
-          </Typography>
-        </CardContent>
-        <CardActions>
-          {/* <LoadingButton
+      />
+      <CourseCardMedia
+        year={course.year}
+        studyProgram={course.studyProgram}
+        sx={{
+          height: 140,
+          backgroundSize: "contain",
+          bgcolor: "primary.light",
+        }}
+        //  image={course.pictureURL}
+        //title={course.name}
+      />
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {course.studyProgram.name} - {course.year.name}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        {/* <LoadingButton
             loading={status == "pendingAddItem" + product.id}
             onClick={() =>
               dispatch(addBasketItemAsync({ productId: product.id }))
@@ -63,12 +66,12 @@ export default function CourseCard({ course }: Props) {
           >
             Add to cart
           </LoadingButton> */}
-          <Button>Upiši se</Button>
-          <Button component={Link} to={`/courses/${course.id}`} size="small">
-            Otvori
-          </Button>
-        </CardActions>
-      </Card>
-    </Box>
+        <Button>Upiši se</Button>
+        <Button component={Link} to={`/courses/${course.id}`} size="small">
+          Otvori
+        </Button>
+      </CardActions>
+    </Card>
+    // </Box>
   );
 }

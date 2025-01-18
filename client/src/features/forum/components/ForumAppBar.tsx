@@ -7,6 +7,7 @@ import ForumIcon from "@mui/icons-material/Forum";
 import { Link, useNavigate } from "react-router-dom";
 // import { resetCoursesParams, fetchCoursesAsync } from "../courseSlice";
 import { useAppDispatch } from "../../../app/store/configureStore";
+import { Grid } from "@mui/material";
 
 //STAVITI FIKSNI HEIGHT ZBOG APPAPPBARA
 
@@ -21,41 +22,46 @@ export default function ForumAppBar() {
 
   //DODATI I JEDAN TAB KAO TEME U KOJIMA JE UCESTVOVAO A NIJE IH KREIRAO
   return (
-    <AppBar
-      //ne radi sticky
-      position="sticky"
-      enableColorOnDark
+    <Box
+      //enableColorOnDark
       sx={{
-        top: 30,
+        // width:"50%",
+        // top: 30,
         boxShadow: 0,
-        bgcolor: "transparent",
+        bgcolor: "background.paper",
+        borderRadius: "22px",
+
         backgroundImage: "none",
-        mt: "calc(var(--template-frame-height, 0px) + 28px)",
-        textAlign: "center",
+        // mt: 10,
+        //textAlign: "center",
         padding: 0,
-        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
       }}
     >
-      <Container
-        maxWidth="lg"
+      <Grid
+        // maxWidth="lg"
         sx={{
+          // position: "fixed",
           display: "flex",
-          direction: "row",
+          flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
+          padding: 0,
+          margin: 0,
+          width: "100%",
         }}
       >
         <Toolbar
-          disableGutters
           variant="dense"
           sx={{
-            borderRadius: "22px",
             // backdropFilter: "blur(36px)",
-            backgroundColor: "secondary.main",
-            border: "1px solid ",
-            borderColor: "text.secondary",
-            padding: "0",
-            width: "60%",
+            // backgroundColor: "secondary.main",
+            // border: "1px solid ",
+            // borderColor: "text.secondary",
+            padding: 0,
+            width: "70%",
           }}
         >
           <Box
@@ -69,6 +75,36 @@ export default function ForumAppBar() {
               minHeight: 0,
             }}
           >
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  paddingX: 2,
+                  borderRadius: "25pt",
+                  color: "text.primary",
+                  fontWeight: "bold",
+                  transition: "all 0.5s ease", // Dodaje animaciju
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    color: "action.hover", // Promijeni boju na hover
+                    backgroundColor: "action.active",
+                  },
+                  fontFamily: "Raleway, sans-serif",
+                }}
+                component={Link}
+                to="/themes?type=all"
+              >
+                Sve teme
+              </Button>
+            </Box>
+
             <Box
               sx={{
                 display: "flex",
@@ -87,14 +123,16 @@ export default function ForumAppBar() {
                   fontWeight: "bold",
                   margin: 0,
                   padding: 0,
-                  transition: "all 0.9s ease", // Dodaje animaciju
+                  transition: "all 0.5s ease", // Dodaje animaciju
                   // backgroundColor: "transparent",
                   "&:hover": {
-                    color: "background.paper", // Promijeni boju na hover
+                    color: "primary.main", // Promijeni boju na hover
                   },
+                  fontFamily: "Raleway, sans-serif",
                 }}
               />
             </Box>
+
             <Box
               sx={{
                 display: { xs: "none", md: "flex" },
@@ -110,40 +148,13 @@ export default function ForumAppBar() {
                   borderRadius: "25pt",
                   color: "text.primary",
                   fontWeight: "bold",
-                  transition: "all 0.9s ease", // Dodaje animaciju
+                  transition: "all 0.5s ease", // Dodaje animaciju
                   backgroundColor: "transparent",
                   "&:hover": {
                     color: "action.hover", // Promijeni boju na hover
                     backgroundColor: "action.active",
                   },
-                }}
-                component={Link}
-                to="/themes?type=all"
-              >
-                Sve teme
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                display: { xs: "none", md: "flex" },
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              <Button
-                variant="text"
-                size="small"
-                sx={{
-                  paddingX: 2,
-                  borderRadius: "25pt",
-                  color: "text.primary",
-                  fontWeight: "bold",
-                  transition: "all 0.9s ease", // Dodaje animaciju
-                  backgroundColor: "transparent",
-                  "&:hover": {
-                    color: "action.hover", // Promijeni boju na hover
-                    backgroundColor: "action.active",
-                  },
+                  fontFamily: "Raleway, sans-serif",
                 }}
                 component={Link}
                 to="/themes?type=my"
@@ -153,7 +164,7 @@ export default function ForumAppBar() {
             </Box>
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+      </Grid>
+    </Box>
   );
 }

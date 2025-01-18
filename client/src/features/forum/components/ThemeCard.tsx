@@ -49,6 +49,7 @@ export default function ThemeCard({ theme }: ThemeCardProps) {
               height: 70,
               width: 70,
               margin: 0,
+              mb: 2,
             }}
           >
             <Box sx={{ textAlign: "center", fontSize: "25pt", margin: 0 }}>
@@ -95,21 +96,25 @@ export default function ThemeCard({ theme }: ThemeCardProps) {
               fontFamily: "Raleway, sans-serif",
             }}
           >
-            Autor: {theme.user.firstName}
+            Autor: {theme.user.firstName + " " + theme.user.lastName}
           </Typography>
         </Box>
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             Opis: <br />{" "}
           </Typography>
-          <Typography sx={{ color: "text.primary", overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
-            display: "-webkit-box", // Neophodno za multi-line truncation
-            WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
-            WebkitLineClamp: 3, // Maksimalan broj linija (menjajte po potrebi)
-            lineHeight: "1", // Podešava razmak između linija
-            height: "3em", // Fiksna visina: broj linija * lineHeight
-            textOverflow: "ellipsis", // Dodaje tri tačke
-             }}>
+          <Typography
+            sx={{
+              color: "text.primary",
+              overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+              display: "-webkit-box", // Neophodno za multi-line truncation
+              WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+              WebkitLineClamp: 3, // Maksimalan broj linija (menjajte po potrebi)
+              lineHeight: "1", // Podešava razmak između linija
+              height: "3em", // Fiksna visina: broj linija * lineHeight
+              textOverflow: "ellipsis", // Dodaje tri tačke
+            }}
+          >
             {theme.description}
           </Typography>
 

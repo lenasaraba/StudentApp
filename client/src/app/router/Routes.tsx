@@ -14,6 +14,7 @@ import ForumPage from "../../features/forum/ForumPage";
 import Theme from "../../features/forum/Theme";
 import Themes from "../../features/forum/Themes";
 import CreateTheme from "../../features/forum/CreateTheme";
+import CreateCourse from "../../features/onlineStudy/CreateCourse";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -79,9 +80,13 @@ export const router = createBrowserRouter([
             element: <Themes />, // Komponenta koja prikazuje teme
           },
           {
-            path:"createTheme",
-            element: <CreateTheme/>
-          }
+            path: "createTheme",
+            element: <CreateTheme />,
+          },
+          {
+            path: "createCourse",
+            element: <CreateCourse />,
+          },
         ],
       },
     ],

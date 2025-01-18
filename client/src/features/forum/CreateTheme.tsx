@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 export default function CreateTheme() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const courses = useAppSelector((state) => state.course.courses);
+  const courses = useAppSelector((state) => state.course.allCourses);
 
   const [isFreeTopic, setIsFreeTopic] = useState(false);
   const methods = useForm({
@@ -123,7 +123,7 @@ export default function CreateTheme() {
             Kreiranje teme
           </Typography>
 
-          <Grid  sx={{ paddingLeft: 0 }}>
+          <Grid sx={{ paddingLeft: 0 }}>
             <Controller
               name="title"
               control={control}
@@ -144,7 +144,7 @@ export default function CreateTheme() {
               )}
             />
           </Grid>
-          <Grid  sx={{ padding: 0 }}>
+          <Grid sx={{ padding: 0 }}>
             <Controller
               name="description"
               control={control}
@@ -167,7 +167,7 @@ export default function CreateTheme() {
               )}
             />
           </Grid>
-          <Grid  sx={{ padding: 0 }}>
+          <Grid sx={{ padding: 0 }}>
             <Controller
               name="freeTopic"
               control={control}
@@ -200,7 +200,7 @@ export default function CreateTheme() {
               )}
             />
           </Grid>
-          <Grid  sx={{ padding: 0 }}>
+          <Grid sx={{ padding: 0 }}>
             <FormControl
               fullWidth
               disabled={isFreeTopic}
@@ -265,7 +265,6 @@ export default function CreateTheme() {
           </Grid>
 
           <Grid
-            
             sx={{ display: "flex", justifyContent: "space-evenly", padding: 0 }}
           >
             <Button onClick={handleClose}>Odustani</Button>

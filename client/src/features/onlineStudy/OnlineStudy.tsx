@@ -23,8 +23,10 @@ import AppAppBar from "./components/AppAppBar";
 import MainContent from "./components/MainContent";
 import { Grid } from "@mui/material";
 import ProfessorList from "./components/ProfessorList";
-import { useAppSelector } from "../../app/store/configureStore";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import { fetchCoursesAsync, resetCoursesParams } from "./courseSlice";
+import { useEffect } from "react";
 // import Footer from './components/Footer';
 
 export default function OnlineStudy() {
@@ -36,9 +38,12 @@ export default function OnlineStudy() {
   //   }
   // }, [dispatch, location.pathname]);
 
-
   //
-
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(resetCoursesParams());
+    dispatch(fetchCoursesAsync());
+  }, []);
   const { status: courseStatus } = useAppSelector((state) => state.course);
   console.log(courseStatus);
   if (courseStatus.includes("pending"))

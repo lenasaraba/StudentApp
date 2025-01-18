@@ -65,6 +65,7 @@ export default function ThemeCard2({ theme }: ThemeCardProps) {
               fontSize: "clamp(12pt, 18pt, 20pt)",
               fontFamily: "Raleway, sans-serif",
               textDecoration: "none", // Uklanja podvlačenje linka
+              mt: 2,
 
               overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
               display: "-webkit-box", // Neophodno za multi-line truncation
@@ -97,7 +98,7 @@ export default function ThemeCard2({ theme }: ThemeCardProps) {
               fontFamily: "Raleway, sans-serif",
             }}
           >
-            Autor: {theme.user.firstName}
+            Autor: {theme.user.firstName + " " + theme.user.lastName}
           </Typography>
         </Box>
         <CardContent>

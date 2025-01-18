@@ -11,6 +11,14 @@ export interface Course {
   professorsCourse: ProfessorsCourse[];
 }
 
+export interface CreateCourse {
+  name: string;
+  description: string;
+  yearId: number;
+  studyProgramId: number;
+  date: string;
+}
+
 export interface UsersCourse {
   id: number;
   user: User;
@@ -36,7 +44,7 @@ export interface User {
 }
 
 export interface Theme {
-  id:number;
+  id: number;
   title: string;
   description: string;
   date: string;
@@ -82,6 +90,6 @@ export interface CoursesParams {
   searchTerm?: string;
   years: string[];
   studyPrograms: string[];
-  // pageNumber:number
-  // pageSize:number
+  pageNumber: number;
+  pageSize: number;
 }

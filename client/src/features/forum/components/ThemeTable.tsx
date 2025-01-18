@@ -35,6 +35,7 @@ import {
 } from "../themeSlice";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import TableRowSkeleton from "./TableRowSkeleton";
+import LoadingComponentJoy from "../../../app/layout/LoadingComponentJoy";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -127,12 +128,9 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
     };
   }, [debouncedSearch]);
 
-  console.log(
-    "444444444444444444444444444444444444444444444 " + themesParams.searchTerm,
-    themesParams.category
-  );
   // console.log(filtersLoaded)
-  if (!filtersLoaded) return <LoadingComponent message="Učitavanje tema..." />;
+  if (!filtersLoaded)
+    return <LoadingComponentJoy message="Učitavanje tema..." />;
 
   // if (themeStatus.includes("pending") || !themesLoaded)
   // return <TableRowSkeleton />;

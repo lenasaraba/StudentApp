@@ -7,6 +7,8 @@ using API.DTOs;
 using API.Entities;
 using API.RequestHelpers;
 using API.Services;
+using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,14 +29,9 @@ namespace API.Controllers
         }
 
 
-        [HttpGet("getAllCourses")]
-        public async Task<ActionResult<List<CourseDto>>> GetCourses([FromQuery] CourseParams coursesParams)
+        [HttpGet("getAllCoursesList")]
+        public async Task<ActionResult<List<CourseDto>>> GetCoursesList([FromQuery] CourseParams coursesParams)
         {
-            // var courses = await _context.Courses.Include(y => y.Year).Include(s => s.StudyProgram).Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User).Include(c => c.UsersCourse).ToListAsync();
-            // return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
-
-
-
             var query = _context.Courses
             .Include(y => y.Year)
             .Include(s => s.StudyProgram)
@@ -54,30 +51,83 @@ namespace API.Controllers
             .Include(t => t.Themes)
             .AsQueryable();
             }
-            // Filtriranje prema searchTerm
             if (!string.IsNullOrEmpty(coursesParams.SearchTerm))
             {
                 query = query.Where(c =>
                     c.Name.Contains(coursesParams.SearchTerm) ||
                     c.Description.Contains(coursesParams.SearchTerm));
             }
-            // Filtriranje prema Year
             if (coursesParams.Years != null && coursesParams.Years.Count > 0)
             {
                 query = query.Where(c => coursesParams.Years.Contains(c.Year!.Name));
             }
 
-            // Filtriranje prema StudyProgram
             if (coursesParams.StudyPrograms != null && coursesParams.StudyPrograms.Count > 0)
             {
                 query = query.Where(c => coursesParams.StudyPrograms.Contains(c.StudyProgram!.Name));
             }
 
-            // Dobavljanje filtriranih kurseva
             var courses = await query.ToListAsync();
 
             return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
         }
+
+        [HttpGet("getAllCourses")]
+        public async Task<ActionResult<PagedList<CourseDto>>> GetCourses([FromQuery] CourseParams coursesParams)
+        {
+            var query = _context.Courses
+            .Include(y => y.Year)
+            .Include(s => s.StudyProgram)
+            .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
+            .Include(c => c.UsersCourse)
+            .Include(t => t.Themes)
+            .AsQueryable();
+
+            if (coursesParams.Type == "my")
+            {
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                query = _context.Courses.Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+            .Include(y => y.Year)
+            .Include(s => s.StudyProgram)
+            .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
+            .Include(c => c.UsersCourse)
+            .Include(t => t.Themes)
+            .AsQueryable();
+            }
+            if (!string.IsNullOrEmpty(coursesParams.SearchTerm))
+            {
+                query = query.Where(c =>
+                    c.Name.Contains(coursesParams.SearchTerm) ||
+                    c.Description.Contains(coursesParams.SearchTerm));
+            }
+            if (coursesParams.Years != null && coursesParams.Years.Count > 0)
+            {
+                query = query.Where(c => coursesParams.Years.Contains(c.Year!.Name));
+            }
+
+            if (coursesParams.StudyPrograms != null && coursesParams.StudyPrograms.Count > 0)
+            {
+                query = query.Where(c => coursesParams.StudyPrograms.Contains(c.StudyProgram!.Name));
+            }
+
+            var pagedCourses = await PagedList<Course>.ToPagedList(query, coursesParams.PageNumber, coursesParams.PageSize);
+
+            // Mapiranje na ProductDto
+            var coursesDto = _mapper.Map<List<CourseDto>>(pagedCourses);
+
+            // Kreiranje PagedList<ProductDto>
+            var pagedCoursesDto = new PagedList<CourseDto>(
+                coursesDto,
+                pagedCourses.MetaData.TotalCount,
+                coursesParams.PageNumber,
+                coursesParams.PageSize
+            );
+
+            Response.AddPaginationHeader(pagedCoursesDto.MetaData);
+
+            return pagedCoursesDto;
+        }
+
 
 
         // [HttpGet("getMyCourses/{email}")]
@@ -129,13 +179,45 @@ namespace API.Controllers
         [HttpGet("filters")]
         public async Task<IActionResult> GetFilters()
         {
-            var years = await _context.Courses.Select(c => c.Year!.Name).Distinct().ToListAsync();
-            var programs = await _context.Courses.Select(c => c.StudyProgram!.Name).Distinct().ToListAsync();
+            var years = await _context.Courses.Select(c => c.Year!).Distinct().ToListAsync();
+            var programs = await _context.Courses.Select(c => c.StudyProgram!).Distinct().ToListAsync();
 
 
             return Ok(new { years, programs });
         }
 
+        [Authorize]
+        [HttpPost("CreateCourse")]
+        public async Task<ActionResult<CourseDto>> CreateCourse(CreateCourseDto newCourse)
+        {
+             var user = await _userManager.FindByNameAsync(User!.Identity!.Name!);
+
+             var course=_mapper.Map<Course>(newCourse);
+            course.Year = await _context.Years
+            .FirstOrDefaultAsync(y => y.Id == newCourse.YearId);
+            course.YearId=newCourse.YearId;
+
+            course.StudyProgram = await _context.StudyPrograms
+            .FirstOrDefaultAsync(y => y.Id == newCourse.StudyProgramId);
+            course.StudyProgramId=newCourse.StudyProgramId;
+
+            _context.Courses.Add(course);
+            await _context.SaveChangesAsync();
+
+             var professorCourse = new ProfessorCourse
+            {
+                UserId = user!.Id,
+                CourseId = course.Id,
+                EnrollDate=course.CourseCreationDate
+            };
+
+            // Dodavanje veze u bazu
+            _context.ProfessorCourses.Add(professorCourse);
+            await _context.SaveChangesAsync(); 
+            var courseDto = _mapper.Map<CourseDto>(course);
+            return CreatedAtAction(nameof(GetCourse), new { id = courseDto.Id }, courseDto);
+
+        }
 
     }
 }

@@ -31,9 +31,9 @@ export default function AppAppBar() {
         // mt: 10,
         //textAlign: "center",
         padding: 0,
-        display:"flex",
-        flexDirection:"column",
-        justifyContent:"center",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
       }}
     >
       <Grid
@@ -123,10 +123,11 @@ export default function AppAppBar() {
                   "&:hover": {
                     color: "primary.main", // Promijeni boju na hover
                   },
+                  fontFamily: "Raleway, sans-serif",
                 }}
               />
             </Box>
-            
+
             <Box
               sx={{
                 display: { xs: "none", md: "flex" },
