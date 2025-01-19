@@ -135,7 +135,7 @@ export default function Themes() {
           </div>
           <Divider sx={{ marginBottom: 4 }} />
 
-          <ThemeTable theme={theme} />
+          <ThemeTable themeM={theme} />
           {/* <ThemeList /> */}
           {/* OVO SE NE PRIKAZUJE NA LAPTOPU, ALI FINO IZGLEDA, POGLEDATI */}
         </Grid>
