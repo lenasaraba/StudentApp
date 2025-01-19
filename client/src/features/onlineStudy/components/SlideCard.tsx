@@ -115,7 +115,7 @@ export default function SlideCard({ courses }: SlideCardProps) {
       </Typography> */}
 
         <MobileStepper
-          variant="dots"
+          variant="text"
           steps={courses.length}
           position="static"
           activeStep={activeStep}

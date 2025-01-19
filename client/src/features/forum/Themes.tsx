@@ -9,17 +9,17 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import { Link, useSearchParams } from "react-router-dom";
 import ThemeTable from "./components/ThemeTable";
 import { Breadcrumbs, Grid, useTheme } from "@mui/material";
-import { useAppDispatch } from "../../app/store/configureStore";
-import { resetThemesParams } from "./themeSlice";
+import { useAppSelector } from "../../app/store/configureStore";
 
 // import ThemeList from "./components/ThemeList";
 
 export default function Themes() {
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const themesType = searchParams.get("type");
   const theme = useTheme();
-
+  const { user } = useAppSelector((state) => state.account);
+  console.log({ ...theme });
   return (
     <CssVarsProvider disableTransitionOnChange>
       {/* <CssBaseline /> */}
@@ -110,26 +110,28 @@ export default function Themes() {
             >
               Teme
             </Typography>
-            <Button
-              component={Link}
-              to="/createTheme"
-              //onClick={handleOpen}
-              sx={{
-                backgroundColor: theme.palette.primary.dark,
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: "20px",
-                // fontSize: "30px",
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.light,
-                },
-                height: "fit-content",
-                width: "3rem",
-                boxSizing: "border-box",
-              }}
-            >
-              <AddIcon sx={{ fontSize: "16pt" }} />
-            </Button>
+            {user && (
+              <Button
+                component={Link}
+                to="/createTheme"
+                //onClick={handleOpen}
+                sx={{
+                  backgroundColor: theme.palette.primary.dark,
+                  color: "white",
+                  padding: "10px 20px",
+                  borderRadius: "20px",
+                  // fontSize: "30px",
+                  "&:hover": {
+                    backgroundColor: theme.palette.primary.light,
+                  },
+                  height: "fit-content",
+                  width: "3rem",
+                  boxSizing: "border-box",
+                }}
+              >
+                <AddIcon sx={{ fontSize: "16pt" }} />
+              </Button>
+            )}
           </div>
           <Divider sx={{ marginBottom: 4 }} />
 

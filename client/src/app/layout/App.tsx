@@ -20,7 +20,7 @@ import { fetchCurrentUser } from "../../features/account/accountSlice";
 import { fetchProfessorsAsync } from "../../features/onlineStudy/professorSlice";
 import { fetchThemesAsync } from "../../features/forum/themeSlice";
 import { fetchMessagesAsync } from "../../features/forum/messageSlice";
-
+import "./app.css"; //
 const NAVIGATION: Navigation = [
   {
     kind: "header",
@@ -65,47 +65,8 @@ const BRANDING = {
   logo: <SchoolIcon sx={{ fontSize: "2rem" }} />,
 };
 
-// const { palette } = createTheme();
-// const theme = createTheme({
-//   palette: {
-//     myAwesomeColor: palette.augmentColor({ color: purple }),
-//     // Use this code if you want to use an arbitrary color// myAwesomeColor: palette.augmentColor({//   color: {//     main: "#00ff00"//   }// })
-//   },
-// });
-
 const demoTheme = extendTheme({
   colorSchemes: {
-    // light: {
-    //   palette: {
-    //     text: {
-    //       primary: "#4D869C",
-    //       secondary: "#89a8b2",
-    //       disabled: "#adbac7",
-    //     },
-    //     action: {
-    //       active: "#89a8b2",
-    //       hover: "#7AB2B2",
-    //       //19334d
-    //       disabled: "#adbac7",
-    //       disabledBackground: "#6b7d8e",
-    //     },
-    //     background: {
-    //       default: "#EEF7FF",
-    //       // paper: "#CDE8E5",
-    //       paper: "#81BFDA",
-    //     },
-    //     divider: "#CDE8E5",
-    //     primary: { main: "#3a98b9" },
-    //     secondary: { main: "#eef7ff80" },
-    //     common:{
-    //       background:"#6096B4",
-    //       white: "#ffffff",
-    //       black: "#201E43",
-    //       onBackground:"#AFD3E2",
-    //       backgroundChannel:"#67C6E3"
-    //     }
-    //   },
-    // },
     light: {
       palette: {
         text: {
@@ -125,6 +86,8 @@ const demoTheme = extendTheme({
         background: {
           default: "#f7f9fc", // nežno svetlo siva za pozadinu
           paper: "#e3edf5", // blago plava za kartice i slične elemente
+          // defaultChannel: "red",
+          // paperChannel: "red",
         },
         divider: "#e3edf5", // prigušena svetlo siva za linije razdvajanja
         primary: { main: "#89a8b2" }, // neutralna plava kao primarna boja
@@ -136,6 +99,9 @@ const demoTheme = extendTheme({
           black: "#1a2b3c", // još tamnija nijansa za istaknuti tekst ili naslove
           onBackground: "#6b8ca1", // svetlija prigušena plava za sekundarni tekst
           backgroundChannel: "#c4dae6", // mekana pastelna plava za naglašene delove u poruci
+        },
+        Tooltip: {
+          bg: "#89a8b2",
         },
       },
     },
@@ -170,6 +136,9 @@ const demoTheme = extendTheme({
           black: "#ffffff", // Tekst na svetlim površinama
           onBackground: "#8faecc", // Tekst na kanalima i istaknuti elementi
           backgroundChannel: "#2a415b", // Sekundarne pozadine
+        },
+        Tooltip: {
+          bg: "#608bc1",
         },
       },
     },

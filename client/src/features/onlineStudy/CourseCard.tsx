@@ -37,7 +37,20 @@ export default function CourseCard({ course }: Props) {
         }
         title={course.name}
         titleTypographyProps={{
-          sx: { fontWeight: "bold", color: "primary.main" },
+          sx: {
+            fontWeight: "bold",
+            color: "primary.main",
+            fontFamily: "Raleway,sans-serif",
+            fontSize: "clamp(12px, 14px, 16px)",
+            overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+            display: "-webkit-box", // Neophodno za multi-line truncation
+            WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+            WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
+            lineHeight: "1.2", // Podešava razmak između linija
+
+            height: "1.2em", // Fiksna visina: broj linija * lineHeight
+            textOverflow: "ellipsis", // Dodaje tri tačke
+          },
         }}
       />
       <CourseCardMedia
@@ -52,7 +65,21 @@ export default function CourseCard({ course }: Props) {
         //title={course.name}
       />
       <CardContent>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            fontFamily: "Raleway,sans-serif",
+            fontSize: "clamp(12px, 14px, 16px)",
+            overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
+            display: "-webkit-box", // Neophodno za multi-line truncation
+            WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+            WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
+            lineHeight: "1.3", // Podešava razmak između linija
+            height: "1.3em", // Fiksna visina: broj linija * lineHeight
+            textOverflow: "ellipsis", // Dodaje tri tačke
+          }}
+        >
           {course.studyProgram.name} - {course.year.name}
         </Typography>
       </CardContent>
@@ -66,8 +93,13 @@ export default function CourseCard({ course }: Props) {
           >
             Add to cart
           </LoadingButton> */}
-        <Button>Upiši se</Button>
-        <Button component={Link} to={`/courses/${course.id}`} size="small">
+        <Button sx={{ fontFamily: "Raleway, sans-serif" }}>Upiši se</Button>
+        <Button
+          component={Link}
+          to={`/courses/${course.id}`}
+          size="small"
+          sx={{ fontFamily: "Raleway, sans-serif" }}
+        >
           Otvori
         </Button>
       </CardActions>

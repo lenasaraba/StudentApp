@@ -18,7 +18,6 @@ import { useEffect, useMemo, useState } from "react";
 import {
   fetchCoursesAsync,
   fetchFilters,
-  resetCoursesParams,
   setCoursesParams,
   setPageNumber,
 } from "./courseSlice";
@@ -225,35 +224,40 @@ export default function CourseList() {
           >
             Kursevi
           </Typography>
-          <Button
-            component={Link}
-            to="/createCourse"
-            //onClick={handleOpen}
-            sx={{
-              backgroundColor: "primary.dark",
-              color: "white",
-              padding: "10px 20px",
-              borderRadius: "20px",
-              // fontSize: "16px",
-              "&:hover": {
-                backgroundColor: "primary.light",
-              },
-              height: "fit-content",
-              minWidth: 0,
-              width: "3rem",
-              boxSizing: "border-box",
-              // height: "auto",
-            }}
-          >
-            <AddIcon sx={{ fontSize: "16pt" }} />
-          </Button>
+          {user && (
+            <Button
+              component={Link}
+              to="/createCourse"
+              //onClick={handleOpen}
+              sx={{
+                backgroundColor: "primary.dark",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "20px",
+                // fontSize: "16px",
+                "&:hover": {
+                  backgroundColor: "primary.light",
+                },
+                height: "fit-content",
+                minWidth: 0,
+                width: "3rem",
+                boxSizing: "border-box",
+                // height: "auto",
+              }}
+            >
+              <AddIcon sx={{ fontSize: "16pt" }} />
+            </Button>
+          )}
         </div>
         <Divider sx={{ marginBottom: 4 }} />
         <Box
           sx={{
             borderRadius: "sm",
             py: 0,
-            display: { xs: "none", sm: "flex" },
+            display: {
+              xs: "none",
+              sm: "flex",
+            },
             flexWrap: "wrap",
             gap: 1.5,
             flexDirection: "column",
@@ -363,13 +367,18 @@ export default function CourseList() {
             {!coursesLoaded ? (
               <Grid
                 container
-                spacing={0} // Dodaje razmak između Grid elemenata
-                justifyContent="space-between" // Podešava razmak između elemenata
-                columns={12} // Ukupno broj kolona u mreži
-                sx={{ width: "100%", rowGap: 4, mt: 4 }}
+                spacing={0} // Uklanjamo automatski razmak između elemenata
+                justifyContent="flex-start" // Elementi idu redom, bez centriranja ili raspodele
+                columns={12}
+                sx={{
+                  width: "100%",
+                  gap: "2.5%",
+                  mt: 4,
+                  rowGap: 4,
+                }}
               >
                 {coursesToDisplay!.map((course) => (
-                  <Grid item xs={12} md={3.8} key={course.id}>
+                  <Grid item xs={12} sm={5.8} md={3.8} key={course.id}>
                     <CourseCardSkeleton />
                   </Grid>
                 ))}
@@ -377,13 +386,24 @@ export default function CourseList() {
             ) : (
               <Grid
                 container
-                spacing={0} // Dodaje razmak između Grid elemenata
-                justifyContent="space-between" // Podešava razmak između elemenata
-                columns={12} // Ukupno broj kolona u mreži
-                sx={{ width: "100%", rowGap: 4, mt: 4 }}
+                spacing={0} // Uklanjamo automatski razmak između elemenata
+                justifyContent="flex-start" // Elementi idu redom, bez centriranja ili raspodele
+                columns={12}
+                sx={{
+                  width: "100%",
+                  gap: "2.5%",
+                  mt: 4,
+                  rowGap: 4,
+                }}
               >
                 {coursesToDisplay!.map((course) => (
-                  <Grid item xs={12} md={3.8} key={course.id}>
+                  <Grid
+                    item
+                    xs={12} // Na najmanjim ekranima zauzima celu širinu
+                    sm={5.8} // Na manjim ekranima dve kartice u redu
+                    md={3.8} // Na srednjim ekranima tri kartice u redu sa prostorom između njih
+                    key={course.id}
+                  >
                     <CourseCard course={course} />
                   </Grid>
                 ))}

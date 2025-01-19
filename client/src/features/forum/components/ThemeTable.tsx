@@ -1,5 +1,5 @@
 // /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 // import { ColorPaletteProp } from "@mui/joy/styles";
 import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
@@ -14,7 +14,7 @@ import Sheet from "@mui/joy/Sheet";
 import { debounce, TableBody, Theme } from "@mui/material";
 import { Typography as MuiTypo } from "@mui/material";
 
-import { Link as JoyLink } from "@mui/joy";
+import { Link as JoyLink, useTheme } from "@mui/joy";
 import { Typography } from "@mui/joy";
 import { Link } from "react-router-dom";
 
@@ -64,6 +64,22 @@ interface ThemeTableProps {
   theme: Theme; // Define the 'theme' prop type
 }
 export default function ThemeTable({ theme }: ThemeTableProps) {
+  const joyTheme = useTheme();
+  console.log({ ...joyTheme });
+  const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [hoverColor, setHoverColor] = useState<string>("");
+  const [backgroundColor, setBackgroundColor] = useState<string>("");
+  const handleMouseEnter = (index: number) => {
+    if (optionRefs.current[index]) {
+      const computedStyle = window.getComputedStyle(optionRefs.current[index]);
+      setHoverColor(computedStyle.backgroundColor);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoverColor(""); // Resetuj hover boju kad miš napusti
+  };
+  console.log(backgroundColor);
   const [order, setOrder] = useState<Order>("desc");
 
   const dispatch = useAppDispatch();
@@ -165,12 +181,15 @@ export default function ThemeTable({ theme }: ThemeTableProps) {
             themeStatus.length > 0 &&
             themeStatus.map((status, index) => (
               <Option
+                ref={(el) => (optionRefs.current[index] = el)}
                 key={index}
                 value={status}
                 sx={{
                   backgroundColor: theme.palette.background.paper,
                   color: theme.palette.primary.main,
                 }}
+                onMouseEnter={() => handleMouseEnter(index)} // Kada miš pređe preko
+                onMouseLeave={handleMouseLeave}
               >
                 {status}
               </Option>

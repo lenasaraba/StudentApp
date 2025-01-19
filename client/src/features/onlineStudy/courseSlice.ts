@@ -82,18 +82,23 @@ export const fetchCoursesAsync = createAsyncThunk<
   { state: RootState }
 >("course/fetchCoursesAsync", async (_, thunkAPI) => {
   const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
-
+  const courses = await agent.Course.list(params);
   try {
-    const courses = await agent.Course.list(params);
-    console.log("Fetched courses:", courses); // Proveri šta API vraća
+    console.log("Fetched courses:", courses.items); // Proveri šta API vraća
 
     thunkAPI.dispatch(setCourses(courses.items));
     thunkAPI.dispatch(setMetaData(courses.metaData));
 
     return courses.items;
   } catch (error: any) {
-    console.log(error.data);
-    return thunkAPI.rejectWithValue({ error: error.data });
+    try {
+      thunkAPI.dispatch(setCourses(courses.items.items));
+      thunkAPI.dispatch(setMetaData(courses.metaData));
+      return courses.items.items;
+    } catch {
+      console.log(error.data);
+      return thunkAPI.rejectWithValue({ error: error.data });
+    }
   }
 });
 

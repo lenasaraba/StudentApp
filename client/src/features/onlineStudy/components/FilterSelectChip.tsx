@@ -115,10 +115,11 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
         m: 0,
         padding: 0,
         justifyContent: "space-between",
+        flexDirection: { xs: "column", sm: "row" },
       }}
     >
       {/* Display programs as checkboxes */}
-      <Box sx={{ width: "45%" }}>
+      <Box sx={{ width: { xs: "100%", sm: "45%" } }}>
         <Box
           ref={boxRef2}
           sx={{
@@ -142,9 +143,12 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
               display: "flex",
               alignItems: "center",
               position: "relative",
-              left: alignRight
-                ? `${boxWidth2 / 2 + typographyWidth2}px` // Početna pozicija
-                : "0", // Pomera se na desni kraj
+              left:
+                typographyWidth2 > 0 && boxWidth2 > 0
+                  ? alignRight
+                    ? `${boxWidth2 - typographyWidth2}px` // Početna pozicija
+                    : "0" // Pomera se na desni kraj
+                  : "auto",
               textAlign: alignRight ? "right" : "left",
               transition: "left 0.8s ease-in-out", // Glatka tranzicija
             }}
@@ -163,14 +167,18 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
           }}
         >
           {isOpenP &&
-            programs.map((program) => (
+            programs.map((program, index) => (
               <Grid
-                key={program.id} // Premesti `key` na spoljašnji `Grid`
+                item
+                key={program.id}
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  width: "fit-content",
-                }} // Stil za poravnanje pojedinačnog elementa
+                  overflow: "hidden", // Skriva višak teksta ako pređe
+                  width: "100%", // Osigurava da zauzima svu širinu roditeljskog elementa
+                  paddingLeft:
+                    index % 2 !== 0
+                      ? `${boxWidth2 / 6.1}px`
+                      : `${boxWidth2 / 11}px`,
+                }}
               >
                 <FormControlLabel
                   control={
@@ -180,13 +188,26 @@ export default function FilterSelectChip({ programs, years, onChange }: Props) {
                     />
                   }
                   label={program.name}
-                  sx={{ margin: 0 }}
+                  sx={{
+                    margin: 0, // Uklanja marginu
+                    display: "flex", // Flex za poravnanje
+                    alignItems: "center", // Poravnava checkbox i tekst vertikalno
+                    width: "100%", // Da zauzme svu širinu
+                    "& .MuiCheckbox-root": {
+                      marginRight: 2, // Razmak između checkboxa i teksta
+                    },
+                  }}
                   slotProps={{
                     typography: {
                       fontFamily: "Raleway, sans-serif",
-                      fontSize: "clamp(12px, 14px, 16px)",
-                      display: "flex",
+                      fontSize: "clamp(12px, 14px, 16px)", // Dinamički smanjuje font
+                      display: "inline", // Menja display na inline za tekst
                       alignItems: "center",
+                      textAlign: "left", // Poravnava tekst levo
+                      whiteSpace: "nowrap", // Sprečava prelazak u novi red
+                      overflow: "hidden", // Skriva višak teksta
+                      textOverflow: "ellipsis", // Dodaje "..." kada tekst ne stane
+                      width: "100%", // Osigurava da tekst ne prelazi širinu roditelja
                     },
                   }}
                 />

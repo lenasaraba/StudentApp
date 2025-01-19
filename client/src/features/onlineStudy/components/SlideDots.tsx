@@ -22,66 +22,67 @@ export default function SlideDots({ programs }: SlideDotsProps) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  if (programs.length>0)
-    return (<>
-<Typography
-                variant="caption"
-                fontFamily="Raleway, sans-serif"
-                sx={{ display: "block", textAlign: "center" }}
-              >
-                Aktivni smjerovi profesora
-              </Typography>
-      <div style={{ margin: "0", padding: 0 }}>
-        {/* Ispis trenutnog studijskog programa */}
+  if (programs.length > 0)
+    return (
+      <>
         <Typography
-          variant="h6"
-          align="center"
-          gutterBottom
-          color="primary.main"
+          variant="caption"
           fontFamily="Raleway, sans-serif"
+          sx={{ display: "block", textAlign: "center" }}
         >
-          {programs[activeStep]}
+          Aktivni smjerovi profesora
         </Typography>
+        <div style={{ margin: "0", padding: 0 }}>
+          {/* Ispis trenutnog studijskog programa */}
+          <Typography
+            variant="h6"
+            align="center"
+            gutterBottom
+            color="primary.main"
+            fontFamily="Raleway, sans-serif"
+          >
+            {programs[activeStep]}
+          </Typography>
 
-        <MobileStepper
-          variant="text"
-          steps={programs.length}
-          position="static"
-          activeStep={activeStep}
-          sx={{ flexGrow: 1, padding: 0, color: "common.onBackground" }}
-          nextButton={
-            <Button
-              size="small"
-              onClick={handleNext}
-              disabled={activeStep === programs.length - 1}
-              sx={{ color: "common.onBackground" }}
-            >
-              Sljedeća
-              {theme.direction === "rtl" ? (
-                <KeyboardArrowLeft />
-              ) : (
-                <KeyboardArrowRight />
-              )}
-            </Button>
-          }
-          backButton={
-            <Button
-              size="small"
-              onClick={handleBack}
-              disabled={activeStep === 0}
-              sx={{ color: "common.onBackground" }}
-            >
-              {theme.direction === "rtl" ? (
-                <KeyboardArrowRight />
-              ) : (
-                <KeyboardArrowLeft />
-              )}
-              Prethodna
-            </Button>
-          }
-        />
-      </div>
+          <MobileStepper
+            variant="dots"
+            steps={programs.length}
+            position="static"
+            activeStep={activeStep}
+            sx={{ flexGrow: 1, padding: 0, color: "common.onBackground" }}
+            nextButton={
+              <Button
+                size="small"
+                onClick={handleNext}
+                disabled={activeStep === programs.length - 1}
+                sx={{ color: "common.onBackground" }}
+              >
+                Sljedeća
+                {theme.direction === "rtl" ? (
+                  <KeyboardArrowLeft />
+                ) : (
+                  <KeyboardArrowRight />
+                )}
+              </Button>
+            }
+            backButton={
+              <Button
+                size="small"
+                onClick={handleBack}
+                disabled={activeStep === 0}
+                sx={{ color: "common.onBackground" }}
+              >
+                {theme.direction === "rtl" ? (
+                  <KeyboardArrowRight />
+                ) : (
+                  <KeyboardArrowLeft />
+                )}
+                Prethodna
+              </Button>
+            }
+          />
+        </div>
       </>
     );
-    else return(<></>)
+  else return <></>;
 }
