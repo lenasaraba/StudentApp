@@ -73,6 +73,8 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
   // console.log({ ...joyTheme });
 
   const [currentColor, setCurrentColor] = useState<string>("");
+  const [statusValue, setStatusValue] = useState<string>("");
+  const [catValue, setCatValue] = useState<string>("");
 
   // Ref za pristup svim Option elementima
   const optionRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -266,8 +268,8 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
     },
   });
 
-  console.log(themeM);
-  console.log(pageTheme);
+  // console.log(themeM);
+  // console.log(pageTheme);
 
   const renderFilters = () => (
     <>
@@ -288,10 +290,10 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
               },
             },
           }}
-          value=""
-
+          value={statusValue}
           onChange={(event, value) => {
-            // console.log("Selected value:", value);
+            console.log("Selected value:", value);
+            setStatusValue(value || "");
             dispatch(setThemesParams({ themeStatus: value }));
             dispatch(fetchThemesAsync());
           }}
@@ -358,10 +360,11 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
           placeholder="Kategorija"
           onChange={(event, value) => {
             console.log("Selected category:", value);
+            setCatValue(value || "");
             dispatch(setThemesParams({ category: value }));
             dispatch(fetchThemesAsync());
           }}
-          value=""
+          value={catValue}
           sx={{
             backgroundColor: themeM.palette.background.paper,
             borderColor: themeM.palette.background.default,
@@ -380,7 +383,6 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
               sx: {
                 maxHeight: "300px",
                 backgroundColor: themeM.palette.background.paper, // Promeni pozadinu menija
-
               },
             },
           }}
@@ -453,7 +455,6 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                     backgroundColor: themeM.palette.action.hover, // Hover effect on the select button
                     color: themeM.palette.primary.main,
                   },
-                  
                 }}
               />
             </FormControl>
@@ -628,7 +629,7 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                                 WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
                                 WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
                                 lineHeight: "1", // Podešava razmak između linija
-                                height: "1em", // Fiksna visina: broj linija * lineHeight
+                                height: "1.2em", // Fiksna visina: broj linija * lineHeight
                                 textOverflow: "ellipsis", // Dodaje tri tačke
                                 fontWeight: "normal", // Normalna težina teksta inicijalno
                                 "&:hover": {
@@ -647,7 +648,7 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                                 WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
                                 WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
                                 lineHeight: "1", // Podešava razmak između linija
-                                height: "1em", // Fiksna visina: broj linija * lineHeight
+                                height: "1.2em", // Fiksna visina: broj linija * lineHeight
                                 textOverflow: "ellipsis", // Dodaje tri tačke
                               }}
                             >

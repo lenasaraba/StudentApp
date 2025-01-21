@@ -66,6 +66,15 @@ const BRANDING = {
 };
 
 const demoTheme = extendTheme({
+  components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontFamily: "'Raleway', sans-serif", // Specifično za AppBar
+        },
+      },
+    },
+  },
   colorSchemes: {
     light: {
       palette: {

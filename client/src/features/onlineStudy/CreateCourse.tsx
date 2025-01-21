@@ -86,7 +86,7 @@ export default function CreateCourse() {
     >
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        style={{ width: "40%", padding: 8 }}
+        style={{ width: "40%", padding: 8, minWidth: "fit-content" }}
       >
         <Grid
           container
@@ -216,6 +216,14 @@ export default function CreateCourse() {
                         setValue("studyProgramId", e.target.value || "0", {
                           shouldValidate: true,
                         });
+                      }}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 120,
+                            overflowY: "auto",
+                          },
+                        },
                       }}
                     >
                       <MenuItem value={0}>Izaberite smjer</MenuItem>

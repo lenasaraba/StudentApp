@@ -215,7 +215,15 @@ namespace API.Controllers
             _context.ProfessorCourses.Add(professorCourse);
             await _context.SaveChangesAsync(); 
             var courseDto = _mapper.Map<CourseDto>(course);
-            return CreatedAtAction(nameof(GetCourse), new { id = courseDto.Id }, courseDto);
+            // return CreatedAtAction(nameof(GetCourse), new { id = courseDto.Id }, courseDto);
+            var response = new
+                {
+                    Method = "CreateCourse",
+                    Status = "Success",
+                    Data = courseDto
+                };
+
+            return CreatedAtAction(nameof(GetCourse), new { id = courseDto.Id }, response); 
 
         }
 

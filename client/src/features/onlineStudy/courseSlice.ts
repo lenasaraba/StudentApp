@@ -81,24 +81,32 @@ export const fetchCoursesAsync = createAsyncThunk<
   void,
   { state: RootState }
 >("course/fetchCoursesAsync", async (_, thunkAPI) => {
-  const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
-  const courses = await agent.Course.list(params);
   try {
+    const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
+    const courses = await agent.Course.list(params);
     console.log("Fetched courses:", courses.items); // Proveri šta API vraća
 
-    thunkAPI.dispatch(setCourses(courses.items));
-    thunkAPI.dispatch(setMetaData(courses.metaData));
-
-    return courses.items;
-  } catch (error: any) {
-    try {
-      thunkAPI.dispatch(setCourses(courses.items.items));
-      thunkAPI.dispatch(setMetaData(courses.metaData));
-      return courses.items.items;
-    } catch {
-      console.log(error.data);
-      return thunkAPI.rejectWithValue({ error: error.data });
+    let responseCourses = [];
+    let responseMetaData;
+    if (courses.items.items) {
+      responseCourses = courses.items.items;
+      responseMetaData = courses.items.metaData;
+    } else {
+      responseCourses = courses.items;
+      responseMetaData = courses.metaData;
     }
+
+    // console.log(responseCourses);
+    // const plainResponse = JSON.parse(JSON.stringify(courses.items));
+    // console.log("2 2 2 2 2 2 :" + plainResponse);
+    thunkAPI.dispatch(setCourses(responseCourses));
+
+    thunkAPI.dispatch(setMetaData(responseMetaData));
+
+    return responseCourses;
+  } catch (error: any) {
+    console.log(error.data);
+    return thunkAPI.rejectWithValue({ error: error.data });
   }
 });
 
@@ -176,7 +184,7 @@ export const createCourseAsync = createAsyncThunk<Course, CreateCourse>(
     try {
       const response = await agent.Course.create(newCourse);
       // console.log(respo)
-      return response; // Ovo vraća listu poruka sa servera
+      return response.data; // Ovo vraća listu poruka sa servera
     } catch (error: unknown) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -188,8 +196,10 @@ export const courseSlice = createSlice({
   initialState,
   reducers: {
     setCourses: (state, action) => {
-      // console.log(action.payload);
-      state.courses = action.payload;
+      // console.log("OVOOOO " + action.payload);
+      // console.log({ ...action });
+      if (action.payload.items) state.courses = action.payload.items;
+      else state.courses = action.payload;
     },
     setAllCourses: (state, action) => {
       // console.log(action.payload);

@@ -19,7 +19,7 @@ export default function Themes() {
   const themesType = searchParams.get("type");
   const theme = useTheme();
   const { user } = useAppSelector((state) => state.account);
-  console.log({ ...theme });
+  // console.log({ ...theme });
   return (
     <CssVarsProvider disableTransitionOnChange>
       {/* <CssBaseline /> */}

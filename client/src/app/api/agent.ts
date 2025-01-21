@@ -19,12 +19,19 @@ const sleep = () => new Promise((resolve) => setTimeout(resolve, 500));
 axios.interceptors.response.use(
   async (response) => {
     await sleep();
-    //console.log(response)
+    console.log(response);
     // const pagination=response.headers['pagination'];    //PAGINATION MORA MALIM SLOVIMA
     // if(pagination){
     //     response.data=new PaginatedResponse(response.data, JSON.parse(pagination))
     //     //console.log(response);
     // }
+    if (response.status === 201) {
+      if (response.data.method == "CreateTheme") toast.success("Tema kreirana");
+      if (response.data.method == "CreateCourse") toast.success("Kurs kreiran");
+
+      // Ako želite, možete dodati specifičnu logiku za status 201
+    }
+
     const pagination = response.headers["pagination"];
     //console.log(response.headers);
     if (pagination) {
@@ -42,6 +49,9 @@ axios.interceptors.response.use(
     //destrukturiramo propertije koje uzimamo iz error response
     const { data, status } = error.response as AxiosResponse;
     switch (status) {
+      case 201:
+        console.log(data.title);
+        break;
       case 400:
         // if(data.errors){
         //    const modelStateErrors: string[]=[];

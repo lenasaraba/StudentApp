@@ -4,9 +4,10 @@ import { Box, Button, IconButton, useColorScheme } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAppDispatch, useAppSelector } from "../store/configureStore";
 import { signOut } from "../../features/account/accountSlice";
-import React from "react";
+import React, { useEffect } from "react";
 import NightsStayTwoToneIcon from "@mui/icons-material/NightsStayTwoTone";
 import LightModeTwoToneIcon from "@mui/icons-material/LightModeTwoTone";
+import MenuIcon from "@mui/icons-material/Menu";
 function CustomThemeToggle(): JSX.Element {
   const { mode, setMode } = useColorScheme();
 
@@ -32,6 +33,21 @@ function CustomThemeToggle(): JSX.Element {
   );
 }
 export default function Layout() {
+  // useEffect(() => {
+  //   const element = document.querySelector('[aria-label="Expand menu"]');
+  //   const currentLabel = element?.getAttribute("aria-label");
+  //   console.log(currentLabel);
+  //   if (element) {
+  //     // element.addEventListener("click", () => {
+  //     // currentLabel = element.getAttribute("aria-label");
+  //     console.log(currentLabel);
+  //     if (currentLabel?.toString() === "Expand menu") {
+  //       element.setAttribute("aria-label", "Otvori meni");
+  //       console.log(element.ariaLabel?.toString());
+  //     }
+  //     // });
+  //   }
+  // }, []);
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.account);
   function sideMenu() {
@@ -52,10 +68,31 @@ export default function Layout() {
   }
   return (
     <DashboardLayout
-      sx={{ padding: 0 }}
+      components={{
+        menuButton: (
+          <IconButton
+            aria-label="Custom label"
+            onClick={() => {
+              console.log("Menu button clicked!");
+              // Dodaj dodatnu logiku ovde, npr. otvaranje menija
+            }}
+            sx={{
+              height: "50px",
+              color: "red", // Prilagođavanje boje
+              ":hover": { backgroundColor: "secondary.light" }, // Hover efekat
+            }}
+          >
+            {/* Možeš dodati svoju ikonu */}
+            <MenuIcon />
+          </IconButton>
+        ),
+      }}
+      sx={{
+        padding: 0,
+      }}
       defaultSidebarCollapsed
       slots={{
-        toolbarActions: sideMenu,
+        toolbarActions: sideMenu, // Ako ima dodatne akcije u toolbaru
       }}
     >
       {/* <PageContainer> */}

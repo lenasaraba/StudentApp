@@ -144,7 +144,15 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
             // var themes = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m=>m.Messages).ThenInclude(u=>u.User);
             var themeDto = _mapper.Map<GetThemeDto>(theme);
-            return CreatedAtAction(nameof(GetTheme), new { id = themeDto.Id }, themeDto);
+            // return CreatedAtAction(nameof(GetTheme), new { id = themeDto.Id }, themeDto);
+            var response = new
+                {
+                    Method = "CreateTheme",
+                    Status = "Success",
+                    Data = themeDto
+                };
+
+            return CreatedAtAction(nameof(GetTheme), new { id = themeDto.Id }, response);
 
         }
 

@@ -53,7 +53,7 @@ export const fetchThemesAsync = createAsyncThunk<
   { state: RootState }
 >("theme/fetchThemesAsync", async (_, thunkAPI) => {
   const params = getAxiosParams(thunkAPI.getState().theme.themesParams);
-  console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" + params);
+  // console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" + params);
   try {
     const themes = await agent.Theme.getAll(params);
     thunkAPI.dispatch(setThemes(themes));
@@ -80,7 +80,7 @@ export const createThemeAsync = createAsyncThunk<Theme, CreateTheme>(
   async (newTheme, thunkAPI) => {
     try {
       const response = await agent.Theme.create(newTheme);
-      return response; // Ovo vraća listu poruka sa servera
+      return response.data; // Ovo vraća listu poruka sa servera
     } catch (error: unknown) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -100,7 +100,7 @@ export const themeSlice = createSlice({
         ...state.themesParams,
         ...action.payload,
       };
-      console.log(state.themesParams);
+      // console.log(state.themesParams);
     },
     resetThemesParams: (state) => {
       state.themesParams = initParams();
@@ -121,7 +121,7 @@ export const themeSlice = createSlice({
       state.status = "pendingFetchFilters";
     });
     builder.addCase(fetchFilters.fulfilled, (state, action) => {
-      console.log(action.payload);
+      // console.log(action.payload);
       state.category = action.payload.categories;
       state.themeStatus = action.payload.activeStatus;
       state.status = "idle";

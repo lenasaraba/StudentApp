@@ -63,6 +63,7 @@ export default function CreateTheme() {
     const resultAction = await dispatch(createThemeAsync(newTheme));
 
     if (createThemeAsync.fulfilled.match(resultAction)) {
+      console.log(resultAction.payload);
       navigate(`/forum/${resultAction.payload.id}`);
     } else {
       console.error("Failed to create theme:", resultAction.payload);
@@ -93,7 +94,7 @@ export default function CreateTheme() {
     >
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        style={{ width: "40%", padding: 8 }}
+        style={{ width: "40%", padding: 8, minWidth: "fit-content" }}
       >
         <Grid
           container

@@ -7,6 +7,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ForumIcon from "@mui/icons-material/Forum";
 import {
   Avatar,
+  Box,
   Card,
   CardContent,
   Collapse,
@@ -79,134 +80,176 @@ export default function Course() {
   // console.log({...course});
   return (
     <>
-      <div ref={topOfPageRef}></div>
-      <Container style={{ marginTop: "2rem" }}>
-        {/* Naslov i opisi */}
-        <Card
+      {" "}
+      <Grid
+        container
+        sx={{
+          display: "flex",
+          direction: "column",
+          position: "relative",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Grid
+          container
           sx={{
-            boxShadow: (theme) => `0px 4px 10px ${theme.palette.text.primary}`,
-            //   backgroundColor: "background.paper",
+            display: "flex",
+            flexDirection: "column",
+            margin: 0,
+            paddingX: 10,
+            paddingY: 3,
           }}
         >
-          <CardContent>
-            <Typography variant="h4" gutterBottom>
-              {course.name}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              ID: {course.id} | {course.year.name} | {course.studyProgram.name}
-            </Typography>
-            <Typography variant="body1" style={{ marginTop: "1rem" }}>
-              {course.description}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              style={{ marginTop: "1rem" }}
-            >
-              Kreirano:{" "}
-              {new Date(course.courseCreationDate).toLocaleDateString()}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              style={{ marginTop: "1rem" }}
-            >
-              Profesori
-            </Typography>
-            <Author authors={course!.professorsCourse} />
-          </CardContent>
-          <CourseCardMedia
-            year={course.year}
-            studyProgram={course.studyProgram}
-            sx={{ borderBottom: "1px solid", borderColor: "divider" }}
-          />
-        </Card>
-
-        {/* Izlistavanje sedmica */}
-        <Typography variant="h5" style={{ margin: "2rem 0 1rem 0" }}>
-          Sedmice i materijali
-        </Typography>
-        <List>
-          {[...Array(10)].map((_, index) => (
-            <div key={index}>
-              <ListItem
-                component="div"
-                onClick={() => toggleWeek(index)}
-                style={{ cursor: "pointer" }}
+          <div ref={topOfPageRef}></div>
+          {/* <Container style={{ marginTop: "2rem" }}> */}
+          {/* Naslov i opisi */}
+          <Card
+            sx={{
+              boxShadow: (theme) =>
+                `0px 4px 10px ${theme.palette.text.primary}`,
+              //   backgroundColor: "background.paper",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h4" gutterBottom>
+                {course.name}
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                ID: {course.id} | {course.year.name} |{" "}
+                {course.studyProgram.name}
+              </Typography>
+              <Typography variant="body1" style={{ marginTop: "1rem" }}>
+                {course.description}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                style={{ marginTop: "1rem" }}
               >
-                <ListItemText primary={`Sedmica ${index + 1}`} />
-                <IconButton>
-                  {openWeeks[index] ? <ExpandLess /> : <ExpandMore />}
-                </IconButton>
-              </ListItem>
-              <Collapse in={openWeeks[index]} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <ListItem>
-                    <ListItemText
-                      primary={`Materijal za sedmicu ${index + 1}`}
-                    />
-                  </ListItem>
-                </List>
-              </Collapse>
-            </div>
-          ))}
-        </List>
-        <Divider sx={{ mb: 2 }} />
-        {/* Izlistavanje tema kursa */}
-        <Grid container sx={{ mb: 2, pb: 2 }}>
-          <Grid item xs={6}>
-            <Typography variant="overline" style={{ margin: "2rem 0 1rem 0" }}>
-              Aktuelne teme za ovaj kurs na studentskom forumu
-            </Typography>
-            <Demo sx={{ borderRadius: 2 }}>
-              <List>
-                {course.themes && course.themes.length > 0 ? (
-                  course.themes.map((theme, index) => (
-                    <ListItem
-                      key={index}
-                      component={Link}
-                      to={`/forum/${theme.id}`}
-                      secondaryAction={
-                        <IconButton edge="end" aria-label="open">
-                          <OpenInNewIcon />
-                        </IconButton>
-                      }
-                    >
-                      <ListItemAvatar>
-                        <Avatar sx={{ backgroundColor: "primary.main" }}>
-                          <ForumIcon />
-                        </Avatar>
-                      </ListItemAvatar>
+                Kreirano:{" "}
+                {new Date(course.courseCreationDate).toLocaleDateString()}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                style={{ marginTop: "1rem" }}
+              >
+                Profesori
+              </Typography>
+              <Author authors={course!.professorsCourse} />
+            </CardContent>
+            {/* <Box sx={{ height: "100%", padding: 0, margin: 0 }}> */}
+            <CourseCardMedia
+              year={course.year}
+              studyProgram={course.studyProgram}
+              sx={{
+                borderBottom: "1px solid",
+                borderColor: "divider",
+                aspectRatio: "16 / 9",
+                objectFit: "cover", // Puni okvir, bez izobličenja
+                backgroundRepeat: "repeat",
+                height: "clamp(50px, 50vh, 70vh)",
+                width: "100%",
+              }}
+            />
+            {/* </Box> */}
+          </Card>
+
+          {/* Izlistavanje sedmica */}
+          <Typography variant="h5" style={{ margin: "2rem 0 1rem 0" }}>
+            Sedmice i materijali
+          </Typography>
+          <List>
+            {[...Array(10)].map((_, index) => (
+              <div key={index}>
+                <ListItem
+                  component="div"
+                  onClick={() => toggleWeek(index)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <ListItemText primary={`Sedmica ${index + 1}`} />
+                  <IconButton>
+                    {openWeeks[index] ? <ExpandLess /> : <ExpandMore />}
+                  </IconButton>
+                </ListItem>
+                <Collapse in={openWeeks[index]} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <ListItem>
                       <ListItemText
-                        sx={{
-                          textDecoration: "none", // Uklanja podvlačenje linka
-                          color: "text.primary", // Koristi boju teksta iz roditeljskog elementa
-                          "&:visited": {
-                            color: "text.primary", // Zadrži istu boju za visited linkove
-                          },
-                          "&:hover": {
-                            color: "primary.main", // Zadrži istu boju pri hover-u
-                          },
-                          "&:active": {
-                            color: "text.primary", // Zadrži istu boju pri aktivnom linku
-                          },
-                        }}
-                      >
-                        {theme.title}
-                      </ListItemText>
+                        primary={`Materijal za sedmicu ${index + 1}`}
+                      />
                     </ListItem>
-                  ))
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    Nema tema za ovaj kurs.
-                  </Typography>
-                )}
-              </List>
-            </Demo>
+                  </List>
+                </Collapse>
+              </div>
+            ))}
+          </List>
+          <Divider sx={{ mb: 2 }} />
+          {/* Izlistavanje tema kursa */}
+          <Grid container sx={{ mb: 2, pb: 2 }}>
+            <Grid item xs={12}>
+              <Typography
+                variant="overline"
+                style={{ margin: "2rem 0 1rem 0" }}
+              >
+                Aktuelne teme za ovaj kurs na studentskom forumu
+              </Typography>
+              <Demo sx={{ borderRadius: 2 }}>
+                <List>
+                  {course.themes && course.themes.length > 0 ? (
+                    course.themes.map((theme, index) => (
+                      <ListItem
+                        key={index}
+                        component={Link}
+                        to={`/forum/${theme.id}`}
+                        secondaryAction={
+                          <IconButton edge="end" aria-label="open">
+                            <OpenInNewIcon />
+                          </IconButton>
+                        }
+                      >
+                        <ListItemAvatar>
+                          <Avatar sx={{ backgroundColor: "primary.main" }}>
+                            <ForumIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          sx={{
+                            textDecoration: "none", // Uklanja podvlačenje linka
+                            color: "text.primary", // Koristi boju teksta iz roditeljskog elementa
+                            "&:visited": {
+                              color: "text.primary", // Zadrži istu boju za visited linkove
+                            },
+                            "&:hover": {
+                              color: "primary.main", // Zadrži istu boju pri hover-u
+                            },
+                            "&:active": {
+                              color: "text.primary", // Zadrži istu boju pri aktivnom linku
+                            },
+                          }}
+                        >
+                          {theme.title}
+                        </ListItemText>
+                      </ListItem>
+                    ))
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontSize: "1rem", paddingX: 2, paddingY: 1 }}
+                    >
+                      Nema tema za ovaj kurs.
+                    </Typography>
+                  )}
+                </List>
+              </Demo>
+            </Grid>
+            <Grid item xs={3} />
           </Grid>
-          <Grid item xs={3} />
+          {/* </Container> */}
         </Grid>
-      </Container>
+      </Grid>
     </>
   );
 }

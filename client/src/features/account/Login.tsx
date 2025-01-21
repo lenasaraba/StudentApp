@@ -121,7 +121,7 @@ export default function Login() {
               gap: 2,
             }}
           >
-            <FormControl>
+            <FormControl sx={{ height: "5.5rem", maxHeight: "5.5rem" }}>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
                 id="email"
@@ -135,7 +135,7 @@ export default function Login() {
                 helperText={errors?.email?.message as string}
               />
             </FormControl>
-            <FormControl>
+            <FormControl sx={{ height: "5.5rem", maxHeight: "5.5rem" }}>
               <FormLabel htmlFor="password">Lozinka</FormLabel>
               <TextField
                 placeholder="••••••"
@@ -156,18 +156,19 @@ export default function Login() {
               fullWidth
               variant="contained"
               sx={{
-                backgroundColor:"common.background",
-                color:"common.onBackground",
-                border:"1px solid",
-                borderColor:"transparent",
-                "&:hover":{backgroundColor:"secondary.main",
-                  border:"1px solid",
-                  borderColor:"common.onBackground"
+                backgroundColor: "common.background",
+                color: "common.onBackground",
+                border: "1px solid",
+                borderColor: "transparent",
+                "&:hover": {
+                  backgroundColor: "secondary.main",
+                  border: "1px solid",
+                  borderColor: "common.onBackground",
                 },
                 "&.MuiLoadingButton-loading": {
                   backgroundColor: "background.paper", // Boja tokom učitavanja
-                  border:"2px solid",
-                  borderColor:"background.default"
+                  border: "2px solid",
+                  borderColor: "background.default",
                 },
               }}
             >
