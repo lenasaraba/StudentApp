@@ -1,9 +1,7 @@
 // /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useEffect, useMemo, useRef, useState } from "react";
 // import { ColorPaletteProp } from "@mui/joy/styles";
-import Avatar from "@mui/joy/Avatar";
 import Box from "@mui/joy/Box";
-import Chip from "@mui/joy/Chip";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
@@ -14,67 +12,63 @@ import Sheet from "@mui/joy/Sheet";
 import { debounce, TableBody, Theme } from "@mui/material";
 import { Typography as MuiTypo } from "@mui/material";
 
-import { Link as JoyLink } from "@mui/joy";
+import { Avatar } from "@mui/joy";
 import { Typography } from "@mui/joy";
-import { Link } from "react-router-dom";
 
 import SearchIcon from "@mui/icons-material/Search";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
-import BlockIcon from "@mui/icons-material/Block";
 import {
   useAppDispatch,
   useAppSelector,
 } from "../../../app/store/configureStore";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  fetchFilters,
-  fetchThemesAsync,
-  resetThemesParams,
-  setThemesParams,
-} from "../themeSlice";
+
 import { ThemeProvider as MuiThemeProvider } from "@mui/material";
 import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy";
 
-import LoadingComponent from "../../../app/layout/LoadingComponent";
-import TableRowSkeleton from "./TableRowSkeleton";
+import RowSkeleton from "./RowSkeleton";
 import LoadingComponentJoy from "../../../app/layout/LoadingComponentJoy";
-import { ThemeProvider } from "@mui/joy";
-import { CssVarsProvider, extendTheme } from "@mui/joy/styles";
+import { extendTheme } from "@mui/joy/styles";
+import {
+  fetchFilters,
+  fetchProfessorCoursesAsync,
+  fetchProfessorsAsync,
+  setProfessorsParams,
+} from "../professorSlice";
+import { Link } from "react-router-dom";
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
+// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+//   if (b[orderBy] < a[orderBy]) {
+//     return -1;
+//   }
+//   if (b[orderBy] > a[orderBy]) {
+//     return 1;
+//   }
+//   return 0;
+// }
 
-type Order = "asc" | "desc";
+// type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof never>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+// function getComparator<Key extends keyof never>(
+//   order: Order,
+//   orderBy: Key
+// ): (
+//   a: { [key in Key]: number | string },
+//   b: { [key in Key]: number | string }
+// ) => number {
+//   return order === "desc"
+//     ? (a, b) => descendingComparator(a, b, orderBy)
+//     : (a, b) => -descendingComparator(a, b, orderBy);
+// }
+interface ProfessorsTableProps {
+  themeM: Theme; // Define the 'theme' prop type (tema izgled)
 }
-interface ThemeTableProps {
-  themeM: Theme; // Define the 'theme' prop type
-}
-export default function ThemeTable({ themeM }: ThemeTableProps) {
-  // const joyTheme = useTheme();
-  // console.log({ ...joyTheme });
+export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
+  // const themeM = useTheme();
+
+  //---------------PROMIJENITI ROWSKELETON
 
   const [currentColor, setCurrentColor] = useState<string>("");
-  const [statusValue, setStatusValue] = useState<string>("");
-  const [catValue, setCatValue] = useState<string>("");
+  const [yearValue, setYearValue] = useState<string>("");
+  const [programValue, setProgramValue] = useState<string>("");
 
   // Ref za pristup svim Option elementima
   const optionRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -96,62 +90,68 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
     setCurrentColor("");
   };
 
-  const [order, setOrder] = useState<Order>("desc");
+  // const [order, setOrder] = useState<Order>("desc");
 
   const dispatch = useAppDispatch();
 
-  const [searchParams] = useSearchParams();
-  const themesType = searchParams.get("type");
-  // console.log("111111111111111111111111111111111111111 " + searchParams);
   const {
-    themeStatus,
-    category,
+    years,
+    programs,
     filtersLoaded,
-    themesParams,
-    themesLoaded,
+    professorsParams,
+    professorsLoaded,
     status,
-  } = useAppSelector((state) => state.theme);
+    profYears,
+    profPrograms,
+  } = useAppSelector((state) => state.professor);
 
-  const [searchTerm, setSearchTerm] = useState(themesParams.searchTerm);
-  // console.log("2222222222222222222222222222222222222 " + searchTerm);
+  const [searchTerm, setSearchTerm] = useState(professorsParams.searchTerm);
 
   const debouncedSearch = useMemo(
     () =>
       debounce((event: any) => {
-        // console.log(
-        //   "-----------------------------------------------" + event.target.value
-        // );
+        console.log(
+          "-----------------------------------------------" + event.target.value
+        );
+
+        //DODATI U PROFESSORSLICE FUNKCIJE OVE SVE
         setSearchTerm(event.target.value);
-        dispatch(setThemesParams({ searchTerm: event.target.value }));
-        dispatch(fetchThemesAsync());
+        dispatch(setProfessorsParams({ searchTerm: event.target.value }));
+        dispatch(fetchProfessorsAsync());
       }, 1000),
-    [dispatch] // Zavisi samo od dispatch-ap
+    [dispatch]
   );
 
-  const allThemes = useAppSelector((state) => state.theme.themes);
+  const allProfessors = useAppSelector((state) => state.professor.professors);
+
+  const sortedProfessors = [...allProfessors].sort((a, b) =>
+    a.lastName.localeCompare(b.lastName)
+  );
+
+
+  useEffect(() => {
+    // Pozivanje dispatch-a za svakog profesora
+    sortedProfessors.forEach((professor) => {
+      dispatch(fetchProfessorCoursesAsync(professor.id));
+    });
+  }, [dispatch, sortedProfessors]);
 
   //themestype: my ili all
-  useEffect(() => {
-    // console.log(themesType);
-    dispatch(setThemesParams({ type: themesType }));
-    dispatch(fetchThemesAsync());
-  }, [themesType, dispatch]);
-
-  const user = useAppSelector((state) => state.account.user);
-  const navigate = useNavigate();
+  // useEffect(() => {
+  //   // console.log(themesType);
+  //   dispatch(setThemesParams({ type: themesType }));
+  //   dispatch(fetchThemesAsync());
+  // }, [themesType, dispatch]);
 
   useEffect(() => {
-    if (themesType === "my" && !user) {
-      navigate("/login");
+    if (!professorsLoaded) dispatch(fetchProfessorsAsync());
+  }, [professorsLoaded, dispatch]);
+
+  useEffect(() => {
+    if (!filtersLoaded) {
+      dispatch(fetchFilters());
+      console.log("-------aaaaaaaaaaaaaaa---------");
     }
-  }, [user, themesType, navigate]);
-
-  useEffect(() => {
-    if (!themesLoaded) dispatch(fetchThemesAsync());
-  }, [themesLoaded, dispatch]);
-
-  useEffect(() => {
-    if (!filtersLoaded) dispatch(fetchFilters());
   }, [dispatch, filtersLoaded]);
 
   useEffect(() => {
@@ -160,13 +160,8 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
     };
   }, [debouncedSearch]);
 
-  // console.log(filtersLoaded)
   if (!filtersLoaded)
-    return <LoadingComponentJoy message="Učitavanje tema..." />;
-
-  // if (themeStatus.includes("pending") || !themesLoaded)
-  // return <TableRowSkeleton />;
-  // console.log({ themeStatus });
+    return <LoadingComponentJoy message="Učitavanje profesora..." />;
 
   const pageTheme = extendTheme({
     colorSchemes: {
@@ -268,65 +263,50 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
     },
   });
 
-  // console.log(themeM);
-  // console.log(pageTheme);
-
   const renderFilters = () => (
     <>
       <FormControl size="sm">
         <FormLabel sx={{ color: themeM.palette.primary.main }}>
-          Status
+          Godina
         </FormLabel>
         <Select
           size="sm"
-          placeholder="Status"
+          placeholder="Godina"
           slotProps={{
             button: { sx: { whiteSpace: "nowrap" } },
             listbox: {
               sx: {
-                // maxHeight: 200, // Postavljanje maksimalne visine menija
-                // overflowY: "auto", // Omogućava skrolovanje
-                backgroundColor: themeM.palette.background.paper, // Promeni pozadinu menija
+                backgroundColor: themeM.palette.background.paper,
               },
             },
           }}
-          value={statusValue}
+          value={yearValue}
           onChange={(event, value) => {
             console.log("Selected value:", value);
-            setStatusValue(value || "");
-            dispatch(setThemesParams({ themeStatus: value }));
-            dispatch(fetchThemesAsync());
+            setYearValue(value || "");
+            dispatch(setProfessorsParams({ year: value }));
+            dispatch(fetchProfessorsAsync());
           }}
-          // MenuProps={{
-          //   PaperProps: {
-          //     sx: {
-          //       maxHeight: 200,  // Postavljanje maksimalne visine menija
-          //       overflowY: 'auto',  // Omogućava skrolovanje
-          //       backgroundColor: 'gray',  // Promeni pozadinu menija
-          //     },
-          //   },
-          // }}
           sx={{
-            // "--ListDivider-gap": 0,
             backgroundColor: themeM.palette.background.paper,
             borderColor: themeM.palette.background.default,
             color: themeM.palette.primary.main,
 
             "&:hover": {
-              backgroundColor: themeM.palette.action.hover, // Hover effect on the select button
+              backgroundColor: themeM.palette.action.hover,
               color: themeM.palette.primary.main,
             },
             "&.Mui-focused": {
-              borderColor: themeM.palette.primary.main, // Focus state for the select component
+              borderColor: themeM.palette.primary.main,
             },
           }}
         >
-          {themeStatus &&
-            themeStatus.length > 0 &&
-            themeStatus.map((status, index) => (
+          {years &&
+            years.length > 0 &&
+            years.map((year, index) => (
               <Option
                 key={index}
-                value={status}
+                value={year}
                 ref={(el) => (optionRefs.current[index] = el)} // Čuvanje reference na Option
                 onMouseEnter={() => handleHover(index)} // Čitanje boje pri hover-u
                 onMouseLeave={() => handleMouseLeave(index)} // Resetovanje boje
@@ -346,25 +326,23 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                   },
                 }}
               >
-                {status}
+                {year}
               </Option>
             ))}
         </Select>
       </FormControl>
       <FormControl size="sm">
-        <FormLabel sx={{ color: themeM.palette.primary.main }}>
-          Kategorija
-        </FormLabel>
+        <FormLabel sx={{ color: themeM.palette.primary.main }}>Smjer</FormLabel>
         <Select
           size="sm"
-          placeholder="Kategorija"
+          placeholder="Smjer"
           onChange={(event, value) => {
-            console.log("Selected category:", value);
-            setCatValue(value || "");
-            dispatch(setThemesParams({ category: value }));
-            dispatch(fetchThemesAsync());
+            console.log("Selected program:", value);
+            setProgramValue(value || "");
+            dispatch(setProfessorsParams({ program: value }));
+            dispatch(fetchProfessorsAsync());
           }}
-          value={catValue}
+          value={programValue}
           sx={{
             backgroundColor: themeM.palette.background.paper,
             borderColor: themeM.palette.background.default,
@@ -387,12 +365,12 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
             },
           }}
         >
-          {category &&
-            category.length > 0 &&
-            category.map((cat, index) => (
+          {programs &&
+            programs.length > 0 &&
+            programs.map((program, index) => (
               <Option
                 key={index}
-                value={cat}
+                value={program}
                 sx={{
                   backgroundColor: themeM.palette.background.paper,
                   color: themeM.palette.primary.main,
@@ -410,7 +388,7 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                   },
                 }}
               >
-                {cat}
+                {program}
               </Option>
             ))}
         </Select>
@@ -437,7 +415,7 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
           >
             <FormControl sx={{ flex: 1 }} size="sm">
               <FormLabel sx={{ color: themeM.palette.primary.main }}>
-                Pretraži prema ključnoj riječi
+                Pretraži prema imenu i/ili prezimenutf
               </FormLabel>
               <Input
                 size="sm"
@@ -492,75 +470,56 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                 width: "100%",
               }}
             >
-              <thead style={{ width: "100%", display: "flex" }}>
+              <thead
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
                 <tr
                   style={{
-                    width: "100%",
+                    width: "95%",
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between", // Koristimo space-between da rasporedimo sadržaj
                     alignItems: "center", // Osiguravamo da su stavke poravnate
                   }}
                 >
-                  <th style={{ width: "25%", flex: 1 }}>
-                    <JoyLink
-                      underline="none"
-                      color="primary"
-                      component="button"
-                      onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
-                      endDecorator={<ArrowDropDownIcon />}
-                      sx={{
-                        fontWeight: "lg",
-                        "& svg": {
-                          transition: "0.2s",
-                          transform:
-                            order === "desc"
-                              ? "rotate(0deg)"
-                              : "rotate(180deg)",
-                        },
-                        color: themeM.palette.primary.main,
-                      }}
-                    >
-                      {order === "asc" ? "Najstarije" : "Najnovije"}
-                    </JoyLink>
-                  </th>
                   <th
                     style={{
-                      // padding: "12px 12px",
+                      width: "25%",
+                      flex: 1,
                       color: themeM.palette.primary.main,
-                      // width: "25%",
+                    }}
+                  >
+                    Ime i prezime
+                  </th>
+
+                  <th
+                    style={{
+                      color: themeM.palette.primary.main,
                       flex: 1,
                     }}
                   >
-                    Datum
+                    Godine
                   </th>
                   <th
                     style={{
                       color: themeM.palette.primary.main,
-                      //  width: "25%",
                       flex: 1,
                     }}
                   >
-                    Kategorija
-                  </th>
-                  <th
-                    style={{
-                      // padding: "12px 12px",
-                      color: themeM.palette.primary.main,
-                      // width: "25%",
-                      flex: 1,
-                    }}
-                  >
-                    Status
+                    Smjerovi
                   </th>
                   <th
                     style={{
                       color: themeM.palette.primary.main,
-                      // width: "25%",
                       flex: 1,
                     }}
                   >
-                    Kreator
+                    Email
                   </th>
                 </tr>
               </thead>
@@ -569,7 +528,9 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                   maxHeight: "50vh",
                   overflowY: "auto",
                   backgroundColor: themeM.palette.background.default,
-                  display: "block",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                   width: "100%",
                   "&::-webkit-scrollbar": {
                     width: "8px",
@@ -586,17 +547,21 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                   },
                 }}
               >
-                {status.includes("pending") || !themesLoaded ? (
-                  <TableRowSkeleton />
+                {status.includes("pending") || !professorsLoaded ? (
+                  <RowSkeleton />
                 ) : (
-                  allThemes &&
-                  [...allThemes]
-                    .sort(getComparator(order, "id"))
-                    .map((theme1) => (
+                  sortedProfessors &&
+                  [...sortedProfessors]
+                    // .sort(getComparator(order, "id"))
+                    .map((prof) => (
                       <tr
-                        key={theme1.id}
+                        key={prof.id}
                         style={{
-                          width: "100%",
+                          borderBottom: "1px solid",
+                          borderColor:themeM.palette.background.paper,
+                          // borderWidth:"90%",
+                          // borderCollapse: "collapse",
+                          width: "95%",
                           display: "flex",
                           flexDirection: "row",
                           justifyContent: "space-between", // Koristimo space-between da rasporedimo sadržaj
@@ -616,14 +581,25 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                             border: 0,
                           }}
                         >
-                          <div>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              gap: 2,
+                              alignItems: "center",
+                            }}
+                          >
+                            <Avatar
+                              size="sm"
+                              sx={{ bgcolor: themeM.palette.primary.main }}
+                            >
+                              {prof.lastName.charAt(0).toUpperCase()}
+                            </Avatar>
                             <MuiTypo
-                              component={Link}
-                              to={`../forum/${theme1.id}`}
+                            component={Link}
+                            to={`/professorInfo/${prof.id}`}
                               sx={{
-                                textDecoration: "none",
+                                textDecoration:"none",
                                 color: themeM.palette.action.active,
-                                cursor: "pointer",
                                 overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
                                 display: "-webkit-box", // Neophodno za multi-line truncation
                                 WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
@@ -632,31 +608,17 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                                 height: "1.2em", // Fiksna visina: broj linija * lineHeight
                                 textOverflow: "ellipsis", // Dodaje tri tačke
                                 fontWeight: "normal", // Normalna težina teksta inicijalno
-                                "&:hover": {
-                                  color: themeM.palette.primary.main, // Boja za hover stanje
-                                  fontWeight: "bold", // Boldovanje na hover
-                                },
+                               "&:hover":{
+                                cursor:"pointer",
+                                color:themeM.palette.text.primary,
+                               }
                               }}
                             >
-                              {theme1.title}
+                              {prof.lastName} {prof.firstName}
                             </MuiTypo>
-                            <MuiTypo
-                              sx={{
-                                color: themeM.palette.action.active,
-                                overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
-                                display: "-webkit-box", // Neophodno za multi-line truncation
-                                WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
-                                WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
-                                lineHeight: "1", // Podešava razmak između linija
-                                height: "1.2em", // Fiksna visina: broj linija * lineHeight
-                                textOverflow: "ellipsis", // Dodaje tri tačke
-                              }}
-                            >
-                              {theme1.description}
-                            </MuiTypo>
-                          </div>
+                          </Box>
                         </td>
-                        <td
+                        {/* <td
                           style={{
                             padding: "0 12px",
                             flex: 1,
@@ -680,9 +642,9 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                               day: "2-digit",
                               month: "2-digit",
                               year: "numeric",
-                            })}
+                            })} 
                           </Typography>
-                        </td>
+                        </td> */}
                         <td
                           style={{
                             padding: "0 12px",
@@ -696,10 +658,13 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                               color: themeM.palette.action.active,
                             }}
                           >
-                            {" "}
+                            {/* {" "}
                             {theme1.course != null
                               ? theme1.course.name
-                              : "Slobodna tema"}
+                              : "Slobodna tema"} */}
+                            {profYears?.[prof.id]
+                              ?.map((year) => year.name)
+                              .join(", ") || "Nema"}
                           </Typography>
                         </td>
                         <td
@@ -710,7 +675,7 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                             border: 0,
                           }}
                         >
-                          <Chip
+                          {/* <Chip
                             variant="soft"
                             size="sm"
                             startDecorator={
@@ -725,13 +690,19 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                                 : themeM.palette.text.secondaryChannel, // Prilagođene boje
                               color: "#fff", // Tekst u beloj boji
                               borderRadius: "16px", // Primer prilagođenog oblika
-                              ".MuiChip-icon": {
-                                color: "#fff",
-                              },
                             }}
                           >
                             {theme1.active ? "Aktivno" : "Zatvoreno"}
-                          </Chip>
+                          </Chip> */}
+                          <Typography
+                            sx={{
+                              color: themeM.palette.action.active,
+                            }}
+                          >
+                            {profPrograms?.[prof.id]
+                              ?.map((program) => program.name)
+                              .join(", ") || "Nema"}
+                          </Typography>
                         </td>
                         <td
                           style={{
@@ -741,38 +712,36 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                             border: 0,
                           }}
                         >
-                          <Box
+                          {/* <Box
                             sx={{
                               display: "flex",
                               gap: 2,
                               alignItems: "center",
                             }}
-                          >
-                            <Avatar
+                          > */}
+                          {/* <Avatar
                               size="sm"
                               sx={{ bgcolor: themeM.palette.primary.main }}
                             >
                               {theme1.user.firstName.charAt(0).toUpperCase()}
-                            </Avatar>
-                            <div>
-                              <Typography
+                            </Avatar> */}
+                          {/* <Typography
                                 level="body-xs"
                                 sx={{
                                   color: themeM.palette.action.active,
                                 }}
                               >
                                 {theme1.user.firstName} {theme1.user.lastName}
-                              </Typography>
-                              <Typography
-                                level="body-xs"
-                                sx={{
-                                  color: themeM.palette.action.active,
-                                }}
-                              >
-                                {theme1.user.email}
-                              </Typography>
-                            </div>
-                          </Box>
+                              </Typography> */}
+                          <Typography
+                            level="body-xs"
+                            sx={{
+                              color: themeM.palette.action.active,
+                            }}
+                          >
+                            {prof.email}
+                          </Typography>
+                          {/* </Box> */}
                         </td>
                       </tr>
                     ))

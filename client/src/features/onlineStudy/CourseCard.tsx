@@ -6,7 +6,6 @@ import {
   Typography,
   CardActions,
   Button,
-  Box,
 } from "@mui/material";
 import { Course } from "../../app/models/course";
 import CourseCardMedia from "./components/CourseCardMedia";
@@ -24,9 +23,21 @@ export default function CourseCard({ course }: Props) {
         // width: "100%" /* Postavlja karticu da zauzme 100% širine roditelja */,
         boxSizing: "border-box",
         borderRadius: "20pt",
-        backgroundColor: "secondary.main",
+        backgroundColor: "background.default",
+        
         border: "2px solid",
         borderColor: "background.paper",
+        // backdropFilter:"blur(36px)",
+        transition: "transform 0.3s ease",
+        "&:hover": {
+                  transform: "scale(1.05)",
+                  boxShadow: (theme) =>
+                    `0px 8px 24px ${theme.palette.primary.dark}`,
+                },
+        // "&:hover":{
+        //   borderColor: "primary.dark",
+
+        // }
       }}
     >
       <CardHeader
@@ -83,7 +94,7 @@ export default function CourseCard({ course }: Props) {
           {course.studyProgram.name} - {course.year.name}
         </Typography>
       </CardContent>
-      <CardActions>
+      <CardActions sx={{ display: "flex", justifyContent: "space-evenly" }}>
         {/* <LoadingButton
             loading={status == "pendingAddItem" + product.id}
             onClick={() =>
@@ -93,12 +104,39 @@ export default function CourseCard({ course }: Props) {
           >
             Add to cart
           </LoadingButton> */}
-        <Button sx={{ fontFamily: "Raleway, sans-serif" }}>Upiši se</Button>
+        <Button
+          sx={{
+            fontFamily: "Raleway, sans-serif",
+            m: 0,
+            ml: 0,
+            p: 0,
+            borderRadius: "20pt",
+            paddingX: 1,
+            "&:hover": {
+              backgroundColor: "primary.main",
+              color: "background.paper",
+            },
+          }}
+        >
+          Upiši se
+        </Button>
         <Button
           component={Link}
           to={`/courses/${course.id}`}
           size="small"
-          sx={{ fontFamily: "Raleway, sans-serif" }}
+          sx={{
+            fontFamily: "Raleway, sans-serif",
+            m: 0,
+            ml: 0,
+            p: 0,
+            paddingX: 1,
+            borderRadius: "20pt",
+
+            "&:hover": {
+              backgroundColor: "primary.main",
+              color: "background.paper",
+            },
+          }}
         >
           Otvori
         </Button>

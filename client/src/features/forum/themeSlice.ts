@@ -1,10 +1,10 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CreateTheme, Theme, ThemesParams } from "../../app/models/theme";
 import agent from "../../app/api/agent";
 import { RootState } from "../../app/store/configureStore";
 
 export interface ThemeState {
-  themes: Theme[] | null;
+  themes: Theme[];
   status: string;
   themesParams: ThemesParams;
   filtersLoaded: boolean;
@@ -14,7 +14,7 @@ export interface ThemeState {
 }
 
 const initialState: ThemeState = {
-  themes: null,
+  themes: [],
   status: "idle",
   themesParams: initParams(),
   filtersLoaded: false,
@@ -43,7 +43,8 @@ function getAxiosParams(themesParams: ThemesParams) {
     params.append("searchTerm", themesParams.searchTerm.toString());
   if (themesParams.category)
     params.append("category", themesParams.category.toString());
-  if (themesParams.type) params.append("type", themesParams.type.toString());
+  if (themesParams.type) 
+    params.append("type", themesParams.type.toString());
   return params;
 }
 
@@ -79,10 +80,30 @@ export const createThemeAsync = createAsyncThunk<Theme, CreateTheme>(
   "messages/createTheme",
   async (newTheme, thunkAPI) => {
     try {
+      console.log(newTheme.date);
       const response = await agent.Theme.create(newTheme);
+      console.log(response);
       return response.data; // Ovo vraća listu poruka sa servera
     } catch (error: unknown) {
       return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+interface UpdateThemeDto {
+  id: number;
+  active: boolean;
+}
+
+export const updateThemeStatus = createAsyncThunk<Theme, UpdateThemeDto>(
+  "theme/updateTheme",
+  async (themeData, thunkAPI) => {
+    try {
+      const themeDto = await agent.Theme.updateTheme(themeData); // Pozivanje agenta sa parametrima
+      console.log(themeDto);
+      return themeDto;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
@@ -107,13 +128,11 @@ export const themeSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(createThemeAsync.fulfilled, (state, action) => {
-      state.status = "succeeded"; // Ažuriramo status kako bismo pokazali da je operacija uspešna
-      if (state.themes) {
-        // Ako već imamo teme, dodajemo novu u listu
+    builder.addCase(createThemeAsync.fulfilled, (state, action: PayloadAction<Theme>) => {
+      state.status = 'succeeded';
+      if (state.themes.length > 0) {
         state.themes.push(action.payload);
       } else {
-        // Ako nema tema, postavljamo novu listu sa jednom temom
         state.themes = [action.payload];
       }
     });
@@ -141,6 +160,23 @@ export const themeSlice = createSlice({
     builder.addCase(fetchThemesAsync.fulfilled, (state) => {
       state.status = "idle";
       state.themesLoaded = true;
+    });
+    builder.addCase(updateThemeStatus.pending, (state) => {
+      state.status = "pendingUpdateTheme";
+    });
+    builder.addCase(updateThemeStatus.rejected, (state) => {
+      state.status = "idle";
+    });
+    builder.addCase(updateThemeStatus.fulfilled, (state, action) => {
+      state.status = "idle";
+
+      const index = state.themes?.findIndex(
+        (theme) => theme.id === action.payload.id
+      );
+
+      if (index !== undefined && index !== -1 && state.themes) {
+        state.themes[index] = { ...state.themes[index], ...action.payload };
+      }
     });
   },
 });

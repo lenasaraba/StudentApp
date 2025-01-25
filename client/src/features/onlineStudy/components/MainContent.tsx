@@ -14,7 +14,6 @@ import CourseCardMedia from "./CourseCardMedia";
 import { Author } from "./Author";
 import { Divider } from "@mui/material";
 import Theme from "../../forum/Theme";
-import { BorderColor } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { fetchCoursesAsync, resetCoursesParams } from "../courseSlice";
 

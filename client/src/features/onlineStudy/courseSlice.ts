@@ -182,8 +182,9 @@ export const createCourseAsync = createAsyncThunk<Course, CreateCourse>(
   "course/createCourse",
   async (newCourse, thunkAPI) => {
     try {
+      console.log(newCourse.courseCreationDate);
       const response = await agent.Course.create(newCourse);
-      // console.log(respo)
+      console.log(response)
       return response.data; // Ovo vraća listu poruka sa servera
     } catch (error: unknown) {
       return thunkAPI.rejectWithValue(error);

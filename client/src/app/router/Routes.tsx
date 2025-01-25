@@ -15,6 +15,9 @@ import Theme from "../../features/forum/Theme";
 import Themes from "../../features/forum/Themes";
 import CreateTheme from "../../features/forum/CreateTheme";
 import CreateCourse from "../../features/onlineStudy/CreateCourse";
+import ProfessorsTable from "../../features/onlineStudy/components/ProfessorsTable";
+import Professors from "../../features/onlineStudy/Professors";
+import ProfessorInfo from "../../features/onlineStudy/ProfessorInfo";
 
 const ExternalRedirect = ({ url }: { url: string }) => {
   useEffect(() => {
@@ -86,6 +89,14 @@ export const router = createBrowserRouter([
           {
             path: "createCourse",
             element: <CreateCourse />,
+          },
+          {
+            path:"professors",
+            element:<Professors />,
+          },
+          {
+            path: "professorInfo/:id",
+            element: <ProfessorInfo />,
           },
         ],
       },

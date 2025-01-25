@@ -1,27 +1,15 @@
-import {
-  Box,
-  Avatar,
-  Divider,
-  Button,
-  Typography,
-  CssBaseline,
-  Modal,
-} from "@mui/material";
+import { Box, Avatar, Divider, Typography, Chip } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
   useAppDispatch,
   useAppSelector,
 } from "../../../app/store/configureStore";
 import { fetchProfessorCoursesAsync } from "../courseSlice";
-import { useEffect, useState } from "react";
-import CourseCardMedia from "./CourseCardMedia";
-import { Professor } from "../../../app/models/professor";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
 import SlideDots from "./SlideDots";
 import SlideCard from "./SlideCard";
-
-// POPRAVITI MODAL DA SE UCITA ZA ODGOVARAJUCEG PROFESORA
-// POPRAVITI IZGLED MODALA
+import { OpenInNewRounded } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 export default function ProfessorList() {
   const dispatch = useAppDispatch();
@@ -38,19 +26,12 @@ export default function ProfessorList() {
   );
 
   // console.log({...professorCourses})
+  // const themeM=useTheme();
+  // const navigate = useNavigate();
+  // const handleNavigate = () => {
+  //   navigate("/professorsList", { state: { themeM } }); // Prosleđivanje state-a
+  // };
 
-  const [selectedProfessor, setSelectedProfessor] = useState<Professor>(); // Čuva informacije o profesoru
-  const [isModalOpen, setIsModalOpen] = useState(false); // Kontroliše prikaz modala
-
-  const handleOpenModal = (professor: Professor) => {
-    setSelectedProfessor(professor); // Postavi odabranog profesora
-    setIsModalOpen(true); // Otvori modal
-  };
-
-  const handleCloseModal = () => {
-    setSelectedProfessor(undefined); // Očisti odabranog profesora
-    setIsModalOpen(false); // Zatvori modal
-  };
   return (
     <>
       {/* <CssBaseline /> */}
@@ -62,13 +43,46 @@ export default function ProfessorList() {
           mb: 4,
         }}
       >
-        <Typography
-          variant="h2"
-          gutterBottom
-          sx={{ fontFamily: "Raleway, sans-serif", paddingTop: 4 }}
+        <Grid
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
-          Profesori
-        </Typography>
+          <Typography
+            variant="h2"
+            gutterBottom
+            sx={{ fontFamily: "Raleway, sans-serif", paddingTop: 4 }}
+          >
+            Profesori
+          </Typography>
+          <Chip
+            size="small"
+            icon={<OpenInNewRounded />}
+            component={Link}
+            to="/professors"
+            sx={{
+              backgroundColor: "primary.dark",
+              color: "#fff", // Tekst u beloj boji
+              borderRadius: "16px", // Primer prilagođenog oblika
+              ".MuiChip-icon": {
+                color: "#fff",
+              },
+              cursor:"pointer",
+              marginTop: 4,
+              fontFamily: "Raleway, sans-serif",
+              marginBottom: 2, // GutterBottom ekvivalent
+              textDecoration: "none", // Uklanja podvlačenje
+              "&:hover": {
+                backgroundColor: "primary.main", // Boja pri hover-u
+              },
+              padding:2,
+            }}
+            label="Svi profesori"
+          />
+        </Grid>
         <Grid container spacing={6} columns={12} sx={{}}>
           {professors!.slice(0, 4).map((teacher, index) => (
             <Grid
@@ -114,15 +128,14 @@ export default function ProfessorList() {
               </Box>
               <Divider component="div" sx={{ my: 2 }} />
 
-              {(professorCourses && professorCourses[teacher.id]!=undefined) ? (
+              {professorCourses && professorCourses[teacher.id] != undefined ? (
                 <SlideCard courses={professorCourses[teacher.id]} />
               ) : (
                 <Typography>Nema kurseva</Typography> // ili neki drugi indikator
               )}
-             
 
               <Divider component="div" sx={{ my: 2 }} />
-              
+
               {professorCourses && professorCourses[teacher.id] ? (
                 <SlideDots
                   programs={[

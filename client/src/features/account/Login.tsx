@@ -15,6 +15,8 @@ import { useAppDispatch } from "../../app/store/configureStore";
 import { FieldValues, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { signInUser } from "./accountSlice";
+import Alert from "@mui/material/Alert";
+
 import { LoadingButton } from "@mui/lab";
 
 const Card = styled(MuiCard)(() => ({
@@ -28,21 +30,6 @@ const Card = styled(MuiCard)(() => ({
   backgroundColor: "secondary.main",
 
   margin: "auto",
-}));
-
-const SignInContainer = styled(Stack)(() => ({
-  height: "100vh",
-  minHeight: "100%",
-  backgroundColor: "secondary.main",
-  padding: 2,
-
-  "&::before": {
-    content: '""',
-    display: "flex",
-    position: "absolute",
-    zIndex: -1,
-    inset: 0,
-  },
 }));
 
 export default function Login() {
@@ -74,15 +61,16 @@ export default function Login() {
     // <AppTheme {...props}>
     <>
       <CssBaseline />
+
       <Grid
         container
         sx={{
           flexGrow: 1,
-          padding: 2,
+          // padding: 2,
           backgroundImage: `url(${logo})`,
           backgroundSize: "contain",
           backgroundPosition: "right",
-          height: "100vh",
+          // height: "100vh",
           width: "100%",
           filter: "blur(8px)",
           backgroundRepeat: "no-repeat",
@@ -93,10 +81,23 @@ export default function Login() {
         }}
       ></Grid>
 
-      <SignInContainer direction="column" justifyContent="space-between">
-        {/* <ColorModeSelect
-          sx={{ position: "fixed", top: "1rem", right: "1rem" }}
-        /> */}
+      <Grid sx={{ display: "flex", height: "100vh", flexDirection: "column" }}>
+        <Alert
+          severity="info"
+          variant="filled"
+          sx={{
+            color: "text.primary",
+            backgroundColor: "background.paper",
+            opacity: "80%",
+            fontFamily: "Raleway, sans-serif",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          Za prijavu koristite Microsoft nalog koji vam je dodijeljen od strane
+          fakulteta.
+        </Alert>
         <Card variant="outlined" sx={{ backgroundColor: "secondary.main" }}>
           {/* <SitemarkIcon /> */}
           <Typography
@@ -106,6 +107,7 @@ export default function Login() {
               width: "100%",
               fontSize: "clamp(2rem, 10vw, 2.15rem)",
               mb: 2,
+              fontFamily: "Raleway, sans-serif",
             }}
           >
             Prijava
@@ -122,7 +124,12 @@ export default function Login() {
             }}
           >
             <FormControl sx={{ height: "5.5rem", maxHeight: "5.5rem" }}>
-              <FormLabel htmlFor="email">Email</FormLabel>
+              <FormLabel
+                htmlFor="email"
+                sx={{ fontFamily: "Raleway, sans-serif" }}
+              >
+                Email
+              </FormLabel>
               <TextField
                 id="email"
                 type="email"
@@ -136,7 +143,12 @@ export default function Login() {
               />
             </FormControl>
             <FormControl sx={{ height: "5.5rem", maxHeight: "5.5rem" }}>
-              <FormLabel htmlFor="password">Lozinka</FormLabel>
+              <FormLabel
+                htmlFor="password"
+                sx={{ fontFamily: "Raleway, sans-serif" }}
+              >
+                Lozinka
+              </FormLabel>
               <TextField
                 placeholder="••••••"
                 type="password"
@@ -156,6 +168,7 @@ export default function Login() {
               fullWidth
               variant="contained"
               sx={{
+                fontFamily: "Raleway, sans-serif",
                 backgroundColor: "common.background",
                 color: "common.onBackground",
                 border: "1px solid",
@@ -192,20 +205,9 @@ export default function Login() {
             >
               Sign in with Facebook
             </Button> */}
-            <Typography
-              sx={{
-                textAlign: "center",
-                fontStyle: "italic",
-                fontSize: 13,
-                color: "text.disabled",
-              }}
-            >
-              *Za prijavu, koristite Microsoft nalog koji vam je dodijeljen od
-              strane fakulteta.
-            </Typography>
           </Box>
         </Card>
-      </SignInContainer>
+      </Grid>
     </>
     // </AppTheme>
   );

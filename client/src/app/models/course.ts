@@ -16,7 +16,7 @@ export interface CreateCourse {
   description: string;
   yearId: number;
   studyProgramId: number;
-  date: string;
+  courseCreationDate: string;
 }
 
 export interface UsersCourse {
@@ -50,6 +50,8 @@ export interface Theme {
   date: string;
   userId: number;
   messages: Message[];
+  active: string;
+
 }
 
 export interface Message {

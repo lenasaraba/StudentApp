@@ -1,23 +1,3 @@
-// import { Grid } from "@mui/material";
-// import { useAppSelector } from "../../app/store/configureStore";
-// import CourseCard from "./CourseCard";
-
-//URADITI COURSECARD I COURSELIST (pogledati ProductCard i ProductList)
-
-// export default function OnlineStudy() {
-//   const { courses } = useAppSelector((state) => state.course);
-
-//   return (
-//     <Grid container spacing={4} sx={{backgroundColor:'text.secondary'}}>
-//       {courses?.map((course) => (
-//         <Grid item xs={4} key={course.id}>
-//            <CourseCard course={course} />
-//         </Grid>
-//       ))}
-//       </Grid>
-//   );
-// }
-
 import AppAppBar from "./components/AppAppBar";
 import MainContent from "./components/MainContent";
 import { Grid } from "@mui/material";
@@ -26,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { fetchCoursesAsync, resetCoursesParams } from "./courseSlice";
 import { useEffect } from "react";
+import { fetchProfessorsAsync, resetProfessorsParams } from "./professorSlice";
 // import Footer from './components/Footer';
 
 export default function OnlineStudy() {
@@ -42,6 +23,8 @@ export default function OnlineStudy() {
   useEffect(() => {
     dispatch(resetCoursesParams());
     dispatch(fetchCoursesAsync());
+    dispatch(resetProfessorsParams());
+    dispatch(fetchProfessorsAsync());
   }, []);
   const { status: courseStatus } = useAppSelector((state) => state.course);
   console.log(courseStatus);

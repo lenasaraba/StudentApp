@@ -6,37 +6,82 @@ import {
   Box,
   Button,
   CardContent,
+  Chip,
   Divider,
   Grid,
+  Menu,
+  MenuItem,
+  Popover,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { createMessage, fetchMessagesAsync } from "./messageSlice";
 import { useEffect, useRef, useState } from "react";
-import { fetchThemesAsync } from "./themeSlice";
+import { fetchThemesAsync, updateThemeStatus } from "./themeSlice";
 import { Author } from "../onlineStudy/components/Author";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import BlockIcon from "@mui/icons-material/Block";
+import React from "react";
 
 export default function Theme() {
-  const { id } = useParams<{ id: string }>();
-  const themes = useAppSelector((state) => state.theme.themes);
+  const { id } = useParams<{ id: string }>(); // Osigurava da je `id` uvek string
+  // const themes = useAppSelector((state) => state.theme.themes);
   const { user } = useAppSelector((state) => state.account);
   const messages = useAppSelector((state) => state.message.messages);
   const [messageContent, setMessageContent] = useState("");
   const dispatch = useAppDispatch();
 
-  const theme = themes!.find((i) => i.id === parseInt(id!));
+  // const theme = themes!.find((i) => i.id === parseInt(id!));
+  const theme = useAppSelector((state) => {
+    if (!id) return undefined; // Ako je `id` undefined, vrati `undefined`
+    return state.theme.themes.find((t) => t.id === parseInt(id));
+  });
+  // const [activeStatus, setActiveStatus] = useState(
+  //   theme?.active == "true" ? true : false
+  // );
+
+  //IZVUCI PODATAK O TOME DA LI JE TRRENUTNO PRIJAVLJENI KORISNIK KREATOR TEME
+  //DA LI MOZE DA VIDI DUGME TRI TACKE ILI NE
+
   const topOfPageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (topOfPageRef.current) {
-      // Skroluje na prvi element u referenci
       topOfPageRef.current.scrollIntoView({
         behavior: "instant",
         block: "start",
       });
     }
-    //console.log("Ovdjee");
   }, [id]);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const idMenu = open ? "simple-popover" : undefined;
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget); // Postavlja element na koji je kliknuto
+    console.log(anchorEl);
+  };
+
+  const updateStatus = async (event: React.MouseEvent<HTMLElement>) => {
+    // console.log(theme?.active +" "+!theme?.active);
+
+    const updateData = {
+      id: theme!.id!,
+      active: !theme!.active,
+    };
+    // setActiveStatus(!theme?.active);
+
+    console.log(updateData);
+    await dispatch(updateThemeStatus(updateData));
+    setAnchorEl(null);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null); // Zatvara Popover
+  };
+
   if (theme == undefined) return <NotFound />;
 
   if (id == undefined) return <NotFound />;
@@ -51,14 +96,12 @@ export default function Theme() {
           direction: "column",
           padding: 4,
           margin: 0,
-          // overflowX: "hidden",
         }}
       >
         <Grid
           container
           sx={{
             direction: "row",
-            // pt: 2,
             display: "flex",
             margin: 0,
             justifyContent: "space-around",
@@ -83,7 +126,6 @@ export default function Theme() {
                 <Grid item sx={{ padding: 0 }}>
                   <Avatar
                     alt={theme.title}
-                    // src={author.avatar}
                     sx={{
                       width: 56,
                       height: 56,
@@ -98,9 +140,87 @@ export default function Theme() {
                   </Avatar>
                 </Grid>
                 <Grid item xs>
-                  <Typography variant="h5" fontWeight="bold">
-                    {theme.title}
-                  </Typography>
+                  <Grid
+                    gap={2}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography variant="h5" fontWeight="bold">
+                      {theme.title}
+                    </Typography>
+                    <Chip
+                      // variant="soft"
+                      size="small"
+                      icon={
+                        {
+                          true: <CheckRoundedIcon />,
+                          false: <BlockIcon />,
+                        }[theme.active]
+                      }
+                      sx={{
+                        backgroundColor: theme.active
+                          ? "text.primaryChannel"
+                          : "text.secondaryChannel", // Prilagođene boje
+                        color: "#fff", // Tekst u beloj boji
+                        borderRadius: "16px", // Primer prilagođenog oblika
+                        ".MuiChip-icon": {
+                          color: "#fff",
+                        },
+                      }}
+                      label={theme.active ? "Aktivno" : "Zatvoreno"}
+                    />
+                    <div>
+                      <Box
+                        aria-describedby={idMenu}
+                        // variant="contained"
+                        onClick={handleClick}
+                        sx={{
+                          display: "flex",
+                          width: "fit-content",
+                          padding: 0,
+                        }}
+                      >
+                        <MoreVertIcon />
+                      </Box>
+                      <Popover
+                        id={idMenu}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "center",
+                        }}
+                        slotProps={{
+                          paper: {
+                            sx: {
+                              borderRadius: 0,
+                            },
+                          },
+                        }}
+                      >
+                        <Typography
+                          onClick={updateStatus}
+                          variant="body2"
+                          sx={{
+                            paddingX: 1,
+                            paddingY: 0.5,
+                            "&:hover": {
+                              cursor: "pointer",
+                            },
+                            fontFamily: "Raleway, sans-serif",
+                            color: "primary.light",
+                            backgroundColor: "text.primary",
+                          }}
+                        >
+                          {theme.active ? "Zaključaj" : "Otključaj"}
+                        </Typography>
+                      </Popover>
+                    </div>
+                  </Grid>
                   <Typography variant="body2" color="text.secondary">
                     {theme.description}
                   </Typography>
@@ -265,6 +385,18 @@ export default function Theme() {
           >
             Poruke
           </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              paddingY: 1,
+              color: "action.disabled",
+              display: "block",
+              fontFamily: "Raleway, sans-serif",
+              width: "100%",
+            }}
+          >
+            {theme.active ? "" : "Zatvorena tema"}
+          </Typography>
 
           <Grid
             item
@@ -272,7 +404,7 @@ export default function Theme() {
             sx={{
               boxSizing: "border-box",
               border: "1px solid",
-              borderColor: "primary.main",
+              borderColor: theme.active ? "primary.main" : "action.disabled",
               borderRadius: "20px",
               position: "relative",
               margin: 0,
@@ -292,6 +424,7 @@ export default function Theme() {
                 width: "100%",
                 margin: 0,
                 padding: 1,
+
                 "&::-webkit-scrollbar": {
                   width: "8px",
                 },
@@ -322,7 +455,7 @@ export default function Theme() {
                     borderRadius: "8px",
                   },
                   "&::-webkit-scrollbar-thumb:hover": {
-                    backgroundColor: "primary.dark", // Boja hvataljke na hover
+                    backgroundColor: "primary.light", // Boja hvataljke na hover
                   },
                   "&::-webkit-scrollbar-track": {
                     backgroundColor: "transparent", // Prozirna pozadina skrola
@@ -447,7 +580,7 @@ export default function Theme() {
                       fontFamily: "Raleway, sans-serif",
                     }}
                   >
-                    Započnite razgovor.
+                    {theme.active ? "Započnite razgovor." : "Zatvorena tema"}
                   </Typography>
                 )}
               </Box>
@@ -468,7 +601,12 @@ export default function Theme() {
               >
                 <TextField
                   fullWidth
-                  placeholder="Unesite poruku..."
+                  disabled={!theme.active}
+                  placeholder={
+                    theme.active
+                      ? "Unesite poruku..."
+                      : "Nije moguće slati poruke na zatvorenoj temi"
+                  }
                   variant="outlined"
                   size="small"
                   sx={{ marginRight: 2 }}
@@ -478,7 +616,7 @@ export default function Theme() {
                 <Button
                   variant="contained"
                   color="primary"
-                  disabled={messageContent == ""}
+                  disabled={!theme.active || messageContent == ""}
                   sx={{ textTransform: "none" }}
                   onClick={() => {
                     const localDate = new Date();

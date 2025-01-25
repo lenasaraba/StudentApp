@@ -26,6 +26,8 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import CourseCardMedia from "./components/CourseCardMedia";
 import { Author } from "./components/Author";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import SlideCardThemes from "./components/SlideCardThemes";
+import SpeakerNotesOffIcon from "@mui/icons-material/SpeakerNotesOff";
 
 // function generate(element: React.ReactElement<unknown>) {
 //   return [0, 1, 2].map((value) =>
@@ -78,6 +80,10 @@ export default function Course() {
   if (course == undefined || course == null) return <NotFound />;
   console.log({ ...course });
   // console.log({...course});
+
+  const activeThemes = course.themes.filter(theme => theme.active);
+  const inactiveThemes = course.themes.filter(theme => !theme.active);
+
   return (
     <>
       {" "}
@@ -128,7 +134,7 @@ export default function Course() {
                 style={{ marginTop: "1rem" }}
               >
                 Kreirano:{" "}
-                {new Date(course.courseCreationDate).toLocaleDateString()}
+                {new Date(course.courseCreationDate).toLocaleDateString("sr-RS")}
               </Typography>
               <Typography
                 variant="body2"
@@ -189,14 +195,8 @@ export default function Course() {
           {/* Izlistavanje tema kursa */}
           <Grid container sx={{ mb: 2, pb: 2 }}>
             <Grid item xs={12}>
-              <Typography
-                variant="overline"
-                style={{ margin: "2rem 0 1rem 0" }}
-              >
-                Aktuelne teme za ovaj kurs na studentskom forumu
-              </Typography>
-              <Demo sx={{ borderRadius: 2 }}>
-                <List>
+              {/* <Demo sx={{ borderRadius: 2 }}> */}
+              {/* <List>
                   {course.themes && course.themes.length > 0 ? (
                     course.themes.map((theme, index) => (
                       <ListItem
@@ -242,8 +242,59 @@ export default function Course() {
                       Nema tema za ovaj kurs.
                     </Typography>
                   )}
-                </List>
-              </Demo>
+                </List> */}
+              <Grid
+                xs={12}
+                gap={3}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Grid
+                  xs={6}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    variant="overline"
+                    style={{ margin: "2rem 0 1rem 0" }}
+                  >
+                    Aktuelne teme za ovaj kurs
+                  </Typography>
+                  {course.themes.length > 0 ? (
+                  <SlideCardThemes course={course} themes={activeThemes} />
+                ) : (
+                    <SpeakerNotesOffIcon />
+                  )}
+                </Grid>
+                <Grid
+                  xs={6}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    variant="overline"
+                    style={{ margin: "2rem 0 1rem 0" }}
+                  >
+                    Zatvorene teme za ovaj kurs
+                  </Typography>
+                  {course.themes.length > 0 ? (
+                    <SlideCardThemes course={course} themes={inactiveThemes} />
+                  ) : (
+                    <SpeakerNotesOffIcon />
+                  )}
+                </Grid>
+              </Grid>
+              {/* mozda ovdje staviti da su teme iz models/themes */}
+              {/* </Demo> */}
             </Grid>
             <Grid item xs={3} />
           </Grid>

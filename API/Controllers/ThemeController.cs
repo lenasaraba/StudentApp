@@ -71,7 +71,7 @@ namespace API.Controllers
                 query = query.Where(t =>
                     t.Course == null);
             }
-            else if (( themeParams.Category != "all" && themeParams.Category!="Sve") && !string.IsNullOrEmpty(themeParams.Category))
+            else if ((themeParams.Category != "all" && themeParams.Category != "Sve") && !string.IsNullOrEmpty(themeParams.Category))
             {
                 query = query.Where(t => t.Course!.Name == themeParams.Category); // Teme sa specifičnim kursom
             }
@@ -146,17 +146,33 @@ namespace API.Controllers
             var themeDto = _mapper.Map<GetThemeDto>(theme);
             // return CreatedAtAction(nameof(GetTheme), new { id = themeDto.Id }, themeDto);
             var response = new
-                {
-                    Method = "CreateTheme",
-                    Status = "Success",
-                    Data = themeDto
-                };
+            {
+                Method = "CreateTheme",
+                Status = "Success",
+                Data = themeDto
+            };
 
             return CreatedAtAction(nameof(GetTheme), new { id = themeDto.Id }, response);
 
         }
 
+        [HttpPost("updateTheme")]
+        public async Task<ActionResult<GetThemeDto>> UpdateTheme(UpdateThemeDto themeData)
+        {
+            var theme = await _context.Themes.Include(u => u.User).Include(c => c.Course).ThenInclude(y => y.Year).Include(c => c.Course).ThenInclude(s => s.StudyProgram).Include(m => m.Messages).ThenInclude(u => u.User).Include(c => c.Course).ThenInclude(p => p.ProfessorsCourse).ThenInclude(u => u.User).FirstOrDefaultAsync(t => t.Id == themeData.Id);
 
+            if (theme == null)
+            {
+                return NotFound("Theme not found.");
+            }
+
+            theme.Active = themeData.Active;
+
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<GetThemeDto>(theme);
+
+        }
 
         [Authorize]
         [HttpPost("CreateMessage")]

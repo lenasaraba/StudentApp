@@ -59,7 +59,7 @@ export default function CreateCourse() {
       description: data.description,
       yearId: data.yearId,
       studyProgramId: data.studyProgramId,
-      date: adjustedDate.toISOString(),
+      courseCreationDate: adjustedDate.toISOString(),
     };
     console.log(newCourse);
 

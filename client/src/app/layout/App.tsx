@@ -167,7 +167,7 @@ export default function App() {
   const initApp = useCallback(async () => {
     try {
       await dispatch(fetchCurrentUser());
-      await dispatch(fetchCoursesAsync());
+      // await dispatch(fetchCoursesAsync());
       await dispatch(fetchCoursesListAsync());
 
       //await dispatch(fetchUserCoursesAsync());

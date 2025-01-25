@@ -136,9 +136,10 @@ export default function CourseList() {
                 sx={{
                   color: "text.primary",
                   // fontWeight: "bold",
-
+                  transition: "transform 0.3s ease",
                   "&:hover": {
-                    color: "action.focus", // Promijeni boju na hover
+                    transform:"scale(1.2)",
+                    color: "primary.dark", // Promijeni boju na hover
                   },
                 }}
               />
@@ -152,7 +153,7 @@ export default function CourseList() {
                 fontSize: 12,
                 fontWeight: 500,
                 "&:hover": {
-                  color: "action.focus", // Promijeni boju na hover
+                  color: "primary.dark", // Promijeni boju na hover
                 },
                 fontFamily: "Raleway, sans-serif",
               }}

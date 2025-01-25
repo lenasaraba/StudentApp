@@ -110,7 +110,9 @@ const Course = {
 };
 
 const Professor = {
-  GetAllProfessors: () => requests.get("professor/GetAllProfessors"),
+  GetAllProfessors: (params: URLSearchParams) => requests.get("professor/GetAllProfessors", params),
+  getProfessorYearsPrograms:(id:number)=>requests.get(`professor/getProfessorYearsPrograms/${id}`),
+  fetchFilters:()=>requests.get("professor/filters"),
 };
 
 const Theme = {
@@ -118,6 +120,8 @@ const Theme = {
     requests.get("theme/GetAllThemes", params),
   create: (values: any) => requests.post("theme/CreateTheme", values),
   fetchFilters: () => requests.get("theme/filters"),
+  updateTheme: (themeData: any) => requests.post("theme/updateTheme", themeData),
+
 };
 const Message = {
   getAll: () => requests.get("theme/GetAllMessages"),
