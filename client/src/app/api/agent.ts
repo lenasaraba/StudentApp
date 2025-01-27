@@ -19,7 +19,7 @@ const sleep = () => new Promise((resolve) => setTimeout(resolve, 500));
 axios.interceptors.response.use(
   async (response) => {
     await sleep();
-    console.log(response);
+    // console.log(response);
     // const pagination=response.headers['pagination'];    //PAGINATION MORA MALIM SLOVIMA
     // if(pagination){
     //     response.data=new PaginatedResponse(response.data, JSON.parse(pagination))
@@ -100,9 +100,8 @@ const Account = {
 const Course = {
   list: (params: URLSearchParams) =>
     requests.get("course/getAllCourses", params),
-  fullList: (params: URLSearchParams) =>
-    requests.get("course/getAllCoursesList", params),
-  getMy: (id: string) => requests.get(`course/getMyCourses/${id}`),
+  fullList: () => requests.get("course/getAllCoursesList"),
+  // getMy: (id: string) => requests.get(`course/getMyCourses/${id}`),
   getProfessorCourses: (id: number) =>
     requests.get(`course/getProfessorsCourses/${id}`),
   fetchFilters: () => requests.get("course/filters"),
@@ -110,9 +109,11 @@ const Course = {
 };
 
 const Professor = {
-  GetAllProfessors: (params: URLSearchParams) => requests.get("professor/GetAllProfessors", params),
-  getProfessorYearsPrograms:(id:number)=>requests.get(`professor/getProfessorYearsPrograms/${id}`),
-  fetchFilters:()=>requests.get("professor/filters"),
+  GetAllProfessors: (params: URLSearchParams) =>
+    requests.get("professor/GetAllProfessors", params),
+  getProfessorYearsPrograms: (id: number) =>
+    requests.get(`professor/getProfessorYearsPrograms/${id}`),
+  fetchFilters: () => requests.get("professor/filters"),
 };
 
 const Theme = {
@@ -120,8 +121,8 @@ const Theme = {
     requests.get("theme/GetAllThemes", params),
   create: (values: any) => requests.post("theme/CreateTheme", values),
   fetchFilters: () => requests.get("theme/filters"),
-  updateTheme: (themeData: any) => requests.post("theme/updateTheme", themeData),
-
+  updateTheme: (themeData: any) =>
+    requests.post("theme/updateTheme", themeData),
 };
 const Message = {
   getAll: () => requests.get("theme/GetAllMessages"),

@@ -10,7 +10,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-// import Grid from "@mui/material/Grid2";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import CourseCard from "./CourseCard";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -18,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   fetchCoursesAsync,
   fetchFilters,
+  resetCoursesParams,
   setCoursesParams,
   setPageNumber,
 } from "./courseSlice";
@@ -29,7 +29,7 @@ import AppPagination from "../../app/components/AppPagination";
 import CourseCardSkeleton from "./components/CourseCardSkeleton";
 import FilterSelectChip from "./components/FilterSelectChip";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
-import SchoolIcon from "@mui/icons-material/School";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 
 export default function CourseList() {
   const [searchParams] = useSearchParams();
@@ -44,7 +44,6 @@ export default function CourseList() {
     coursesParams,
     metaData,
   } = useAppSelector((state) => state.course);
-  console.log("/////////////////////////////////////// " + metaData);
   const [searchTerm, setSearchTerm] = useState(coursesParams.searchTerm);
 
   const debouncedSearch = useMemo(
@@ -57,16 +56,13 @@ export default function CourseList() {
   );
 
   const allCourses = useAppSelector((state) => state.course.courses);
-  // const myCourses = useAppSelector((state) => state.course.courses);
+
   useEffect(() => {
-    if (courseType === "all") {
-      dispatch(setCoursesParams({ type: courseType }));
-      dispatch(fetchCoursesAsync());
-    } else if (courseType === "my") {
-      dispatch(setCoursesParams({ type: courseType }));
-      dispatch(fetchCoursesAsync());
-    }
+    dispatch(resetCoursesParams());
+    dispatch(setCoursesParams({ type: courseType }));
+    dispatch(fetchCoursesAsync());
   }, [courseType, dispatch]);
+
   const user = useAppSelector((state) => state.account.user);
   const navigate = useNavigate();
 
@@ -77,6 +73,7 @@ export default function CourseList() {
     }
   }, [user, courseType, navigate]);
 
+  //kad se mijenja stranica da se pribave kursevi sa nove
   useEffect(() => {
     if (!coursesLoaded) dispatch(fetchCoursesAsync());
   }, [coursesLoaded, dispatch]);
@@ -132,13 +129,13 @@ export default function CourseList() {
               sx={{ display: "flex", alignItems: "center" }}
               // onClick={() => dispatch(resetCoursesParams())}
             >
-              <SchoolIcon
+              <AutoStoriesIcon
                 sx={{
                   color: "text.primary",
                   // fontWeight: "bold",
                   transition: "transform 0.3s ease",
                   "&:hover": {
-                    transform:"scale(1.2)",
+                    transform: "scale(1.2)",
                     color: "primary.dark", // Promijeni boju na hover
                   },
                 }}

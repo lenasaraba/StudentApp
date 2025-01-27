@@ -30,7 +30,7 @@ namespace API.Controllers
 
 
         [HttpGet("getAllCoursesList")]
-        public async Task<ActionResult<List<CourseDto>>> GetCoursesList([FromQuery] CourseParams coursesParams)
+        public async Task<ActionResult<List<CourseDto>>> GetCoursesList()
         {
             var query = _context.Courses
             .Include(y => y.Year)
@@ -40,38 +40,13 @@ namespace API.Controllers
             .Include(t => t.Themes)
             .AsQueryable();
 
-            if (coursesParams.Type == "my")
-            {
-                var user = await _userManager.FindByNameAsync(User.Identity.Name);
-                query = _context.Courses.Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
-            .Include(y => y.Year)
-            .Include(s => s.StudyProgram)
-            .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)
-            .Include(c => c.UsersCourse)
-            .Include(t => t.Themes)
-            .AsQueryable();
-            }
-            if (!string.IsNullOrEmpty(coursesParams.SearchTerm))
-            {
-                query = query.Where(c =>
-                    c.Name.Contains(coursesParams.SearchTerm) ||
-                    c.Description.Contains(coursesParams.SearchTerm));
-            }
-            if (coursesParams.Years != null && coursesParams.Years.Count > 0)
-            {
-                query = query.Where(c => coursesParams.Years.Contains(c.Year!.Name));
-            }
-
-            if (coursesParams.StudyPrograms != null && coursesParams.StudyPrograms.Count > 0)
-            {
-                query = query.Where(c => coursesParams.StudyPrograms.Contains(c.StudyProgram!.Name));
-            }
 
             var courses = await query.ToListAsync();
 
             return courses.Select(c => _mapper.Map<CourseDto>(c)).ToList();
         }
 
+        [Authorize] 
         [HttpGet("getAllCourses")]
         public async Task<ActionResult<PagedList<CourseDto>>> GetCourses([FromQuery] CourseParams coursesParams)
         {
@@ -83,10 +58,12 @@ namespace API.Controllers
             .Include(t => t.Themes)
             .AsQueryable();
 
+//trenutno prikazuje samo kurseve koje je neko napravio, a ne na koje je upisan
             if (coursesParams.Type == "my")
             {
+                
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
-                query = _context.Courses.Where(c => c.UsersCourse!.Any(pc => pc.UserId == user!.Id))
+                query = _context.Courses.Where(c => c.ProfessorsCourse!.Any(pc => pc.UserId == user!.Id))
             .Include(y => y.Year)
             .Include(s => s.StudyProgram)
             .Include(c => c.ProfessorsCourse!).ThenInclude(pu => pu.User)

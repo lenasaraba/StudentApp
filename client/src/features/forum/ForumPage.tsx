@@ -1,25 +1,19 @@
-import { Box, Divider, Grid, Typography, Button } from "@mui/material";
+import { Box, Divider, Grid, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { fetchThemesAsync, resetThemesParams } from "./themeSlice";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import ThemeCard from "./components/ThemeCard";
 import ThemeCard2 from "./components/ThemeCard2";
 import forum from "../../assets/forum.png";
-import { useForm, FormProvider } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { validationSchema } from "./forumpageValidation";
-import ForumForm from "./ForumForm";
 import ForumAppBar from "./components/ForumAppBar";
-import { useTheme } from "@emotion/react";
-import JoyForumForm from "./JoyForumForm";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import { Link } from "react-router-dom";
 
 export default function ForumPage() {
-  const methods = useForm({
-    mode: "all",
-    resolver: yupResolver(validationSchema(true)),
-  });
+  // const methods = useForm({
+  //   mode: "all",
+  //   resolver: yupResolver(validationSchema(true)),
+  // });
   //OVO TRUE SAM DODALA DA NE CRVENI
 
   const dispatch = useAppDispatch();
@@ -31,9 +25,9 @@ export default function ForumPage() {
   const { themes, themesLoaded, status } = useAppSelector(
     (state) => state.theme
   );
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
 
-  const handleOpen = () => setOpen(true);
+  // const handleOpen = () => setOpen(true);
   // const handleClose = () => setOpen(false); // Zatvori modal
 
   //POGLEDATI KURS I RADITI SVE STO SE TICE UPLOADA, I NA KURS I NA FORUM
@@ -41,7 +35,7 @@ export default function ForumPage() {
   //DODATI MOZDA UPLOAD FAJLOVA U PORUKU NA FORUMU,
   // KAO AKO IMAJU NEKO PITANJE ZA NEKI FAJL
 
-  const themeApp = useTheme();
+  // const themeApp = useTheme();
   const newArray = [...(themes || [])];
   const topThemes = newArray
     ?.sort((a, b) => b.messages.length - a.messages.length) // Sortiraj prema broju poruka opadajuće

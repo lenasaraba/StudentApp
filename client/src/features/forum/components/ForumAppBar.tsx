@@ -1,24 +1,21 @@
 import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
 import ForumIcon from "@mui/icons-material/Forum";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import { resetCoursesParams, fetchCoursesAsync } from "../courseSlice";
-import { useAppDispatch } from "../../../app/store/configureStore";
 import { Grid } from "@mui/material";
 
 //STAVITI FIKSNI HEIGHT ZBOG APPAPPBARA
 
 export default function ForumAppBar() {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const handleNavigate = () => {
-    // dispatch(resetCoursesParams());
-    // dispatch(fetchCoursesAsync());
-    navigate("/forum", { replace: true });
-  };
+  // const navigate = useNavigate();
+  // const dispatch = useAppDispatch();
+  // const handleNavigate = () => {
+  //   // dispatch(resetCoursesParams());
+  //   // dispatch(fetchCoursesAsync());
+  //   navigate("/forum", { replace: true });
+  // };
 
   //DODATI I JEDAN TAB KAO TEME U KOJIMA JE UCESTVOVAO A NIJE IH KREIRAO
   return (

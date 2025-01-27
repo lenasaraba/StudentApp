@@ -101,6 +101,8 @@ export default function CreateCourse() {
             borderColor: "primary.main",
             display: "flex",
             flexDirection: "column",
+            height: "100%",
+            maxHeight: "100%",
           }}
         >
           <Typography
@@ -127,6 +129,7 @@ export default function CreateCourse() {
                   {...register("name", {
                     required: "Naziv kursa je obavezan.",
                   })}
+                  sx={{ height: "3.5rem", maxHeight: "3.5rem" }}
                 />
               )}
             />
@@ -150,13 +153,18 @@ export default function CreateCourse() {
                   {...register("description", {
                     required: "Opis kursa je obavezan.",
                   })}
+                  sx={{ height: "9.5rem", maxHeight: "9.5rem" }}
                 />
               )}
             />
           </Grid>
 
           <Grid>
-            <FormControl fullWidth error={!!errors.yearId}>
+            <FormControl
+              fullWidth
+              error={!!errors.yearId}
+              sx={{ height: "3.5rem", maxHeight: "3.5rem" }}
+            >
               <InputLabel id="yearId-label">Godina</InputLabel>
               <Controller
                 name="yearId"
@@ -197,7 +205,11 @@ export default function CreateCourse() {
           </Grid>
 
           <Grid>
-            <FormControl fullWidth error={!!errors.studyProgramId}>
+            <FormControl
+              fullWidth
+              error={!!errors.studyProgramId}
+              sx={{ height: "3.5rem", maxHeight: "3.5rem" }}
+            >
               <InputLabel id="studyProgramId-label">Smjer</InputLabel>
               <Controller
                 name="studyProgramId"

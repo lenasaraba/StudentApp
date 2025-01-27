@@ -29,41 +29,16 @@ import LoadingComponentJoy from "../../../app/layout/LoadingComponentJoy";
 import { extendTheme } from "@mui/joy/styles";
 import {
   fetchFilters,
-  fetchProfessorCoursesAsync,
+  fetchProfessorYearsProgramsAsync,
   fetchProfessorsAsync,
   setProfessorsParams,
 } from "../professorSlice";
 import { Link } from "react-router-dom";
 
-// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-//   if (b[orderBy] < a[orderBy]) {
-//     return -1;
-//   }
-//   if (b[orderBy] > a[orderBy]) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
-// type Order = "asc" | "desc";
-
-// function getComparator<Key extends keyof never>(
-//   order: Order,
-//   orderBy: Key
-// ): (
-//   a: { [key in Key]: number | string },
-//   b: { [key in Key]: number | string }
-// ) => number {
-//   return order === "desc"
-//     ? (a, b) => descendingComparator(a, b, orderBy)
-//     : (a, b) => -descendingComparator(a, b, orderBy);
-// }
 interface ProfessorsTableProps {
   themeM: Theme; // Define the 'theme' prop type (tema izgled)
 }
 export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
-  // const themeM = useTheme();
-
   //---------------PROMIJENITI ROWSKELETON
 
   const [currentColor, setCurrentColor] = useState<string>("");
@@ -80,17 +55,12 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
         optionRefs.current[index]!
       ).backgroundColor;
       setCurrentColor(backgroundColor); // Postavljamo boju u stanje
-
-      console.log("*********************************************");
-      console.log(backgroundColor);
     }
   };
 
   const handleMouseLeave = (index: number) => {
     setCurrentColor("");
   };
-
-  // const [order, setOrder] = useState<Order>("desc");
 
   const dispatch = useAppDispatch();
 
@@ -100,6 +70,7 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
     filtersLoaded,
     professorsParams,
     professorsLoaded,
+
     status,
     profYears,
     profPrograms,
@@ -110,11 +81,6 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
   const debouncedSearch = useMemo(
     () =>
       debounce((event: any) => {
-        console.log(
-          "-----------------------------------------------" + event.target.value
-        );
-
-        //DODATI U PROFESSORSLICE FUNKCIJE OVE SVE
         setSearchTerm(event.target.value);
         dispatch(setProfessorsParams({ searchTerm: event.target.value }));
         dispatch(fetchProfessorsAsync());
@@ -128,20 +94,20 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
     a.lastName.localeCompare(b.lastName)
   );
 
+  const coursesLoaded = useAppSelector(
+    (state) => state.professor.coursesLoaded
+  );
 
   useEffect(() => {
-    // Pozivanje dispatch-a za svakog profesora
     sortedProfessors.forEach((professor) => {
-      dispatch(fetchProfessorCoursesAsync(professor.id));
+      dispatch(
+        fetchProfessorYearsProgramsAsync({
+          id: professor.id,
+          totalCount: allProfessors.length,
+        })
+      );
     });
-  }, [dispatch, sortedProfessors]);
-
-  //themestype: my ili all
-  // useEffect(() => {
-  //   // console.log(themesType);
-  //   dispatch(setThemesParams({ type: themesType }));
-  //   dispatch(fetchThemesAsync());
-  // }, [themesType, dispatch]);
+  }, [dispatch, allProfessors]);
 
   useEffect(() => {
     if (!professorsLoaded) dispatch(fetchProfessorsAsync());
@@ -150,7 +116,6 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
   useEffect(() => {
     if (!filtersLoaded) {
       dispatch(fetchFilters());
-      console.log("-------aaaaaaaaaaaaaaa---------");
     }
   }, [dispatch, filtersLoaded]);
 
@@ -282,7 +247,6 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
           }}
           value={yearValue}
           onChange={(event, value) => {
-            console.log("Selected value:", value);
             setYearValue(value || "");
             dispatch(setProfessorsParams({ year: value }));
             dispatch(fetchProfessorsAsync());
@@ -337,7 +301,6 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
           size="sm"
           placeholder="Smjer"
           onChange={(event, value) => {
-            console.log("Selected program:", value);
             setProgramValue(value || "");
             dispatch(setProfessorsParams({ program: value }));
             dispatch(fetchProfessorsAsync());
@@ -415,7 +378,7 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
           >
             <FormControl sx={{ flex: 1 }} size="sm">
               <FormLabel sx={{ color: themeM.palette.primary.main }}>
-                Pretraži prema imenu i/ili prezimenutf
+                Pretraži prema imenu i/ili prezimenu:
               </FormLabel>
               <Input
                 size="sm"
@@ -480,7 +443,7 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
               >
                 <tr
                   style={{
-                    width: "95%",
+                    width: "100%",
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between", // Koristimo space-between da rasporedimo sadržaj
@@ -489,7 +452,7 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
                 >
                   <th
                     style={{
-                      width: "25%",
+                      // width: "25%",
                       flex: 1,
                       color: themeM.palette.primary.main,
                     }}
@@ -547,7 +510,7 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
                   },
                 }}
               >
-                {status.includes("pending") || !professorsLoaded ? (
+                {!(coursesLoaded && professorsLoaded) ? (
                   <RowSkeleton />
                 ) : (
                   sortedProfessors &&
@@ -558,15 +521,15 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
                         key={prof.id}
                         style={{
                           borderBottom: "1px solid",
-                          borderColor:themeM.palette.background.paper,
-                          // borderWidth:"90%",
+                          borderColor: themeM.palette.background.paper,
+                          // borderWidth: "500px",
                           // borderCollapse: "collapse",
-                          width: "95%",
+                          width: "100%",
                           display: "flex",
                           flexDirection: "row",
                           justifyContent: "space-between", // Koristimo space-between da rasporedimo sadržaj
                           alignItems: "center", // Osiguravamo da su stavke poravnate
-                          padding: "8px 0", // Povećavamo visinu redova za bolju vidljivost
+                          padding: "16px 0", // Povećavamo visinu redova za bolju vidljivost
                           transition: "background-color 0.3s ease", // Efekat prelaza boje
                           // "&:hover": {
                           //   backgroundColor: "#f0f0f0", // Pozadina na hover (možeš promeniti boju)
@@ -595,10 +558,10 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
                               {prof.lastName.charAt(0).toUpperCase()}
                             </Avatar>
                             <MuiTypo
-                            component={Link}
-                            to={`/professorInfo/${prof.id}`}
+                              component={Link}
+                              to={`/professorInfo/${prof.id}`}
                               sx={{
-                                textDecoration:"none",
+                                textDecoration: "none",
                                 color: themeM.palette.action.active,
                                 overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
                                 display: "-webkit-box", // Neophodno za multi-line truncation
@@ -608,10 +571,10 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
                                 height: "1.2em", // Fiksna visina: broj linija * lineHeight
                                 textOverflow: "ellipsis", // Dodaje tri tačke
                                 fontWeight: "normal", // Normalna težina teksta inicijalno
-                               "&:hover":{
-                                cursor:"pointer",
-                                color:themeM.palette.text.primary,
-                               }
+                                "&:hover": {
+                                  cursor: "pointer",
+                                  color: themeM.palette.text.primary,
+                                },
                               }}
                             >
                               {prof.lastName} {prof.firstName}
@@ -733,14 +696,20 @@ export default function ProfessorsTable({ themeM }: ProfessorsTableProps) {
                               >
                                 {theme1.user.firstName} {theme1.user.lastName}
                               </Typography> */}
-                          <Typography
-                            level="body-xs"
+                          <MuiTypo
                             sx={{
                               color: themeM.palette.action.active,
+                              display: "-webkit-box", // Neophodno za multi-line truncation
+                              WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
+                              WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
+                              lineHeight: "1", // Podešava razmak između linija
+                              height: "1.2em", // Fiksna visina: broj linija * lineHeight
+                              textOverflow: "ellipsis", // Dodaje tri tačke
+                              fontWeight: "normal",
                             }}
                           >
                             {prof.email}
-                          </Typography>
+                          </MuiTypo>
                           {/* </Box> */}
                         </td>
                       </tr>

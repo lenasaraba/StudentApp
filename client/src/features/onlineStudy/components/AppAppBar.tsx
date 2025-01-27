@@ -1,20 +1,13 @@
 import Box from "@mui/material/Box";
-import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import SchoolIcon from "@mui/icons-material/School";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import { Link, useNavigate } from "react-router-dom";
-import { resetCoursesParams, fetchCoursesAsync } from "../courseSlice";
-import { useAppDispatch } from "../../../app/store/configureStore";
 import { Grid } from "@mui/joy";
 
 export default function AppAppBar() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const handleNavigate = () => {
-    dispatch(resetCoursesParams());
-    dispatch(fetchCoursesAsync());
     navigate("/onlineStudy", { replace: true });
   };
   return (
@@ -112,7 +105,7 @@ export default function AppAppBar() {
                 },
               }}
             >
-              <SchoolIcon
+              <AutoStoriesIcon
                 sx={{
                   color: "text.primary",
                   fontWeight: "bold",

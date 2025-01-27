@@ -25,13 +25,6 @@ export default function ProfessorList() {
     (state) => state.course.professorCourses
   );
 
-  // console.log({...professorCourses})
-  // const themeM=useTheme();
-  // const navigate = useNavigate();
-  // const handleNavigate = () => {
-  //   navigate("/professorsList", { state: { themeM } }); // Prosleđivanje state-a
-  // };
-
   return (
     <>
       {/* <CssBaseline /> */}
@@ -70,7 +63,7 @@ export default function ProfessorList() {
               ".MuiChip-icon": {
                 color: "#fff",
               },
-              cursor:"pointer",
+              cursor: "pointer",
               marginTop: 4,
               fontFamily: "Raleway, sans-serif",
               marginBottom: 2, // GutterBottom ekvivalent
@@ -78,7 +71,7 @@ export default function ProfessorList() {
               "&:hover": {
                 backgroundColor: "primary.main", // Boja pri hover-u
               },
-              padding:2,
+              padding: 2,
             }}
             label="Svi profesori"
           />
@@ -121,7 +114,25 @@ export default function ProfessorList() {
                   {teacher.firstName.charAt(0).toUpperCase()}
                 </Avatar>
                 <div>
-                  <Typography variant="h5" fontFamily="Raleway, sans-serif">
+                  <Typography
+                    variant="h5"
+                    fontFamily="Raleway, sans-serif"
+                    component={Link}
+                    to={`/professorInfo/${teacher.id}`}
+                    sx={{
+                      textDecoration: "none",
+                      color: "text.primary",
+                      "&:visited": {
+                        color: "text.primary", // Zadrži istu boju za visited linkove
+                      },
+                      "&:hover": {
+                        color: "primary.main",
+                      },
+                      // "&:active": {
+                      //   color: "text.primary", // Zadrži istu boju pri aktivnom linku
+                      // },
+                    }}
+                  >
                     {teacher.firstName}&nbsp;{teacher.lastName}
                   </Typography>
                 </div>

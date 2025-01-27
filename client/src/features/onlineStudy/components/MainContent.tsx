@@ -5,17 +5,13 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid2";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "../../../app/store/configureStore";
+import { useAppSelector } from "../../../app/store/configureStore";
 import { format } from "date-fns";
 import CourseCardMedia from "./CourseCardMedia";
 import { Author } from "./Author";
-import { Divider } from "@mui/material";
-import Theme from "../../forum/Theme";
+import { Button, Divider } from "@mui/material";
 import { Link } from "react-router-dom";
-import { fetchCoursesAsync, resetCoursesParams } from "../courseSlice";
+import AddIcon from "@mui/icons-material/Add";
 
 const DateCard = ({ date }: { date: string }) => {
   const dateFormatted = new Date(date); // Pretvori string u Date objekat
@@ -63,6 +59,8 @@ const StyledTypography = styled(Typography)({
 });
 
 export default function MainContent() {
+  const user = useAppSelector((state) => state.account.user);
+
   const [focusedCardIndex, setFocusedCardIndex] = React.useState<number | null>(
     null
   );
@@ -75,7 +73,7 @@ export default function MainContent() {
     setFocusedCardIndex(null);
   };
 
-  const courses = useAppSelector((state) => state.course.courses);
+  const courses = useAppSelector((state) => state.course.allCourses);
 
   const newArray = [...(courses || [])];
   const topCourses = newArray
@@ -83,9 +81,6 @@ export default function MainContent() {
     .slice(0, 5);
   const firstTwoCourses = topCourses.slice(0, 2); // Prvih 4 elementa
   const lastThreeCourses = topCourses.slice(-3);
-
-  //NAPRAVITI NA STRANICI JEDNOJ IZLISTAVANJE SVIH PROFESORA ISTO KAO THEME TABLE SA FILTERIMA
-  //PROMIJENITI IZGLED SVI KURSEVI I MOJE UČENJE
 
   return (
     <Box
@@ -110,9 +105,41 @@ export default function MainContent() {
         >
           Online učenje
         </Typography>
-        <Typography sx={{ fontFamily: "Raleway, sans-serif" }}>
-          Pronađite kurs koji vam odgovara.
-        </Typography>
+        <Box
+          sx={{
+            margin: 0,
+            padding: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Typography sx={{ fontFamily: "Raleway, sans-serif" }}>
+            Pronađite kurs koji vam odgovara.
+          </Typography>
+          {user && (
+            <Button
+              component={Link}
+              to="/createCourse"
+              //onClick={handleOpen}
+              sx={{
+                backgroundColor: "primary.dark",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "20px",
+                // fontSize: "30px",
+                "&:hover": {
+                  backgroundColor: "primary.light",
+                },
+                height: "fit-content",
+                width: "3rem",
+                boxSizing: "border-box",
+              }}
+            >
+              <AddIcon sx={{ fontSize: "16pt" }} />
+            </Button>
+          )}
+        </Box>
       </div>
       <Divider />
 

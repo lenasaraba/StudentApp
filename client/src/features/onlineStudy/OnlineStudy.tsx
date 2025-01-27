@@ -4,7 +4,11 @@ import { Grid } from "@mui/material";
 import ProfessorList from "./components/ProfessorList";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import LoadingComponent from "../../app/layout/LoadingComponent";
-import { fetchCoursesAsync, resetCoursesParams } from "./courseSlice";
+import {
+  fetchCoursesAsync,
+  fetchCoursesListAsync,
+  resetCoursesParams,
+} from "./courseSlice";
 import { useEffect } from "react";
 import { fetchProfessorsAsync, resetProfessorsParams } from "./professorSlice";
 // import Footer from './components/Footer';
@@ -21,8 +25,8 @@ export default function OnlineStudy() {
   //
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(resetCoursesParams());
-    dispatch(fetchCoursesAsync());
+    // dispatch(resetCoursesParams());
+    dispatch(fetchCoursesListAsync());
     dispatch(resetProfessorsParams());
     dispatch(fetchProfessorsAsync());
   }, []);

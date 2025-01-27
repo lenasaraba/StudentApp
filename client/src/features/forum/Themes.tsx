@@ -19,7 +19,7 @@ export default function Themes() {
   const themesType = searchParams.get("type");
   const theme = useTheme();
   const { user } = useAppSelector((state) => state.account);
-  // console.log({ ...theme });
+
   return (
     <CssVarsProvider disableTransitionOnChange>
       {/* <CssBaseline /> */}
@@ -65,8 +65,8 @@ export default function Themes() {
                     fontSize: "1.5rem",
                     transition: "transform 0.3s ease",
                     "&:hover": {
-                      transform:"scale(1.2)",
-                      color:  theme.palette.primary.dark, // Promijeni boju na hover
+                      transform: "scale(1.2)",
+                      color: theme.palette.primary.dark, // Promijeni boju na hover
                     },
                   }}
                 />
@@ -80,7 +80,7 @@ export default function Themes() {
                   fontSize: 12,
                   fontWeight: 500,
                   "&:hover": {
-                    color:  theme.palette.primary.dark, // Promijeni boju na hover
+                    color: theme.palette.primary.dark, // Promijeni boju na hover
                   },
                   fontFamily: "Raleway, sans-serif",
                 }}

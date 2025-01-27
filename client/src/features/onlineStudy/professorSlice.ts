@@ -10,6 +10,10 @@ export interface ProfessorState {
   professorsParams: ProfessorsParams;
   filtersLoaded: boolean;
   professorsLoaded: boolean;
+  //
+  professorCourses: Record<number, Course[]> | null;
+
+  coursesLoaded: boolean;
   programs: string[];
   years: string[];
   profYears: Record<number, Year[]> | null;
@@ -22,6 +26,10 @@ const initialState: ProfessorState = {
   professorsParams: initParams(),
   filtersLoaded: false,
   professorsLoaded: false,
+  //
+  professorCourses: {},
+
+  coursesLoaded: false,
   programs: [],
   years: [],
   profYears: {},
@@ -47,26 +55,33 @@ function getAxiosParams(professorsParams: ProfessorsParams) {
   return params;
 }
 
-export const fetchProfessorCoursesAsync = createAsyncThunk<
-  Record<number, Course[]>,
-  number
->("professor/fetchProfessorYearsProgramsAsync", async (id, thunkAPI) => {
-  try {
-    const { years, programs } =
-      await agent.Professor.getProfessorYearsPrograms(id);
-    thunkAPI.dispatch(
-      setProfessorCourses({
-        professorId: id,
-        years: years,
-        programs: programs,
-      })
-    );
-    return { id, years, programs };
-  } catch (error: any) {
-    console.log(error.data);
-    return thunkAPI.rejectWithValue({ error: error.data });
+//za kurseve profesora iskoristila metodu iz courseSlice jer je ovdje pod tim imenom druga metoda
+export const fetchProfessorYearsProgramsAsync = createAsyncThunk<
+  void,
+  { id: number; totalCount: number }
+>(
+  "professor/fetchProfessorYearsProgramsAsync",
+  async ({ id, totalCount }, thunkAPI) => {
+    try {
+      const { years, programs } =
+        await agent.Professor.getProfessorYearsPrograms(id);
+      const professorCourses = await agent.Course.getProfessorCourses(id);
+
+      thunkAPI.dispatch(
+        setProfessorCourses({
+          professorId: id,
+          years: years,
+          programs: programs,
+          courses: professorCourses,
+          totalCount: totalCount, // Dodaj ukupni broj profesora
+        })
+      );
+    } catch (error: any) {
+      console.error(error.data);
+      throw error;
+    }
   }
-});
+);
 
 export const fetchProfessorsAsync = createAsyncThunk<
   Professor[],
@@ -74,16 +89,11 @@ export const fetchProfessorsAsync = createAsyncThunk<
   { state: RootState }
 >("professor/fetchProfessorsAsync", async (_, thunkAPI) => {
   const params = getAxiosParams(thunkAPI.getState().professor.professorsParams);
-  console.log(...params);
   try {
     const professors = await agent.Professor.GetAllProfessors(params);
     thunkAPI.dispatch(setProfessors(professors));
-    console.log("IVANAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    console.log(...professors);
     return professors;
   } catch (error: any) {
-    console.log(".................IVANA")
-
     return thunkAPI.rejectWithValue({ error: error.data });
   }
 });
@@ -92,9 +102,8 @@ export const fetchFilters = createAsyncThunk(
   "professor/fetchFilters",
   async (_, thunkAPI) => {
     try {
-      const filters= agent.Professor.fetchFilters();
+      const filters = agent.Professor.fetchFilters();
 
-console.log(filters);
       return filters;
     } catch (error: any) {
       return thunkAPI.rejectWithValue({ error: error.data });
@@ -108,6 +117,7 @@ export const professorSlice = createSlice({
   reducers: {
     setProfessors: (state, action) => {
       state.professors = action.payload;
+      state.professorsLoaded = true;
     },
     setProfessorsParams: (state, action) => {
       state.professorsLoaded = false;
@@ -115,7 +125,6 @@ export const professorSlice = createSlice({
         ...state.professorsParams,
         ...action.payload,
       };
-      // console.log(state.themesParams);
     },
     resetProfessorsParams: (state) => {
       state.professorsParams = initParams();
@@ -123,6 +132,17 @@ export const professorSlice = createSlice({
     setProfessorCourses: (state, action) => {
       state.profYears![action.payload.professorId] = action.payload.years;
       state.profPrograms![action.payload.professorId] = action.payload.programs;
+      state.professorCourses![action.payload.professorId] =
+        action.payload.courses;
+
+      if (state.profYears !== null) {
+        const allCoursesLoaded =
+          Object.keys(state.profYears).length === action.payload.totalCount;
+        state.coursesLoaded = allCoursesLoaded;
+      }
+    },
+    setCoursesLoaded: (state, action) => {
+      state.coursesLoaded = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -135,10 +155,8 @@ export const professorSlice = createSlice({
     });
     builder.addCase(fetchProfessorsAsync.rejected, (state) => {
       state.status = "idle";
-      // console.log(action.payload);
     });
     builder.addCase(fetchFilters.fulfilled, (state, action) => {
-      console.log(action.payload);
       state.years = action.payload.years;
       state.programs = action.payload.programs;
       state.status = "idle";
@@ -146,10 +164,27 @@ export const professorSlice = createSlice({
     });
     builder.addCase(fetchFilters.rejected, (state, action) => {
       state.status = "idle";
-      console.log(action.payload);
+    });
+    builder.addCase(fetchProfessorYearsProgramsAsync.pending, (state) => {
+      state.status = "pendingFetchProfessorCoursesAsync";
+      state.coursesLoaded = false;
+    });
+    builder.addCase(fetchProfessorYearsProgramsAsync.rejected, (state) => {
+      //state.loading = false;
+      state.status = "idle";
+    });
+    builder.addCase(fetchProfessorYearsProgramsAsync.fulfilled, (state) => {
+      //state.loading = false; // Postavi loading na true
+      // state.coursesLoaded = true;
+      state.status = "idle";
     });
   },
 });
 
-export const { setProfessors, setProfessorsParams, setProfessorCourses, resetProfessorsParams } =
-  professorSlice.actions;
+export const {
+  setProfessors,
+  setProfessorsParams,
+  setProfessorCourses,
+  resetProfessorsParams,
+  setCoursesLoaded,
+} = professorSlice.actions;

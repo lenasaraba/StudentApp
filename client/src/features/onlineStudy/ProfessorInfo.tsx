@@ -3,25 +3,46 @@ import {
   Box,
   Breadcrumbs,
   CardContent,
-  Chip,
   Divider,
   Grid,
-  Popover,
   Typography,
 } from "@mui/material";
-import { Link, useParams } from "react-router-dom";
-import { useAppSelector } from "../../app/store/configureStore";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { useRef, useEffect } from "react";
 import FlipCard from "./components/FlipCard";
 import SchoolIcon from "@mui/icons-material/School";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import { fetchProfessorYearsProgramsAsync } from "./professorSlice";
+import CourseCardSkeleton from "./components/CourseCardSkeleton";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 
 export default function ProfessorInfo() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const { id } = useParams<{ id: string }>(); // Osigurava da je `id` uvek string
   const professor = useAppSelector((state) => {
     if (!id) return undefined; // Ako je `id` undefined, vrati `undefined`
     return state.professor.professors.find((p) => p.id === parseInt(id));
   });
+
+  const coursesLoaded = useAppSelector(
+    (state) => state.professor.coursesLoaded
+  );
+  const allProfessors = useAppSelector((state) => state.professor.professors);
+
+  useEffect(() => {
+    allProfessors.forEach((professor) => {
+      dispatch(
+        fetchProfessorYearsProgramsAsync({
+          id: professor.id,
+          totalCount: allProfessors.length,
+        })
+      );
+    });
+  }, [dispatch, allProfessors]);
+
   const topOfPageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (topOfPageRef.current) {
@@ -31,6 +52,15 @@ export default function ProfessorInfo() {
       });
     }
   }, [id]);
+
+  const coursesToDisplay = useAppSelector((state) =>
+    state.professor.professorCourses
+      ? state.professor.professorCourses[parseInt(id!)]
+      : []
+  );
+
+  if (!coursesLoaded) return <LoadingComponent message="Učitavanje..." />;
+
   return (
     <>
       <div ref={topOfPageRef}></div>
@@ -67,6 +97,7 @@ export default function ProfessorInfo() {
                 to="/onlineStudy"
                 sx={{ display: "flex", alignItems: "center" }}
                 // onClick={() => dispatch(resetCoursesParams())}
+                onClick={() => navigate(-1)}
               >
                 <SchoolIcon
                   sx={{
@@ -94,45 +125,80 @@ export default function ProfessorInfo() {
                   fontFamily: "Raleway, sans-serif",
                 }}
               >
+                Profil profesora
                 {/* {courseType === "my" ? "Moji kursevi" : "Svi kursevi"} */}
               </Typography>
             </Breadcrumbs>
           </Box>
-          <Grid item xs={12} sx={{ padding: 1 }}>
+          <Grid item xs={12} sx={{ padding: 2 }}>
             <CardContent
               sx={{
                 border: "1px solid",
-                borderRadius: "20px",
-                borderColor: "primary.main",
-                height: "100%",
+                borderRadius: "16px",
+                borderColor: "divider",
                 display: "flex",
                 alignItems: "center",
-                padding: 0,
-                pt: 3,
-                px: 2,
+                padding: 3,
+                backgroundColor: "background.paper",
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Blaga senka za elegantan izgled
               }}
             >
+              {/* Avatar */}
               <Avatar
-                alt={professor?.firstName}
+                alt={`${professor?.firstName} ${professor?.lastName}`}
                 sx={{
-                  width: 56,
-                  height: 56,
-                  backgroundColor: "text.primary",
-                  mr: 2,
-                  padding: 0,
+                  width: 64,
+                  height: 64,
+                  backgroundColor: "primary.main",
+                  color: "white",
+                  fontSize: "24pt",
+                  marginRight: 3,
                 }}
               >
-                <Box sx={{ fontSize: "25pt" }}>
-                  {professor?.firstName.charAt(0).toUpperCase()}
-                </Box>
+                {professor?.firstName.charAt(0).toUpperCase()}
+                {professor?.lastName.charAt(0).toUpperCase()}
               </Avatar>
-              <Typography variant="h5" fontWeight="bold">
-                {professor?.firstName} {professor?.lastName}
-              </Typography>
+
+              {/* Informacije o profesoru */}
+              <Box sx={{ flex: 1 }}>
+                {/* Ime i titula zajedno */}
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  sx={{
+                    color: "text.primary",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {professor?.firstName} {professor?.lastName}
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{
+                      fontStyle: "italic",
+                      fontWeight: "normal",
+                      marginLeft: 1,
+                    }}
+                  >
+                    Profesor
+                  </Typography>
+                </Typography>
+                {/* Email ispod */}
+                <Typography
+                  variant="body2"
+                  color="text.primary"
+                  sx={{ marginTop: 0.5 }}
+                >
+                  {professor?.email}
+                </Typography>
+              </Box>
             </CardContent>
           </Grid>
+
           <Divider sx={{ marginBottom: 4 }} />
-          {coursesToDisplay.length > 0 ? (
+          <Typography variant="h3">Kursevi</Typography>
+          {coursesToDisplay && coursesToDisplay.length > 0 ? (
             <>
               {!coursesLoaded ? (
                 <Grid
@@ -179,7 +245,7 @@ export default function ProfessorInfo() {
                   ))}
                 </Grid>
               )}
-              <Box sx={{ mb: 2, mt: 2 }}>
+              {/* <Box sx={{ mb: 2, mt: 2 }}>
                 {metaData && (
                   <AppPagination
                     metaData={metaData}
@@ -188,7 +254,7 @@ export default function ProfessorInfo() {
                     }
                   />
                 )}
-              </Box>
+              </Box> */}
             </>
           ) : (
             <Box sx={{ display: "flex", flexDirection: "column", mt: 0 }}>
@@ -226,7 +292,7 @@ export default function ProfessorInfo() {
           )}
 
           {/* LISTA KURSEVA PROFESORA */}
-          <FlipCard />
+          {/* <FlipCard  cour/> */}
         </Grid>
       </Grid>
     </>

@@ -67,6 +67,14 @@ const BRANDING = {
 
 const demoTheme = extendTheme({
   components: {
+    // MuiPaper: {
+    //   styleOverrides: {
+    //     root: {
+    //       "--mui-shadows-1": "linear-gradient(green, blue)", // Prilagođena senka
+    //       "--mui-overlays-1": "linear-gradient(red, blue)", // Prilagođeni overlay
+    //     },
+    //   },
+    // },
     MuiTypography: {
       styleOverrides: {
         root: {
@@ -166,13 +174,14 @@ export default function App() {
 
   const initApp = useCallback(async () => {
     try {
-      await dispatch(fetchCurrentUser());
-      // await dispatch(fetchCoursesAsync());
-      await dispatch(fetchCoursesListAsync());
+      await dispatch(fetchCurrentUser()); //da pribavimo korisnika ako je prethodno bio prijavljen, a aplikacija ugašena
+      await dispatch(fetchCoursesAsync());
+      // await dispatch(fetchCoursesListAsync());
 
       //await dispatch(fetchUserCoursesAsync());
-      await dispatch(fetchProfessorsAsync());
-      await dispatch(fetchThemesAsync());
+      // await dispatch(fetchProfessorsAsync());
+      // await dispatch(fetchThemesAsync());
+
       await dispatch(fetchMessagesAsync());
     } catch (error: unknown) {
       console.log(error);

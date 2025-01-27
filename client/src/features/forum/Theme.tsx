@@ -1,12 +1,14 @@
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import NotFound from "../../app/errors/NotFound";
 import {
   Avatar,
   Box,
+  Breadcrumbs,
   Button,
   CardContent,
   Chip,
+  CircularProgress,
   Divider,
   Grid,
   Menu,
@@ -24,8 +26,11 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import BlockIcon from "@mui/icons-material/Block";
 import React from "react";
-
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import ChatTwoToneIcon from "@mui/icons-material/ChatTwoTone";
 export default function Theme() {
+  const navigate = useNavigate();
+
   const { id } = useParams<{ id: string }>(); // Osigurava da je `id` uvek string
   // const themes = useAppSelector((state) => state.theme.themes);
   const { user } = useAppSelector((state) => state.account);
@@ -58,6 +63,7 @@ export default function Theme() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const idMenu = open ? "simple-popover" : undefined;
+  const [loadingStatus, setLoadingStatus] = React.useState(false);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget); // Postavlja element na koji je kliknuto
@@ -67,15 +73,29 @@ export default function Theme() {
   const updateStatus = async (event: React.MouseEvent<HTMLElement>) => {
     // console.log(theme?.active +" "+!theme?.active);
 
+    // const updateData = {
+    //   id: theme!.id!,
+    //   active: !theme!.active,
+    // };
+    // // setActiveStatus(!theme?.active);
+
+    // console.log(updateData);
+    // await dispatch(updateThemeStatus(updateData));
+    // setAnchorEl(null);
+    setLoadingStatus(true); // Pokreće indikator
     const updateData = {
       id: theme!.id!,
       active: !theme!.active,
     };
-    // setActiveStatus(!theme?.active);
 
-    console.log(updateData);
-    await dispatch(updateThemeStatus(updateData));
-    setAnchorEl(null);
+    try {
+      await dispatch(updateThemeStatus(updateData));
+    } catch (error) {
+      console.error("Greška prilikom ažuriranja statusa:", error);
+    } finally {
+      setLoadingStatus(false); // Zaustavlja indikator
+      setAnchorEl(null); // Zatvara meni
+    }
   };
 
   const handleClose = () => {
@@ -85,6 +105,8 @@ export default function Theme() {
   if (theme == undefined) return <NotFound />;
 
   if (id == undefined) return <NotFound />;
+  // console.log(user?.username);
+  // console.log(theme.user.username);
   return (
     <>
       <div ref={topOfPageRef}></div>
@@ -94,8 +116,9 @@ export default function Theme() {
         sx={{
           display: "flex",
           direction: "column",
-          padding: 4,
           margin: 0,
+          paddingX: 10,
+          paddingY: 3,
         }}
       >
         <Grid
@@ -108,6 +131,53 @@ export default function Theme() {
             boxSizing: "border-box",
           }}
         >
+          <Grid item xs={12} sx={{ marginBottom: 2 }}>
+            {" "}
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Breadcrumbs
+                //size="small"
+                aria-label="breadcrumbs"
+                separator={<ChevronRightRoundedIcon fontSize="small" />}
+                sx={{ pl: 0 }}
+              >
+                <Box
+                  component={Link}
+                  to="/onlineStudy"
+                  sx={{ display: "flex", alignItems: "center" }}
+                  // onClick={() => dispatch(resetCoursesParams())}
+                  onClick={() => navigate(-1)}
+                >
+                  <ChatTwoToneIcon
+                    sx={{
+                      color: "text.secondary",
+                      // fontWeight: "bold",
+                      transition: "transform 0.3s ease",
+                      "&:hover": {
+                        transform: "scale(1.2)",
+                        color: "primary.main", // Promijeni boju na hover
+                      },
+                    }}
+                  />
+                </Box>
+
+                {/* </Link> */}
+                <Typography
+                  component={Typography}
+                  color="neutral"
+                  sx={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    "&:hover": {
+                      color: "primary.dark", // Promijeni boju na hover
+                    },
+                    fontFamily: "Raleway, sans-serif",
+                  }}
+                >
+                  Tema
+                </Typography>
+              </Breadcrumbs>
+            </Box>
+          </Grid>
           <Grid item xs={6} sx={{ padding: 1 }}>
             <CardContent
               sx={{
@@ -151,75 +221,106 @@ export default function Theme() {
                     <Typography variant="h5" fontWeight="bold">
                       {theme.title}
                     </Typography>
-                    <Chip
-                      // variant="soft"
-                      size="small"
-                      icon={
-                        {
-                          true: <CheckRoundedIcon />,
-                          false: <BlockIcon />,
-                        }[theme.active]
-                      }
-                      sx={{
-                        backgroundColor: theme.active
-                          ? "text.primaryChannel"
-                          : "text.secondaryChannel", // Prilagođene boje
-                        color: "#fff", // Tekst u beloj boji
-                        borderRadius: "16px", // Primer prilagođenog oblika
-                        ".MuiChip-icon": {
-                          color: "#fff",
-                        },
-                      }}
-                      label={theme.active ? "Aktivno" : "Zatvoreno"}
-                    />
-                    <div>
-                      <Box
-                        aria-describedby={idMenu}
-                        // variant="contained"
-                        onClick={handleClick}
-                        sx={{
-                          display: "flex",
-                          width: "fit-content",
-                          padding: 0,
-                        }}
-                      >
-                        <MoreVertIcon />
-                      </Box>
-                      <Popover
-                        id={idMenu}
-                        open={open}
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "center",
-                        }}
-                        slotProps={{
-                          paper: {
-                            sx: {
-                              borderRadius: 0,
-                            },
-                          },
-                        }}
-                      >
-                        <Typography
-                          onClick={updateStatus}
-                          variant="body2"
+                    {user && user.username == theme.user.username ? (
+                      <>
+                        <Chip
+                          // variant="soft"
+                          size="small"
+                          icon={
+                            // {
+                            //   true: <CheckRoundedIcon />,
+                            //   false: <BlockIcon />,
+                            // }[theme.active]
+                            loadingStatus ? (
+                              <CircularProgress
+                                size={16}
+                                sx={{ color: "#fff" }}
+                              />
+                            ) : theme.active ? (
+                              <CheckRoundedIcon />
+                            ) : (
+                              <BlockIcon />
+                            )
+                          }
                           sx={{
-                            paddingX: 1,
-                            paddingY: 0.5,
-                            "&:hover": {
-                              cursor: "pointer",
+                            backgroundColor: loadingStatus
+                              ? "grey" // Boja dok traje učitavanje
+                              : theme.active
+                                ? "text.primaryChannel"
+                                : "text.secondaryChannel", // Prilagođene boje
+                            color: "#fff", // Tekst u beloj boji
+                            borderRadius: "16px", // Primer prilagođenog oblika
+                            ".MuiChip-icon": {
+                              color: "#fff",
                             },
-                            fontFamily: "Raleway, sans-serif",
-                            color: "primary.light",
-                            backgroundColor: "text.primary",
                           }}
-                        >
-                          {theme.active ? "Zaključaj" : "Otključaj"}
-                        </Typography>
-                      </Popover>
-                    </div>
+                          // label={theme.active ? "Aktivno" : "Zatvoreno"}
+                          label={
+                            loadingStatus
+                              ? "Ažuriranje..."
+                              : theme.active
+                                ? "Aktivno"
+                                : "Zatvoreno"
+                          }
+                        />
+                        <div>
+                          <Box
+                            aria-describedby={idMenu}
+                            // variant="contained"
+                            onClick={handleClick}
+                            sx={{
+                              display: "flex",
+                              width: "fit-content",
+                              padding: 0,
+                              "&:hover": {
+                                cursor: "pointer",
+                              },
+                            }}
+                          >
+                            <MoreVertIcon />
+                          </Box>
+                          <Popover
+                            id={idMenu}
+                            open={open}
+                            anchorEl={anchorEl}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                              vertical: "bottom",
+                              horizontal: "center",
+                            }}
+                            slotProps={{
+                              paper: {
+                                sx: {
+                                  borderRadius: "10pt",
+                                  "&:hover": {
+                                    cursor: "pointer",
+                                  },
+                                },
+                              },
+                            }}
+                          >
+                            <Typography
+                              onClick={updateStatus}
+                              variant="body2"
+                              sx={{
+                                paddingX: 2,
+                                paddingY: 1,
+                                "&:hover": {
+                                  cursor: "pointer",
+                                },
+                                fontFamily: "Raleway, sans-serif",
+                                color: "text.primary",
+                                backgroundColor: "background.paper",
+                              }}
+                            >
+                              {theme.active ? "Zaključaj" : "Otključaj"}
+                            </Typography>
+                          </Popover>
+                        </div>
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </Grid>
                   <Typography variant="body2" color="text.secondary">
                     {theme.description}
@@ -580,7 +681,11 @@ export default function Theme() {
                       fontFamily: "Raleway, sans-serif",
                     }}
                   >
-                    {theme.active ? "Započnite razgovor." : "Zatvorena tema"}
+                    {theme.active
+                      ? user
+                        ? "Započnite razgovor."
+                        : "Prijavite se da započnete razgovor."
+                      : "Zatvorena tema"}
                   </Typography>
                 )}
               </Box>

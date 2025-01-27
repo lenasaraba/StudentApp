@@ -14,7 +14,7 @@ export interface CourseState {
   courses: Course[] | null;
   allCourses: Course[] | null;
 
-  myCourses: Course[] | null;
+  // myCourses: Course[] | null;
   professorCourses: Record<number, Course[]> | null;
   status: string;
   filtersLoaded: boolean;
@@ -28,7 +28,7 @@ export interface CourseState {
 
 const initialState: CourseState = {
   courses: null,
-  myCourses: null,
+  // myCourses: null,
   allCourses: null,
   professorCourses: {},
   status: "idle",
@@ -83,8 +83,8 @@ export const fetchCoursesAsync = createAsyncThunk<
 >("course/fetchCoursesAsync", async (_, thunkAPI) => {
   try {
     const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
+    params.forEach((a) => console.log(a));
     const courses = await agent.Course.list(params);
-    console.log("Fetched courses:", courses.items); // Proveri šta API vraća
 
     let responseCourses = [];
     let responseMetaData;
@@ -96,9 +96,6 @@ export const fetchCoursesAsync = createAsyncThunk<
       responseMetaData = courses.metaData;
     }
 
-    // console.log(responseCourses);
-    // const plainResponse = JSON.parse(JSON.stringify(courses.items));
-    // console.log("2 2 2 2 2 2 :" + plainResponse);
     thunkAPI.dispatch(setCourses(responseCourses));
 
     thunkAPI.dispatch(setMetaData(responseMetaData));
@@ -115,11 +112,10 @@ export const fetchCoursesListAsync = createAsyncThunk<
   void,
   { state: RootState }
 >("course/fetchCoursesAsync", async (_, thunkAPI) => {
-  const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
+  // const params = getAxiosParams(thunkAPI.getState().course.coursesParams);
 
   try {
-    const courses = await agent.Course.fullList(params);
-    console.log("Fetched courses:", courses); // Proveri šta API vraća
+    const courses = await agent.Course.fullList();
 
     thunkAPI.dispatch(setAllCourses(courses));
     // thunkAPI.dispatch(setMetaData(courses.metaData));
@@ -131,22 +127,7 @@ export const fetchCoursesListAsync = createAsyncThunk<
   }
 });
 
-export const fetchUserCoursesAsync = createAsyncThunk<Course[]>(
-  "course/fetchUserCoursesAsync",
-  async (_, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState() as RootState; // Tipizuj prema RootState
-      const user = state.account.user; // Pretpostavljam da `account` slice ima `user` objekat
 
-      const myCourses = await agent.Course.getMy(user!.email);
-      thunkAPI.dispatch(setMyCourses(myCourses));
-      return myCourses;
-    } catch (error: any) {
-      console.log(error.data);
-      return thunkAPI.rejectWithValue({ error: error.data });
-    }
-  }
-);
 
 export const fetchProfessorCoursesAsync = createAsyncThunk<
   Record<number, Course[]>,
@@ -182,9 +163,7 @@ export const createCourseAsync = createAsyncThunk<Course, CreateCourse>(
   "course/createCourse",
   async (newCourse, thunkAPI) => {
     try {
-      console.log(newCourse.courseCreationDate);
       const response = await agent.Course.create(newCourse);
-      console.log(response)
       return response.data; // Ovo vraća listu poruka sa servera
     } catch (error: unknown) {
       return thunkAPI.rejectWithValue(error);
@@ -197,17 +176,11 @@ export const courseSlice = createSlice({
   initialState,
   reducers: {
     setCourses: (state, action) => {
-      // console.log("OVOOOO " + action.payload);
-      // console.log({ ...action });
       if (action.payload.items) state.courses = action.payload.items;
       else state.courses = action.payload;
     },
     setAllCourses: (state, action) => {
-      // console.log(action.payload);
       state.allCourses = action.payload;
-    },
-    setMyCourses: (state, action) => {
-      state.myCourses = action.payload;
     },
     setProfessorCourses: (state, action) => {
       state.professorCourses![action.payload.professorId] =
@@ -237,24 +210,16 @@ export const courseSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(createCourseAsync.fulfilled, (state, action) => {
-      console.log(action.payload);
-      state.status = "succeeded"; // Ažuriramo status kako bismo pokazali da je operacija uspešna
-      console.log("2222222222222222222" + state.status);
+      state.status = "succeeded"; /
 
       if (state.allCourses) {
-        console.log("State.allcourses push");
         state.allCourses.push(action.payload);
-        console.log(state.allCourses);
       } else {
-        console.log("State.allcourses push");
         state.allCourses = [action.payload];
       }
       if (state.courses) {
-        console.log("State.courses push");
         state.courses.push(action.payload);
-        console.log(state.courses);
       } else {
-        console.log("State.courses push");
         state.courses = [action.payload];
       }
     });
@@ -270,7 +235,6 @@ export const courseSlice = createSlice({
     });
     builder.addCase(fetchFilters.rejected, (state, action) => {
       state.status = "idle";
-      console.log(action.payload);
     });
     // builder.addCase(fetchUserCoursesAsync.pending, (state) => {
     //   //state.loading = true; // Postavi loading na true
@@ -300,6 +264,18 @@ export const courseSlice = createSlice({
       state.status = "idle";
       state.coursesLoaded = true;
     });
+    // builder.addCase(fetchProfessorCoursesAsync.pending, (state) => {
+    //   state.status = "pendingFetchProfessorCoursesAsync";
+    // });
+    // builder.addCase(fetchProfessorCoursesAsync.rejected, (state) => {
+    //   //state.loading = false;
+    //   state.status = "idle";
+    // });
+    // builder.addCase(fetchProfessorCoursesAsync.fulfilled, (state) => {
+    //   //state.loading = false; // Postavi loading na true
+    //   state.status = "idle";
+    //   state.coursesLoaded = true;
+    // });
     // builder.addCase(createCourseAsync.fulfilled, (state, action) => {
     //   state.status = "succeeded"; // Ažuriramo status kako bismo pokazali da je operacija uspešna
     //   if (state.allCourses) {
@@ -325,7 +301,7 @@ export const courseSlice = createSlice({
 export const {
   setCourses,
   setAllCourses,
-  setMyCourses,
+  // setMyCourses,
   setProfessorCourses,
   setCoursesParams,
   setPageNumber,

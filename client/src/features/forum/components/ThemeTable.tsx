@@ -36,11 +36,9 @@ import {
 import { ThemeProvider as MuiThemeProvider } from "@mui/material";
 import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy";
 
-import LoadingComponent from "../../../app/layout/LoadingComponent";
 import TableRowSkeleton from "./TableRowSkeleton";
 import LoadingComponentJoy from "../../../app/layout/LoadingComponentJoy";
-import { ThemeProvider } from "@mui/joy";
-import { CssVarsProvider, extendTheme } from "@mui/joy/styles";
+import { extendTheme } from "@mui/joy/styles";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -69,9 +67,6 @@ interface ThemeTableProps {
   themeM: Theme; // Define the 'theme' prop type
 }
 export default function ThemeTable({ themeM }: ThemeTableProps) {
-  // const joyTheme = useTheme();
-  // console.log({ ...joyTheme });
-
   const [currentColor, setCurrentColor] = useState<string>("");
   const [statusValue, setStatusValue] = useState<string>("");
   const [catValue, setCatValue] = useState<string>("");
@@ -86,9 +81,6 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
         optionRefs.current[index]!
       ).backgroundColor;
       setCurrentColor(backgroundColor); // Postavljamo boju u stanje
-
-      console.log("*********************************************");
-      console.log(backgroundColor);
     }
   };
 
@@ -102,7 +94,6 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
 
   const [searchParams] = useSearchParams();
   const themesType = searchParams.get("type");
-  // console.log("111111111111111111111111111111111111111 " + searchParams);
   const {
     themeStatus,
     category,
@@ -113,14 +104,10 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
   } = useAppSelector((state) => state.theme);
 
   const [searchTerm, setSearchTerm] = useState(themesParams.searchTerm);
-  // console.log("2222222222222222222222222222222222222 " + searchTerm);
 
   const debouncedSearch = useMemo(
     () =>
       debounce((event: any) => {
-        // console.log(
-        //   "-----------------------------------------------" + event.target.value
-        // );
         setSearchTerm(event.target.value);
         dispatch(setThemesParams({ searchTerm: event.target.value }));
         dispatch(fetchThemesAsync());
@@ -132,7 +119,7 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
 
   //themestype: my ili all
   useEffect(() => {
-    // console.log(themesType);
+    dispatch(resetThemesParams());
     dispatch(setThemesParams({ type: themesType }));
     dispatch(fetchThemesAsync());
   }, [themesType, dispatch]);
@@ -160,13 +147,11 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
     };
   }, [debouncedSearch]);
 
-  // console.log(filtersLoaded)
   if (!filtersLoaded)
     return <LoadingComponentJoy message="Učitavanje tema..." />;
 
   // if (themeStatus.includes("pending") || !themesLoaded)
   // return <TableRowSkeleton />;
-  // console.log({ themeStatus });
 
   const pageTheme = extendTheme({
     colorSchemes: {
@@ -268,9 +253,6 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
     },
   });
 
-  // console.log(themeM);
-  // console.log(pageTheme);
-
   const renderFilters = () => (
     <>
       <FormControl size="sm">
@@ -292,7 +274,6 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
           }}
           value={statusValue}
           onChange={(event, value) => {
-            console.log("Selected value:", value);
             setStatusValue(value || "");
             dispatch(setThemesParams({ themeStatus: value }));
             dispatch(fetchThemesAsync());
@@ -359,7 +340,6 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
           size="sm"
           placeholder="Kategorija"
           onChange={(event, value) => {
-            console.log("Selected category:", value);
             setCatValue(value || "");
             dispatch(setThemesParams({ category: value }));
             dispatch(fetchThemesAsync());
@@ -628,8 +608,8 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                                 display: "-webkit-box", // Neophodno za multi-line truncation
                                 WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
                                 WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
-                                lineHeight: "1", // Podešava razmak između linija
-                                height: "1.2em", // Fiksna visina: broj linija * lineHeight
+                                lineHeight: "1.3em", // Podešava razmak između linija
+                                height: "1.3em", // Fiksna visina: broj linija * lineHeight
                                 textOverflow: "ellipsis", // Dodaje tri tačke
                                 fontWeight: "normal", // Normalna težina teksta inicijalno
                                 "&:hover": {
@@ -647,8 +627,8 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                                 display: "-webkit-box", // Neophodno za multi-line truncation
                                 WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
                                 WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
-                                lineHeight: "1", // Podešava razmak između linija
-                                height: "1.2em", // Fiksna visina: broj linija * lineHeight
+                                lineHeight: "1.3em", // Podešava razmak između linija
+                                height: "1.3em", // Fiksna visina: broj linija * lineHeight
                                 textOverflow: "ellipsis", // Dodaje tri tačke
                               }}
                             >
@@ -692,8 +672,21 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                           }}
                         >
                           <Typography
+                            component={
+                              theme1.course != null ? Link : Typography
+                            }
+                            to={`/courses/${theme1.course?.id}`}
                             sx={{
+                              textDecoration: "none",
                               color: themeM.palette.action.active,
+                              "&:hover": {
+                                color:
+                                  theme1.course != null
+                                    ? themeM.palette.primary.main
+                                    : themeM.palette.action.active,
+                                fontWeight:
+                                  theme1.course != null ? "bold" : "normal",
+                              },
                             }}
                           >
                             {" "}
@@ -759,7 +752,18 @@ export default function ThemeTable({ themeM }: ThemeTableProps) {
                                 level="body-xs"
                                 sx={{
                                   color: themeM.palette.action.active,
+                                  textDecoration: "none",
+                                  fontSize: "12pt",
+                                  fontWeight: "normal",
+                                  "&:hover": {
+                                    cursor: "pointer",
+                                    color: themeM.palette.primary.main, // Boja za hover stanje
+                                    fontWeight: "bold", // Boldovanje na hover
+                                  },
                                 }}
+                                //ovo raditi samo kad je profesor? i dodati da pise rola pored
+                                component={Link}
+                                to={`/professorInfo/${theme1.user.id}`}
                               >
                                 {theme1.user.firstName} {theme1.user.lastName}
                               </Typography>
