@@ -28,13 +28,16 @@ import BlockIcon from "@mui/icons-material/Block";
 import React from "react";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import ChatTwoToneIcon from "@mui/icons-material/ChatTwoTone";
+import LoadingComponent from "../../app/layout/LoadingComponent";
 export default function Theme() {
   const navigate = useNavigate();
 
   const { id } = useParams<{ id: string }>(); // Osigurava da je `id` uvek string
   // const themes = useAppSelector((state) => state.theme.themes);
   const { user } = useAppSelector((state) => state.account);
-  const messages = useAppSelector((state) => state.message.messages);
+  const messages = useAppSelector(
+    (state) => state.message.messages![parseInt(id!)]
+  );
   const [messageContent, setMessageContent] = useState("");
   const dispatch = useAppDispatch();
 
@@ -43,22 +46,24 @@ export default function Theme() {
     if (!id) return undefined; // Ako je `id` undefined, vrati `undefined`
     return state.theme.themes.find((t) => t.id === parseInt(id));
   });
-  // const [activeStatus, setActiveStatus] = useState(
-  //   theme?.active == "true" ? true : false
-  // );
 
-  //IZVUCI PODATAK O TOME DA LI JE TRRENUTNO PRIJAVLJENI KORISNIK KREATOR TEME
-  //DA LI MOZE DA VIDI DUGME TRI TACKE ILI NE
+  const themesLoaded = useAppSelector((state) => state.theme.themesLoaded);
+  useEffect(() => {
+    dispatch(fetchThemesAsync());
+  }, [dispatch]);
 
   const topOfPageRef = useRef<HTMLDivElement>(null);
+  const bottomOfPageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (topOfPageRef.current) {
-      topOfPageRef.current.scrollIntoView({
-        behavior: "instant",
-        block: "start",
-      });
-    }
-  }, [id]);
+    // Fetch podataka
+    dispatch(fetchMessagesAsync(parseInt(id!))).then(() => {
+      // Skrolovanje stranice na vrh
+      if (topOfPageRef.current) {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        console.log("Stranica skrolovana na vrh");
+      }      
+    });
+  }, [id, dispatch]);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -71,17 +76,6 @@ export default function Theme() {
   };
 
   const updateStatus = async (event: React.MouseEvent<HTMLElement>) => {
-    // console.log(theme?.active +" "+!theme?.active);
-
-    // const updateData = {
-    //   id: theme!.id!,
-    //   active: !theme!.active,
-    // };
-    // // setActiveStatus(!theme?.active);
-
-    // console.log(updateData);
-    // await dispatch(updateThemeStatus(updateData));
-    // setAnchorEl(null);
     setLoadingStatus(true); // Pokreće indikator
     const updateData = {
       id: theme!.id!,
@@ -102,9 +96,12 @@ export default function Theme() {
     setAnchorEl(null); // Zatvara Popover
   };
 
+  if (!themesLoaded) return <LoadingComponent message="Učitavanje teme.." />;
+
   if (theme == undefined) return <NotFound />;
 
   if (id == undefined) return <NotFound />;
+
   // console.log(user?.username);
   // console.log(theme.user.username);
   return (
@@ -688,6 +685,7 @@ export default function Theme() {
                       : "Zatvorena tema"}
                   </Typography>
                 )}
+                <div ref={bottomOfPageRef}></div>
               </Box>
             </Box>
             {user && (
@@ -738,10 +736,16 @@ export default function Theme() {
                       user: user!,
                     };
                     dispatch(createMessage(newMessage)).then(() => {
-                      dispatch(fetchMessagesAsync());
-                      dispatch(fetchThemesAsync());
+                      dispatch(fetchMessagesAsync(parseInt(id!))).then(() => {
+                        if (bottomOfPageRef.current) {
+                          bottomOfPageRef.current.scrollIntoView({
+                            behavior: "instant",
+                            block: "start",
+                          });
+                        }
+                      });
                     });
-                    setMessageContent(""); // Resetuj polje za unos
+                    setMessageContent("");
                   }}
                 >
                   Pošalji
@@ -754,5 +758,3 @@ export default function Theme() {
     </>
   );
 }
-
-//{message.user.firstName}

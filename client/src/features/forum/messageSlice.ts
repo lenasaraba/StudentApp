@@ -3,20 +3,22 @@ import agent from "../../app/api/agent";
 import { Message } from "../../app/models/theme";
 
 export interface MessageState {
-  messages: Message[] | null;
+  messages: Record<number, Message[]> | null;
   status: string;
+  //loaded ?
 }
 
 const initialState: MessageState = {
-  messages: null,
+  messages: {},
   status: "idle",
 };
 
-export const fetchMessagesAsync = createAsyncThunk<Message[], void>(
+export const fetchMessagesAsync = createAsyncThunk<Message[], number>(
   "message/fetchMessagesAsync",
-  async (_, thunkAPI) => {
-    const messages = await agent.Message.getAll();
-    thunkAPI.dispatch(setMessages(messages));
+  async (id, thunkAPI) => {
+    const messages = await agent.Message.getAll(id);
+    // console.log(messages);
+    thunkAPI.dispatch(setMessages({themeId:id, messagesTheme: messages}));
     return messages;
   }
 );
@@ -39,7 +41,8 @@ export const messageSlice = createSlice({
   initialState,
   reducers: {
     setMessages: (state, action) => {
-      state.messages = action.payload;
+      console.log(action.payload);
+      state.messages![action.payload.themeId] = action.payload.messagesTheme;
     },
   },
 });

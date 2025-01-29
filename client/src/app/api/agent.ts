@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { store } from "../store/configureStore";
-import { router } from "../router/Routes";
+// import { router } from "../router/Routes";
 import { toast } from "react-toastify";
 import { PaginatedResponse } from "../models/pagination";
 
@@ -123,9 +123,10 @@ const Theme = {
   fetchFilters: () => requests.get("theme/filters"),
   updateTheme: (themeData: any) =>
     requests.post("theme/updateTheme", themeData),
+  getProfessorThemes:(id:number)=>requests.get(`theme/getProfessorThemes/${id}`),
 };
 const Message = {
-  getAll: () => requests.get("theme/GetAllMessages"),
+  getAll: (id:number) => requests.get(`theme/GetAllMessages/${id}`),
   createMessage: (values: any) => requests.post("theme/CreateMessage", values),
 };
 

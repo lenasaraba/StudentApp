@@ -110,7 +110,7 @@ function RowMenu() {
 
 export default function ThemeList() {
   return (
-    <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+    <Box sx={{ display: { xs: 'block', sm: 'block' } }}>
       {listItems.map((listItem) => (
         <List key={listItem.id} size="sm" sx={{ '--ListItem-paddingX': 0 }}>
           <ListItem

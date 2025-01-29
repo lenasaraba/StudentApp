@@ -87,7 +87,19 @@ namespace API.Controllers
 
             return _mapper.Map<GetThemeDto>(theme);
         }
+        [HttpGet("getProfessorThemes/{id}")]
+        public async Task<ActionResult<List<GetThemeDto>>> GetProfessorThemes(int id){
 
+            var themes =await  _context.Themes.Where(c => c.User.Id == id)
+           .Include(u => u.User)
+            .Include(c => c.Course).ThenInclude(y => y.Year)
+            .Include(c => c.Course).ThenInclude(s => s.StudyProgram)
+            .Include(m => m.Messages).ThenInclude(u => u.User)
+            .Include(c => c.Course).ThenInclude(p => p.ProfessorsCourse)
+            .ThenInclude(u => u.User).ToListAsync();
+
+            return themes.Select(c => _mapper.Map<GetThemeDto>(c)).ToList();
+        }
         [HttpGet("filters")]
         public async Task<IActionResult> GetFilters()
         {
@@ -198,10 +210,10 @@ namespace API.Controllers
             return messages.Select(c => _mapper.Map<GetMessageDto>(c)).ToList();
         }
 
-        [HttpGet("GetAllMessages")]
-        public async Task<ActionResult<List<GetMessageDto>>> GetAllMessages()
+        [HttpGet("GetAllMessages/{id}")]
+        public async Task<ActionResult<List<GetMessageDto>>> GetAllMessages(int id)
         {
-            var messages = await _context.Messages.Include(u => u.User).Include(t => t.Theme).ToListAsync();
+            var messages = await _context.Messages.Where(m=>m.ThemeId==id).Include(u => u.User).Include(t => t.Theme).ToListAsync();
 
             return messages.Select(c => _mapper.Map<GetMessageDto>(c)).ToList();
         }

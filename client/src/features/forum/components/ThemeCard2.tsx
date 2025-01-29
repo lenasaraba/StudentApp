@@ -120,19 +120,20 @@ export default function ThemeCard2({ theme }: ThemeCardProps) {
               sx={{
                 textAlign: "center",
                 fontWeight: "bold",
-                fontSize: "clamp(12pt, 18pt, 20pt)",
+                fontSize: "clamp(12pt, 16pt, 20pt)",
                 fontFamily: "Raleway, sans-serif",
                 textDecoration: "none", // Uklanja podvlačenje linka
                 // mt: 2,
                 justifyContent: "center",
                 alignItems: "center",
                 overflow: "hidden", // Sakriva sadržaj koji prelazi kontejner
-                display: "flex", // Neophodno za multi-line truncation
+                display: "-webkit-box", // Neophodno za multi-line truncation
                 WebkitBoxOrient: "vertical", // Omogućava višelinijski prikaz
                 WebkitLineClamp: 1, // Maksimalan broj linija (menjajte po potrebi)
-                lineHeight: "1.2", // Podešava razmak između linija
-                height: "2em", // Fiksna visina: broj linija * lineHeight
+                lineHeight: "1.2em", // Podešava razmak između linija
+                height: "1.2em", // Fiksna visina: broj linija * lineHeight
                 textOverflow: "ellipsis", // Dodaje tri tačke
+
                 width: "100%",
 
                 color: "text.primary", // Koristi boju teksta iz roditeljskog elementa

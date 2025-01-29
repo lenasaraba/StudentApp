@@ -54,7 +54,6 @@ export const fetchThemesAsync = createAsyncThunk<
   { state: RootState }
 >("theme/fetchThemesAsync", async (_, thunkAPI) => {
   const params = getAxiosParams(thunkAPI.getState().theme.themesParams);
-  // console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII" + params);
   try {
     const themes = await agent.Theme.getAll(params);
     thunkAPI.dispatch(setThemes(themes));

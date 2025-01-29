@@ -10,6 +10,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import ThemeTable from "./components/ThemeTable";
 import { Breadcrumbs, Grid, useTheme } from "@mui/material";
 import { useAppSelector } from "../../app/store/configureStore";
+import ThemeList from "./components/ThemeList";
 
 // import ThemeList from "./components/ThemeList";
 

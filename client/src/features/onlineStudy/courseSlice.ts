@@ -210,7 +210,7 @@ export const courseSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(createCourseAsync.fulfilled, (state, action) => {
-      state.status = "succeeded"; /
+      state.status = "succeeded"; 
 
       if (state.allCourses) {
         state.allCourses.push(action.payload);

@@ -175,14 +175,12 @@ export default function App() {
   const initApp = useCallback(async () => {
     try {
       await dispatch(fetchCurrentUser()); //da pribavimo korisnika ako je prethodno bio prijavljen, a aplikacija ugašena
-      await dispatch(fetchCoursesAsync());
+      // await dispatch(fetchCoursesAsync());        //paginated
       // await dispatch(fetchCoursesListAsync());
-
       //await dispatch(fetchUserCoursesAsync());
       // await dispatch(fetchProfessorsAsync());
       // await dispatch(fetchThemesAsync());
-
-      await dispatch(fetchMessagesAsync());
+      // await dispatch(fetchMessagesAsync());
     } catch (error: unknown) {
       console.log(error);
     }

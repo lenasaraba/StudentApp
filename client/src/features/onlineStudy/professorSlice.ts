@@ -3,6 +3,7 @@ import agent from "../../app/api/agent";
 import { Professor, ProfessorsParams } from "../../app/models/professor";
 import { Course, StudyProgram, Year } from "../../app/models/course";
 import { RootState } from "../../app/store/configureStore";
+import { Theme } from "../../app/models/theme";
 
 export interface ProfessorState {
   professors: Professor[];
@@ -10,9 +11,9 @@ export interface ProfessorState {
   professorsParams: ProfessorsParams;
   filtersLoaded: boolean;
   professorsLoaded: boolean;
-  //
-  professorCourses: Record<number, Course[]> | null;
 
+  professorCourses: Record<number, Course[]> | null;
+  professorThemes: Record<number, Theme[]> | null;
   coursesLoaded: boolean;
   programs: string[];
   years: string[];
@@ -28,7 +29,7 @@ const initialState: ProfessorState = {
   professorsLoaded: false,
   //
   professorCourses: {},
-
+  professorThemes: {},
   coursesLoaded: false,
   programs: [],
   years: [],
@@ -74,6 +75,27 @@ export const fetchProfessorYearsProgramsAsync = createAsyncThunk<
           programs: programs,
           courses: professorCourses,
           totalCount: totalCount, // Dodaj ukupni broj profesora
+        })
+      );
+    } catch (error: any) {
+      console.error(error.data);
+      throw error;
+    }
+  }
+);
+
+export const fetchProfessorThemesAsync = createAsyncThunk<void, number>(
+  "professor/fetchProfessorThemesAsync",
+  async (id, thunkAPI) => {
+    try {
+      // const { themes } =
+      //   await agent.Professor.getProfessorThemes(id);
+      const professorThemes = await agent.Theme.getProfessorThemes(id);
+
+      thunkAPI.dispatch(
+        setProfessorThemes({
+          professorId: id,
+          themes: professorThemes,
         })
       );
     } catch (error: any) {
@@ -141,6 +163,9 @@ export const professorSlice = createSlice({
         state.coursesLoaded = allCoursesLoaded;
       }
     },
+    setProfessorThemes:(state, action)=>{
+      state.professorThemes![action.payload.professorId]=action.payload.themes;
+    },
     setCoursesLoaded: (state, action) => {
       state.coursesLoaded = action.payload;
     },
@@ -187,4 +212,5 @@ export const {
   setProfessorCourses,
   resetProfessorsParams,
   setCoursesLoaded,
+  setProfessorThemes
 } = professorSlice.actions;

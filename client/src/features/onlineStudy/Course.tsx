@@ -1,23 +1,16 @@
-import * as React from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../app/store/configureStore";
 import NotFound from "../../app/errors/NotFound";
 import { useEffect, useRef, useState } from "react";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import ForumIcon from "@mui/icons-material/Forum";
 import {
-  Avatar,
-  Box,
   Card,
   CardContent,
   Collapse,
-  Container,
   Divider,
   Grid,
   IconButton,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemText,
   styled,
   Typography,
@@ -25,7 +18,6 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import CourseCardMedia from "./components/CourseCardMedia";
 import { Author } from "./components/Author";
-import LoadingComponent from "../../app/layout/LoadingComponent";
 import SlideCardThemes from "./components/SlideCardThemes";
 import SpeakerNotesOffIcon from "@mui/icons-material/SpeakerNotesOff";
 

@@ -6,12 +6,12 @@ export const validationSchema = yup.object().shape({
     .string()
     .required("Naziv kursa je obavezan.")
     .min(3, "Naziv kursa mora imati najmanje 3 karaktera.")
-    .max(100, "Naziv kursa može imati najviše 100 karaktera."),
+    .max(80, "Naziv kursa može imati najviše 80 karaktera."),
   description: yup
     .string()
     .required("Opis kursa je obavezan.")
     .min(10, "Opis kursa mora imati najmanje 10 karaktera.")
-    .max(500, "Opis kursa može imati najviše 500 karaktera."),
+    .max(180, "Opis kursa može imati najviše 180 karaktera."),
   yearId: yup
     .string()
     .required("Godina je obavezna.")
