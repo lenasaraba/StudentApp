@@ -490,3 +490,4 @@ $RECYCLE.BIN/
 **/bin/
 
 API/appsettings.json
+API/appsettings.Development.json
